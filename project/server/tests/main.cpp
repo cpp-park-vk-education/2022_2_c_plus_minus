@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
-#include "include.h"
+
+#include "header.h"
 
 TEST(FIRST_TEST, NOTHING_REALLY) {
-    EXPECT_EQ(example() , 0);
+    std::cout << "Server tests" << std::endl;
+    EXPECT_EQ(example(), 0);
 }

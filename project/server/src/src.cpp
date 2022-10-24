@@ -1,5 +1,3 @@
-#include "include.cpp"
+#include "header.h"
 
-int example(){
-    return 0;
-}
+int example() { return 0; }
