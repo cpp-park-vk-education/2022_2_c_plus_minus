@@ -39,6 +39,7 @@ test_client:
 	./${TEST_CLIENT}
 
 test_all:
+	@make build
 	@make test
 	@make test_server
 	@make test_client
