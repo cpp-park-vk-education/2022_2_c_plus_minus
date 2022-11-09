@@ -25,6 +25,6 @@ include(GoogleTest)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SRC)
 
 add_executable(${PROJECT_NAME} ${SRC})
-# TODO add variable of server_lib
+
 target_link_libraries(${PROJECT_NAME} server_lib GTest::gtest_main)
 gtest_discover_tests(${PROJECT_NAME})
