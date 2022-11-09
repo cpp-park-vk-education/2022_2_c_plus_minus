@@ -29,17 +29,16 @@ run: build
 	./${SERVER_DIR}/server
 	./${CLIENT_DIR}/client
 
-test: build
+test:
 	./${TEST_DIR}
 
-test_server: build_server
+test_server:
 	./${TEST_SERVER}
 
-test_client: build_client
+test_client:
 	./${TEST_CLIENT}
 
-test_all:
-	@make build
+test_all: build
 	@make test
 	@make test_server
 	@make test_client
