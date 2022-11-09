@@ -29,13 +29,13 @@ run: build
 	./${SERVER_DIR}/server
 	./${CLIENT_DIR}/client
 
-test:
+test: build
 	./${TEST_DIR}
 
-test_server:
+test_server: build_server
 	./${TEST_SERVER}
 
-test_client:
+test_client: build_client
 	./${TEST_CLIENT}
 
 test_all:
@@ -53,10 +53,7 @@ format:
 	scripts/format.sh project
 
 valgrind:
-	scripts/valgrind.sh ${TEST_DIR}
-	scripts/valgrind.sh ${TEST_SERVER}
-	scripts/valgrind.sh ${TEST_CLIENT}
- 	# scripts/valgrind.sh ${TESTS_DIR} ${TEST_SERVER} ${TEST_CLIENT}
+	scripts/valgrind.sh ${TESTS_DIR} ${TEST_SERVER} ${TEST_CLIENT}
 
 linters:
 	scripts/linters.sh

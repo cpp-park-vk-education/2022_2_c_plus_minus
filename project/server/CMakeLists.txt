@@ -33,8 +33,7 @@ add_executable(${PROJECT_NAME}
         )
 
 target_link_libraries(${PROJECT_NAME}_lib
-# libs
-#        Beast::Beast
+
         )
 
 target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_lib)
