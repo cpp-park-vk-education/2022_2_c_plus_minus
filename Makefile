@@ -45,7 +45,7 @@ test_all:
 	@make test_client
 
 coverage:
-#	scripts/coverage.sh ${TEST_DIR}
+	scripts/coverage.sh ${TEST_DIR}
 	scripts/coverage.sh ${TEST_SERVER}
 	scripts/coverage.sh ${TEST_CLIENT}
 

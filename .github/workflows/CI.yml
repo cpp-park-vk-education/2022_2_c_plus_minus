@@ -68,8 +68,8 @@ jobs:
       - name: prepare
         run: apt install lcov -y
 
-      - name: coverage
-        run: make coverage
-
       - name: valgrind
         run: make valgrind
+
+      - name: coverage
+        run: make coverage
