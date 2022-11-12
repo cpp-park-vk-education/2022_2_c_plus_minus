@@ -10,7 +10,10 @@ on:
 
 jobs:
   checks:
-    if: github.event.pull_request.merged == true
+    if:
+      ((github.event_name != 'pull_request') ||
+      (github.event_name == 'pull_request' && github.event.action == 'closed'
+      && github.event.pull_request.merged == true))
     runs-on: ubuntu-latest
     container: dyndtikj/cpp_gtest_linters:v0.0.1
     steps:
@@ -26,7 +29,10 @@ jobs:
         run: make linters
 
   build:
-    if: github.event.pull_request.merged == true
+    if:
+      ((github.event_name != 'pull_request') ||
+      (github.event_name == 'pull_request' && github.event.action == 'closed'
+                                && github.event.pull_request.merged == true))
     runs-on: ubuntu-latest
     container: dyndtikj/cpp_gtest_linters:v0.0.1
     steps:
@@ -41,7 +47,10 @@ jobs:
           path: build/
 
   unit_tests:
-    if: github.event.pull_request.merged == true
+    if:
+      ((github.event_name != 'pull_request') ||
+      (github.event_name == 'pull_request' && github.event.action == 'closed'
+      && github.event.pull_request.merged == true))
     runs-on: ubuntu-latest
     container: dyndtikj/cpp_gtest_linters:v0.0.1
     steps:
@@ -57,7 +66,10 @@ jobs:
 
   # after build tests
   valgrind_and_cov:
-    if: github.event.pull_request.merged == true
+    if:
+      ((github.event_name != 'pull_request') ||
+      (github.event_name == 'pull_request' && github.event.action == 'closed'
+      && github.event.pull_request.merged == true))
     runs-on: ubuntu-latest
     container: dyndtikj/cpp_gtest_linters:v0.0.1
     needs: [unit_tests]
