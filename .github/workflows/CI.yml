@@ -2,14 +2,17 @@ name: CI
 
 on:
   push:
-    branches: [ "main" , "dev/ci", "dev/dyndtikj"]
+    - "**"
+    - "!main"
 
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+    types: [ opened, synchronize, closed ]
 
 jobs:
-  if: github.event.pull_request.merged == false
   checks:
+    if: (!(github.event.action == 'closed' && github.event.pull_request.merged != true)
     runs-on: ubuntu-latest
     container: dyndtikj/cpp_gtest_linters:v0.0.1
     steps:
@@ -25,6 +28,7 @@ jobs:
         run: make linters
 
   build:
+    if: (!(github.event.action == 'closed' && github.event.pull_request.merged != true)
     runs-on: ubuntu-latest
     container: dyndtikj/cpp_gtest_linters:v0.0.1
     steps:
@@ -39,6 +43,7 @@ jobs:
           path: build/
 
   unit_tests:
+    if: (!(github.event.action == 'closed' && github.event.pull_request.merged != true)
     runs-on: ubuntu-latest
     container: dyndtikj/cpp_gtest_linters:v0.0.1
     steps:
@@ -54,6 +59,7 @@ jobs:
 
   # after build tests
   valgrind_and_cov:
+    if: (!(github.event.action == 'closed' && github.event.pull_request.merged != true)
     runs-on: ubuntu-latest
     container: dyndtikj/cpp_gtest_linters:v0.0.1
     needs: [unit_tests]
