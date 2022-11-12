@@ -5,7 +5,7 @@ on:
     branches: [ "main" , "dev/ci", "dev/dyndtikj"]
 
   pull_request:
-    branches: [ "main", "dev/ci" ]
+    branches: [ "main" ]
 
 jobs:
   checks:
