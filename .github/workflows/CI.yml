@@ -8,6 +8,7 @@ on:
     branches: [ "main" ]
 
 jobs:
+  if: github.event.pull_request.merged == false
   checks:
     runs-on: ubuntu-latest
     container: dyndtikj/cpp_gtest_linters:v0.0.1
