@@ -6,7 +6,7 @@ on:
 
   pull_request:
     branches: [ main ]
-    types: [ opened, synchronize, closed ]
+    types: [ synchronize, closed ]
 
 jobs:
   checks:
