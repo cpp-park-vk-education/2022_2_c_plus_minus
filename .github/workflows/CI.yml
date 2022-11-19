@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [ "**" , "!main" ]
+
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, closed ]
+
+jobs:
+  checks:
+    if:
+      ((github.event_name != 'pull_request') ||
+      (github.event_name == 'pull_request' && github.event.action == 'closed'
+      && github.event.pull_request.merged == true))
+    runs-on: ubuntu-latest
+    container: dyndtikj/cpp_gtest_linters:v0.0.1
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: prepare
+        run: apt install clang-format -y
+      # run clang-format
+      - name: format
+        run: make format
+      # run clang-tidy cpplint cppcheck
+      - name: linters
+        run: make linters
+
+  build:
+    if:
+      ((github.event_name != 'pull_request') ||
+      (github.event_name == 'pull_request' && github.event.action == 'closed'
+                                && github.event.pull_request.merged == true))
+    runs-on: ubuntu-latest
+    container: dyndtikj/cpp_gtest_linters:v0.0.1
+    steps:
+      - uses: actions/checkout@v3
+      - name: build
+        run: make build
+
+      - name: upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact_build
+          path: build/
+
+  unit_tests:
+    if:
+      ((github.event_name != 'pull_request') ||
+      (github.event_name == 'pull_request' && github.event.action == 'closed'
+      && github.event.pull_request.merged == true))
+    runs-on: ubuntu-latest
+    container: dyndtikj/cpp_gtest_linters:v0.0.1
+    steps:
+      - uses: actions/checkout@v2
+      - name: run tests
+        run: make test_all
+
+      - name: upload test artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact_test
+          path: build/
+
+  # after build tests
+  valgrind_and_cov:
+    if:
+      ((github.event_name != 'pull_request') ||
+      (github.event_name == 'pull_request' && github.event.action == 'closed'
+      && github.event.pull_request.merged == true))
+    runs-on: ubuntu-latest
+    container: dyndtikj/cpp_gtest_linters:v0.0.1
+    needs: [unit_tests]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: get test artifact/
+        uses: actions/download-artifact@v3
+        with:
+          name: artifact_test
+          path: build/
+
+      - name: prepare
+        run: apt install lcov -y
+
+      - name: valgrind
+        run: make valgrind
+
+      - name: coverage
+        run: make coverage
