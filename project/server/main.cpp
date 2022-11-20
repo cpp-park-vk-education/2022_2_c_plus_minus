@@ -1,9 +1,5 @@
-#include <iostream>
-
-#include "header.h"
+#include "Connection.h"
 
 int main() {
-    std::cout << "SERVER" << std::endl;
-    std::cout << example() << std::endl;
-    return 0;
-}
+    Connection c;
+};

@@ -5,6 +5,8 @@ OPTION(BUILD_SERVER "Build server" OFF)
 OPTION(BUILD_CLIENT "Build client" OFF)
 OPTION(BUILD_ALL    "Build all"    OFF)
 
+add_subdirectory(general)
+
 if((BUILD_SERVER) OR (BUILD_ALL))
     message("BUILD SERVER")
     add_subdirectory(server)
