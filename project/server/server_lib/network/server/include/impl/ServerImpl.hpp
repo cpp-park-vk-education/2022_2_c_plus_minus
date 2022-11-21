@@ -10,8 +10,9 @@
 
 class ServerImpl : public Server {
    public:
+    ServerImpl();
     ServerImpl(std::shared_ptr<boost::asio::io_context> ioContext,
-               std::uint16_t port);
+               std::uint32_t port);
     ~ServerImpl();
 
     void Run() override;
