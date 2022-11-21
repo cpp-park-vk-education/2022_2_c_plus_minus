@@ -4,6 +4,7 @@
 
 template <typename C>
 class DBConnection {
+private:
     const std::string path_;
     std::unique_ptr<C> connect_;
     std::string LoadConfig(const std::string& path) const;
@@ -11,6 +12,5 @@ class DBConnection {
    public:
     DBConnection(const std::string&);
     ~DBConnection();
-
     C& GetConnection();
 };

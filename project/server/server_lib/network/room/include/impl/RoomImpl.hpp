@@ -24,9 +24,9 @@ class RoomImpl : public Room {
     virtual bool DelSession(std::uint64_t id);
 
     // send msg to a single user by id
-    void Send(const std::string& message, std::uint64_t id) override;
+    virtual void Send(const std::string& message, std::uint64_t id) override;
     // send message for all users in room except one (initiator)
-    void SendAllExcept(const std::string& message, std::uint64_t id) override;
+    virtual void SendAllExcept(const std::string& message, std::uint64_t id) override;
 
    protected:
     const std::uint64_t id_ = 0;

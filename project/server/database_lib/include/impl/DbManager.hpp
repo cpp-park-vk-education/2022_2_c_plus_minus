@@ -13,6 +13,7 @@
 template <typename T = pqxx::connection, class C = DBConnection<T>,
           class M = DBMethods<T, C>, class W = DbWorker<T, C, M>>
 class DBManager {
+private:
     std::vector<std::unique_ptr<W>> workers_pool_;
 
    public:

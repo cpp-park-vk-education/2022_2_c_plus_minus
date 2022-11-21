@@ -7,13 +7,15 @@
 #include "Request.hpp"
 #include "SafeQueue.hpp"
 #include "User.hpp"
+#include "Session.hpp"
+#include "Task.hpp"
 
 class Connection;
 class GameRoom;
 class Room;
 class RoomController;
 
-class SessionImpl : public std::enable_shared_from_this<SessionImpl> {
+class SessionImpl : public std::enable_shared_from_this<SessionImpl>, public Session{
    public:
     SessionImpl(std::shared_ptr<boost::asio::io_context> io_ctx,
                 std::shared_ptr<boost::asio::ssl::context> ssl_ctx,
@@ -22,7 +24,7 @@ class SessionImpl : public std::enable_shared_from_this<SessionImpl> {
 
     ~SessionImpl();
 
-    void BindConnection();
+    void BindConnection() override;
 
     std::uint64_t GetId() const;
     const User& GetUser() const;
@@ -31,12 +33,12 @@ class SessionImpl : public std::enable_shared_from_this<SessionImpl> {
     std::vector<std::shared_ptr<Room>> GetAllRooms() const;
 
     // for every request in queue call private method HandleRequest
-    void HandleRequests();
+    void HandleRequests() override;
 
-    void Send(std::string message);
-    void SendAllExcept(const std::string& message);
+    void Send(std::string message) override;
+    void SendAllExcept(const std::string& message) override;
 
-    std::uint64_t NewRoom(const std::string& name, std::size_t max_user_count);
+    std::uint64_t NewRoom(const std::string& name, std::size_t max_user_count) override;
 
     std::vector<uint64_t> StartGame();
     std::int64_t Move(std::uint64_t figureId, std::uint64_t pos_x,
@@ -44,10 +46,10 @@ class SessionImpl : public std::enable_shared_from_this<SessionImpl> {
 
     void DeleteFromRoomController();
 
-    void StopConnection();
+    void StopConnection() override;
 
    private:
-    void HandleRequest(Request&& request);
+    void HandleRequest(Request&& request) override;
 
    private:
     // bind session with user, room and connection

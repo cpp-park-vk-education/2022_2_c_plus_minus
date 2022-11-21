@@ -10,7 +10,7 @@
 
 class Session;
 
-class Controller final {
+class Controller {
    public:
     Controller();
 
