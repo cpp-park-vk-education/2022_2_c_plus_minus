@@ -26,7 +26,7 @@ jobs:
              apt install libopenmpi-dev -y 
              apt install libcoarrays-openmpi-dev -y 
              apt install libcoarrays-dev -y         # already there
-             gfortran libboost-all-dev libpqxx-dev libssl-dev -y
+             apt gfortran libboost-all-dev libpqxx-dev libssl-dev -y
 
       # run clang-format
       - name: format
