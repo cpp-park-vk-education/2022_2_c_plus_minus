@@ -20,7 +20,13 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: prepare
-        run: apt install clang-format gfortran libboost-all-dev libpqxx-dev libssl-dev libcoarrays-dev libopenmpi-dev -y
+        run: apt install clang-format -y
+             apt install libmpich-dev -y
+             apt install libcoarrays-mpich-dev -y 
+             apt install libopenmpi-dev -y 
+             apt install libcoarrays-openmpi-dev -y 
+             apt install libcoarrays-dev -y         # already there
+             gfortran libboost-all-dev libpqxx-dev libssl-dev -y
 
       # run clang-format
       - name: format
