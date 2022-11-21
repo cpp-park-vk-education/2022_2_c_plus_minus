@@ -22,6 +22,5 @@ class ServerImpl : public Server {
     std::shared_ptr<boost::asio::io_context> io_ctx_;
     std::shared_ptr<boost::asio::ssl::context> ssl_ctx_;
     boost::asio::ip::tcp::acceptor acceptor_;
-    std::optional<boost::asio::ip::tcp::socket> socket_;
     std::shared_ptr<Controller> room_ctrl_;
 };
