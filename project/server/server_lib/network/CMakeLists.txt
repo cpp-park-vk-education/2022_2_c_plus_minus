@@ -29,13 +29,24 @@ aux_source_directory(room/src ROOM_SRC)
 aux_source_directory(connection/src CONN_SRC)
 aux_source_directory(handlers/src HANDLERS_SRC)
 aux_source_directory(session/src SESSION_SRC)
+aux_source_directory(channel/src CHANNEL_SRC)
 
 add_library(${PROJECT_NAME} ${SERVER_SRC} ${ROOM_SRC} ${CONN_SRC}
-            ${HANDLERS_SRC} ${SESSION_SRC})
+            ${HANDLERS_SRC} ${SESSION_SRC} ${CHANNEL_SRC})
 
-target_include_directories(${PROJECT_NAME} PUBLIC connection/include
-        handlers/include room/include server/include session/include)
+find_package(Boost REQUIRED COMPONENTS system)
+find_package(OpenSSL REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+        connection/include/impl connection/include/interface
+        handlers/include/interface handlers/include/impl
+        room/include/interface room/include/impl
+        server/include/interface server/include/impl
+        session/include/interface session/include/impl
+)
 
 target_link_libraries(${PROJECT_NAME}
-        database_lib
+        PUBLIC database_lib general_lib
+        PRIVATE ${Boost_LIBRARIES} OpenSSL::SSL
         )

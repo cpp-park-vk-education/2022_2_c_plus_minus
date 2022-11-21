@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
-project(client)
-set(CMAKE_CXX_STANDARD 17)
+project(game_logic)
+set(CMAKE_CXX_STANDARD 20)
 
 OPTION(BUILD_TEST "TEST" OFF)
 OPTION(BUILD_DEV  "DEVELOPMENT BUILD" ON)
@@ -15,20 +15,25 @@ if(BUILD_DEV)
     add_subdirectory(tests)
 endif()
 
+if(BUILD_SANITIZE)
+    string(APPEND CMAKE_CXX_FLAGS " -fsanitize=address,undefined -fno-sanitize-recover=all -fsanitize-undefined-trap-on-error")
+endif()
+
 if(BUILD_TEST)
     add_subdirectory(tests)
 endif()
 
 # Collects the names of all the source files in the specified directory
 aux_source_directory(src SRC)
-add_library(${PROJECT_NAME}_lib ${SRC})
-target_include_directories(${PROJECT_NAME}_lib PUBLIC include)
+#aux_source_directory(room/src ROOM_SRC)
+#aux_source_directory(connection/src CONN_SRC)
+#aux_source_directory(handlers/src HANDLERS_SRC)
+#aux_source_directory(session/src SESSION_SRC)
 
-add_executable(${PROJECT_NAME}
-        ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-        )
+add_library(${PROJECT_NAME} ${SRC})
 
-target_link_libraries(${PROJECT_NAME}_lib
-        general_lib)
-
-target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_lib)
+target_include_directories(${PROJECT_NAME} PUBLIC include)
+#
+#target_link_libraries(${PROJECT_NAME}
+#        database_lib
+#        )

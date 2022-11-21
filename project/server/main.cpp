@@ -1,5 +1,3 @@
-#include "Connection.h"
+#include "interface/Server.hpp"
 
-int main() {
-    Connection c;
-};
+int main() { return 0; };

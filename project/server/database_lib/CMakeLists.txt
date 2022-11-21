@@ -2,34 +2,19 @@ cmake_minimum_required(VERSION 3.0)
 project(database_lib)
 set(CMAKE_CXX_STANDARD 20)
 
-OPTION(BUILD_TEST "TEST" OFF)
-OPTION(BUILD_DEV  "DEVELOPMENT BUILD" ON)
-OPTION(BUILD_VALGRIND "MEMORY TESTING" OFF)
-OPTION(BUILD_SANITIZE "SANITIZE" OFF)
+message("BUILD DB_LIB")
 
-string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra -pedantic -Wformat=2 -Wfloat-equal -Wconversion -fprofile-arcs")
-string(APPEND CMAKE_CXX_FLAGS " -Wlogical-op  -Wduplicated-cond -Wcast-qual -Wcast-align")
+set(IncludeDirs ${CMAKE_CURRENT_SOURCE_DIR}/include/impl/
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/interface/
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/)
 
-if(BUILD_DEV)
-    string(APPEND CMAKE_CXX_FLAGS " -g -O0")
-    add_subdirectory(tests)
-endif()
-
-if(BUILD_SANITIZE)
-    string(APPEND CMAKE_CXX_FLAGS " -fsanitize=address,undefined -fno-sanitize-recover=all -fsanitize-undefined-trap-on-error")
-endif()
-
-if(BUILD_TEST)
-    add_subdirectory(tests)
-endif()
+find_library(PQXX_LIB pqxx REQUIRED)
+find_library(PQ_LIB pq REQUIRED)
 
 # Collects the names of all the source files in the specified directory
 aux_source_directory(src SRC)
-#aux_source_directory(room/src ROOM_SRC)
-#aux_source_directory(connection/src CONN_SRC)
-#aux_source_directory(handlers/src HANDLERS_SRC)
-#aux_source_directory(session/src SESSION_SRC)
 
 add_library(${PROJECT_NAME} ${SRC})
 
-target_include_directories(${PROJECT_NAME} PUBLIC include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${IncludeDirs})
+target_link_libraries(${PROJECT_NAME} general ${PQ_LIB} ${PQXX_LIB})

@@ -1,23 +1,17 @@
-#pragma once
+#include "User.hpp"
 
-#include "User.h"
-
-std::uint64_t User::Id() const {
-    return id_;
+bool User::IsEmpty() const noexcept {
+    return !(this->id_) && this->password_.empty() && this->nick_.empty();
 }
 
-std::string User::Name() const {
-    return name_;
-}
+void User::SetId(const uint64_t &id) noexcept { this->id_ = id; }
 
-void User::SetName(const std::string& name) {
-    name_ = name;
-}
+void User::SetPassword(const std::string &pw) noexcept { this->password_ = pw; }
 
-std::uint64_t User::RoomId() const {
-    return room_id_;
-}
+void User::SetNick(const std::string &nick) noexcept { this->nick_ = nick; }
 
-void User::SetRoomId(const uint64_t& roomId) {
-    room_id_ = roomId;
-}
+uint64_t &User::GetId() noexcept { return this->id_; }
+
+std::string &User::GetPassword() noexcept { return this->password_; }
+
+std::string &User::GetNick() noexcept { return this->nick_; }

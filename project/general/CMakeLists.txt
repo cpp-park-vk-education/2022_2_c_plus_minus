@@ -1,10 +1,18 @@
 cmake_minimum_required(VERSION 3.0)
-project(general)
-
+project(general_lib)
 set(CMAKE_CXX_STANDARD 20)
 
-file(GLOB ${PROJECT_NAME}_src user/src/*.cpp)
+message("BUILD GENERAL SOURCES")
 
-add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_src})
+aux_source_directory(user/src USER_SRC)
+aux_source_directory(message/src MSG_SRC)
+aux_source_directory(task/src TASK_SRC)
 
-target_include_directories(${PROJECT_NAME} PUBLIC user/include)
+find_package(Boost REQUIRED log log_setup)
+
+add_library(${PROJECT_NAME} STATIC ${USER_SRC} ${MSG_SRC})
+
+target_include_directories(${PROJECT_NAME} PUBLIC  message/include
+        user/include task/include safe_queue/include)
+
+target_link_libraries(${PROJECT_NAME})
