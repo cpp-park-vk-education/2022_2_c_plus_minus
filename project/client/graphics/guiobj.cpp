@@ -34,7 +34,7 @@ void SFMLRect::create() {
 }
 
 void SFMLRect::draw() {
-    factory->_window.draw(rect);
+    factory->window->draw(rect);
 }
 
 
@@ -78,11 +78,11 @@ void SFMLText::create() {
 }
 
 void SFMLText::draw() {
-    factory->_window.draw(_text);
+    factory->window->draw(_text);
 }
 
 
-SFMLGUIFactory::SFMLGUIFactory(sf::VideoMode vm, const std::string& title) : _window(vm, title) {
+SFMLGUIFactory::SFMLGUIFactory(sf::RenderWindow* window) : window{window} {
 }
 
 GUIRect* SFMLGUIFactory::rect() {
@@ -98,11 +98,23 @@ void SFMLGUIFactory::add(GUIObj* obj) {
 }
 
 SFMLGUIFactory::~SFMLGUIFactory() {
-    for (auto obj : objects) {
-        delete obj;
-    }
 }
 
-GUIWindow* SFMLGUIFactory::window() {
-    return SFMLWindow;
+void SFMLGUIFactory::display() {
+    window->clear();
+    for (auto& object : objects) {
+        object->draw();
+    }
+    window->display();
+}
+
+bool SFMLGUIFactory::handleEvents() {
+    sf::Event event;
+    while (window->pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
+            window->close();
+            return false;
+        }
+    }
+    return true;
 }

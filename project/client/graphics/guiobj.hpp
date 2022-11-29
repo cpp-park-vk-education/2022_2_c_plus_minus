@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 
 struct GUIObj {
@@ -96,48 +97,37 @@ struct SFMLText : public GUIText {
 };
 
 
-struct GUIWindow {
-    virtual bool isOpen() = 0;
-    // MOCK
-    virtual bool pollEvent(sf::Event) = 0;
-
-    virtual void clear() = 0;
-
-    virtual void display() = 0;
-};
-
-
-struct SFMLWindow : public GUIWindow {
-
-};
-
-
 struct GUIFactory {
-    virtual ~GUIFactory() = default;
+    std::vector<GUIObj*> objects;
 
-    virtual GUIWindow* window() = 0;
+    virtual ~GUIFactory() = default;
 
     virtual GUIRect* rect() = 0;
 
     virtual GUIText* text() = 0;
 
     virtual void add(GUIObj*) = 0;
+
+    virtual void display() = 0;
+
+    virtual bool handleEvents() = 0;
 };
 
 
 struct SFMLGUIFactory : public GUIFactory {
+    std::unique_ptr<sf::RenderWindow> window;
+
     virtual ~SFMLGUIFactory();
 
-    sf::RenderWindow _window;
-    std::vector<GUIObj*> objects;
-
-    SFMLGUIFactory(sf::VideoMode vm, const std::string& title);
-
-    GUIWindow* window() override;
+    SFMLGUIFactory(sf::RenderWindow*);
 
     GUIRect* rect() override;
 
     GUIText* text() override;
 
     void add(GUIObj* obj) override;
+
+    void display() override;
+
+    bool handleEvents() override;
 };
