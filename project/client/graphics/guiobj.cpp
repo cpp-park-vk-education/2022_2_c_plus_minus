@@ -82,6 +82,8 @@ void SFMLText::draw() {
 }
 
 void SFMLSprite::create() {
+    _texture.loadFromImage(_image);
+    sprite.setTexture(_texture);
     factory->add(this);
 }
 
@@ -146,10 +148,8 @@ SFMLSprite* SFMLSprite::y(int y) {
     return this;
 }
 
-SFMLSprite* SFMLSprite::texture(const std::string& texturePath) {
-    sf::Texture texture;
-    texture.loadFromFile(texturePath);
-    sprite.setTexture(texture);
+SFMLSprite* SFMLSprite::image(const std::string& texturePath) {
+    _image.loadFromFile(texturePath);
     return this;
 }
 
@@ -158,4 +158,7 @@ SFMLSprite* SFMLSprite::frame(int x, int y, int width, int height) {
     return this;
 }
 
-
+SFMLSprite* SFMLSprite::mask(uint32_t color) {
+    _image.createMaskFromColor(sf::Color(color));
+    return this;
+}

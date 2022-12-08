@@ -52,9 +52,11 @@ struct GUISprite : GUIObj {
 
     virtual GUISprite* y(int) = 0;
 
-    virtual GUISprite* texture(const std::string&) = 0;
+    virtual GUISprite* image(const std::string&) = 0;
 
-    virtual GUISprite* frame(int, int, int, int) = 0;
+    virtual GUISprite* frame(int x, int y, int width, int height) = 0;
+
+    virtual GUISprite* mask(uint32_t color) = 0;
 };
 
 
@@ -112,6 +114,8 @@ struct SFMLText : public GUIText {
 
 struct SFMLSprite : public GUISprite {
     sf::Sprite sprite;
+    sf::Texture _texture;
+    sf::Image _image;
 
     SFMLGUIFactory* factory;
 
@@ -125,9 +129,11 @@ struct SFMLSprite : public GUISprite {
 
     SFMLSprite* y(int) override;
 
-    SFMLSprite* frame(int x, int y, int width, int height);
+    SFMLSprite* frame(int x, int y, int width, int height) override;
 
-    SFMLSprite* texture(const std::string& texturePath);
+    SFMLSprite* image(const std::string& texturePath) override;
+
+    SFMLSprite* mask(uint32_t color) override;
 };
 
 
