@@ -81,6 +81,17 @@ void SFMLText::draw() {
     factory->window->draw(_text);
 }
 
+void SFMLSprite::create() {
+    factory->add(this);
+}
+
+void SFMLSprite::draw() {
+    factory->window->draw(sprite);
+}
+
+SFMLSprite::SFMLSprite(SFMLGUIFactory* factory) : factory{factory} {
+}
+
 
 SFMLGUIFactory::SFMLGUIFactory(sf::RenderWindow* window) : window{window} {
 }
@@ -92,6 +103,12 @@ GUIRect* SFMLGUIFactory::rect() {
 GUIText* SFMLGUIFactory::text() {
     return new SFMLText(this);
 }
+
+GUISprite* SFMLGUIFactory::sprite() {
+    return new SFMLSprite(this);
+}
+
+
 
 void SFMLGUIFactory::add(GUIObj* obj) {
     objects.push_back(obj);
@@ -118,3 +135,27 @@ bool SFMLGUIFactory::handleEvents() {
     }
     return true;
 }
+
+SFMLSprite* SFMLSprite::x(int x) {
+    sprite.setPosition({float(x), sprite.getPosition().y});
+    return this;
+}
+
+SFMLSprite* SFMLSprite::y(int y) {
+    sprite.setPosition({sprite.getPosition().x, float(y)});
+    return this;
+}
+
+SFMLSprite* SFMLSprite::texture(const std::string& texturePath) {
+    sf::Texture texture;
+    texture.loadFromFile(texturePath);
+    sprite.setTexture(texture);
+    return this;
+}
+
+SFMLSprite* SFMLSprite::frame(int x, int y, int width, int height) {
+    sprite.setTextureRect(sf::IntRect(x, y, width, height));
+    return this;
+}
+
+
