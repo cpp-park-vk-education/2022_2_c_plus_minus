@@ -57,6 +57,8 @@ struct GUISprite : GUIObj {
     virtual GUISprite* frame(int x, int y, int width, int height) = 0;
 
     virtual GUISprite* mask(uint32_t color) = 0;
+
+    virtual GUISprite* scale(float k) = 0;
 };
 
 
@@ -134,6 +136,8 @@ struct SFMLSprite : public GUISprite {
     SFMLSprite* image(const std::string& texturePath) override;
 
     SFMLSprite* mask(uint32_t color) override;
+
+    SFMLSprite* scale(float k) override;
 };
 
 

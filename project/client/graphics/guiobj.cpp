@@ -162,3 +162,8 @@ SFMLSprite* SFMLSprite::mask(uint32_t color) {
     _image.createMaskFromColor(sf::Color(color));
     return this;
 }
+
+SFMLSprite* SFMLSprite::scale(float k) {
+    sprite.setScale(k, k);
+    return this;
+}
