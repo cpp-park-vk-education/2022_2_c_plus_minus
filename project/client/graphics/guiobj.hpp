@@ -73,15 +73,15 @@ struct SFMLRect : public GUIRect {
 
     explicit SFMLRect(SFMLGUIFactory* factory);
 
-    SFMLRect* x(int x) override;
+    GUIRect* x(int x) override;
 
-    SFMLRect* y(int y) override;
+    GUIRect* y(int y) override;
 
-    SFMLRect* width(int width) override;
+    GUIRect* width(int width) override;
 
-    SFMLRect* height(int height) override;
+    GUIRect* height(int height) override;
 
-    SFMLRect* color(uint32_t color) override;
+    GUIRect* color(uint32_t color) override;
 
     void create() override;
 
@@ -96,17 +96,17 @@ struct SFMLText : public GUIText {
 
     explicit SFMLText(SFMLGUIFactory* factory);
 
-    SFMLText* text(std::string s) override;
+    GUIText* text(std::string s) override;
 
-    SFMLText* size(int size) override;
+    GUIText* size(int size) override;
 
-    SFMLText* font(std::string fontPath) override;
+    GUIText* font(std::string fontPath) override;
 
-    SFMLText* color(uint32_t color) override;
+    GUIText* color(uint32_t color) override;
 
-    SFMLText* x(int x) override;
+    GUIText* x(int x) override;
 
-    SFMLText* y(int y) override;
+    GUIText* y(int y) override;
 
     void create() override;
 
@@ -127,17 +127,17 @@ struct SFMLSprite : public GUISprite {
 
     explicit SFMLSprite(SFMLGUIFactory* factory);
 
-    SFMLSprite* x(int) override;
+    GUISprite* x(int) override;
 
-    SFMLSprite* y(int) override;
+    GUISprite* y(int) override;
 
-    SFMLSprite* frame(int x, int y, int width, int height) override;
+    GUISprite* frame(int x, int y, int width, int height) override;
 
-    SFMLSprite* image(const std::string& texturePath) override;
+    GUISprite* image(const std::string& texturePath) override;
 
-    SFMLSprite* mask(uint32_t color) override;
+    GUISprite* mask(uint32_t color) override;
 
-    SFMLSprite* scale(float k) override;
+    GUISprite* scale(float k) override;
 };
 
 

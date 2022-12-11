@@ -4,27 +4,27 @@
 SFMLRect::SFMLRect(SFMLGUIFactory* factory) : factory{factory} {
 }
 
-SFMLRect* SFMLRect::x(int x) {
+GUIRect* SFMLRect::x(int x) {
     rect.setPosition({(float) x, rect.getPosition().y});
     return this;
 }
 
-SFMLRect* SFMLRect::y(int y) {
+GUIRect* SFMLRect::y(int y) {
     rect.setPosition({rect.getPosition().x, (float) y});
     return this;
 }
 
-SFMLRect* SFMLRect::width(int width) {
+GUIRect* SFMLRect::width(int width) {
     rect.setSize({(float) width, rect.getSize().y});
     return this;
 }
 
-SFMLRect* SFMLRect::height(int height) {
+GUIRect* SFMLRect::height(int height) {
     rect.setSize({rect.getSize().x, (float) height});
     return this;
 }
 
-SFMLRect* SFMLRect::color(uint32_t color) {
+GUIRect* SFMLRect::color(uint32_t color) {
     rect.setFillColor(sf::Color(color));
     return this;
 }
@@ -41,34 +41,34 @@ void SFMLRect::draw() {
 SFMLText::SFMLText(SFMLGUIFactory* factory) : factory{factory} {
 }
 
-SFMLText* SFMLText::text(std::string s) {
+GUIText* SFMLText::text(std::string s) {
     _text.setString(s);
     return this;
 }
 
-SFMLText* SFMLText::size(int size) {
+GUIText* SFMLText::size(int size) {
     _text.setCharacterSize(size);
     return this;
 }
 
-SFMLText* SFMLText::font(std::string fontPath) {
+GUIText* SFMLText::font(std::string fontPath) {
     static sf::Font f;
     f.loadFromFile("../Montserrat-Regular.ttf");
     _text.setFont(f);
     return this;
 }
 
-SFMLText* SFMLText::color(uint32_t color) {
+GUIText* SFMLText::color(uint32_t color) {
     _text.setFillColor(sf::Color(color));
     return this;
 }
 
-SFMLText* SFMLText::x(int x) {
+GUIText* SFMLText::x(int x) {
     _text.setPosition({(float) x, _text.getPosition().y});
     return this;
 }
 
-SFMLText* SFMLText::y(int y) {
+GUIText* SFMLText::y(int y) {
     _text.setPosition({_text.getPosition().x, (float) y});
     return this;
 }
@@ -138,32 +138,32 @@ bool SFMLGUIFactory::handleEvents() {
     return true;
 }
 
-SFMLSprite* SFMLSprite::x(int x) {
+GUISprite* SFMLSprite::x(int x) {
     sprite.setPosition({float(x), sprite.getPosition().y});
     return this;
 }
 
-SFMLSprite* SFMLSprite::y(int y) {
+GUISprite* SFMLSprite::y(int y) {
     sprite.setPosition({sprite.getPosition().x, float(y)});
     return this;
 }
 
-SFMLSprite* SFMLSprite::image(const std::string& texturePath) {
+GUISprite* SFMLSprite::image(const std::string& texturePath) {
     _image.loadFromFile(texturePath);
     return this;
 }
 
-SFMLSprite* SFMLSprite::frame(int x, int y, int width, int height) {
+GUISprite* SFMLSprite::frame(int x, int y, int width, int height) {
     sprite.setTextureRect(sf::IntRect(x, y, width, height));
     return this;
 }
 
-SFMLSprite* SFMLSprite::mask(uint32_t color) {
+GUISprite* SFMLSprite::mask(uint32_t color) {
     _image.createMaskFromColor(sf::Color(color));
     return this;
 }
 
-SFMLSprite* SFMLSprite::scale(float k) {
+GUISprite* SFMLSprite::scale(float k) {
     sprite.setScale(k, k);
     return this;
 }
