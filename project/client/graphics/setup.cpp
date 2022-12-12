@@ -60,29 +60,51 @@ void setupCellTitles(std::shared_ptr<GUIFactory> gui) {
     }
 }
 
+std::function<bool(sf::Event e)> onHover(GUIObj* obj) {
+    return [obj](sf::Event e) -> bool {
+        if (e.type == sf::Event::MouseMoved) {
+            auto [x, y] = e.mouseMove;
+            if (obj->contains(x, y)) {
+                return true;
+            }
+        }
+        return false;
+    };
+}
+
 void setupPawns(std::shared_ptr<GUIFactory> gui) {
     char number = '7';
     for (auto letter : "abcdefgh") {
         auto [x, y] = cell(std::string{letter, number});
-        gui -> sprite()
-            -> x(x)
-            -> y(y)
-            -> image("../figures.png")
-            -> frame(1000, 200, 200, 200)
-            -> scale(CELL_SIZE / 200.0)
-            -> create();
+        auto pawn = gui -> sprite()
+                        -> x(x)
+                        -> y(y)
+                        -> image("../figures.png")
+                        -> frame(1000, 200, 200, 200)
+                        -> scale(CELL_SIZE / 200.0);
+        EventHandler eh(onHover(pawn),
+                [letter, number]() -> void {
+                    std::cerr << "pawn at " << letter << number << '\n';
+                });
+        gui->addEventHandler(eh);
+        pawn -> create();
     }
 
     number = '2';
     for (auto letter : "abcdefgh") {
         auto [x, y] = cell(std::string{letter, number});
-        gui -> sprite()
-            -> x(x)
-            -> y(y)
-            -> image("../figures.png")
-            -> frame(1000, 0, 200, 200)
-            -> scale(CELL_SIZE / 200.0)
-            -> create();
+        auto pawn = gui -> sprite()
+                        -> x(x)
+                        -> y(y)
+                        -> image("../figures.png")
+                        -> frame(1000, 0, 200, 200)
+                        -> scale(CELL_SIZE / 200.0);
+        EventHandler eh(onHover(pawn),
+                [letter, number]() -> void {
+                    std::cerr << "pawn at " << letter << number << '\n';
+                });
+        gui->addEventHandler(eh);
+        pawn->create();
     }
 }
 
@@ -90,23 +112,33 @@ void setupRooks(std::shared_ptr<GUIFactory> gui) {
     using namespace std::literals;
     for (auto pos : {"a1"s, "h1"s}) {
         auto [x, y] = cell(pos);
-        gui -> sprite()
-            -> x(x)
-            -> y(y)
-            -> image("../figures.png")
-            -> frame(800, 0, 200, 200)
-            -> scale(CELL_SIZE / 200.0)
-            -> create();
+        auto rook = gui -> sprite()
+                        -> x(x)
+                        -> y(y)
+                        -> image("../figures.png")
+                        -> frame(800, 0, 200, 200)
+                        -> scale(CELL_SIZE / 200.0);
+        EventHandler eh(onHover(rook),
+                [pos]() -> void {
+                    std::cerr << "rook at " << pos << '\n';
+                });
+        gui->addEventHandler(eh);
+        rook->create();
     }
     for (auto pos : {"a8"s, "h8"s}) {
         auto [x, y] = cell(pos);
-        gui -> sprite()
-            -> x(x)
-            -> y(y)
-            -> image("../figures.png")
-            -> frame(800, 200, 200, 200)
-            -> scale(CELL_SIZE / 200.0)
-            -> create();
+        auto rook = gui -> sprite()
+                        -> x(x)
+                        -> y(y)
+                        -> image("../figures.png")
+                        -> frame(800, 200, 200, 200)
+                        -> scale(CELL_SIZE / 200.0);
+        EventHandler eh(onHover(rook),
+                [pos]() -> void {
+                    std::cerr << "rook at " << pos << '\n';
+                });
+        gui->addEventHandler(eh);
+        rook->create();
     }
 }
 
@@ -114,23 +146,33 @@ void setupKnights(std::shared_ptr<GUIFactory> gui) {
     using namespace std::literals;
     for (auto pos : {"b1"s, "g1"s}) {
         auto [x, y] = cell(pos);
-        gui -> sprite()
-            -> x(x)
-            -> y(y)
-            -> image("../figures.png")
-            -> frame(600, 0, 200, 200)
-            -> scale(CELL_SIZE / 200.0)
-            -> create();
+        auto knight = gui -> sprite()
+                        -> x(x)
+                        -> y(y)
+                        -> image("../figures.png")
+                        -> frame(600, 0, 200, 200)
+                        -> scale(CELL_SIZE / 200.0);
+        EventHandler eh(onHover(knight),
+                [pos]() -> void {
+                    std::cerr << "knight at " << pos << '\n';
+                });
+        gui->addEventHandler(eh);
+        knight->create();
     }
     for (auto pos : {"b8"s, "g8"s}) {
         auto [x, y] = cell(pos);
-        gui -> sprite()
-            -> x(x)
-            -> y(y)
-            -> image("../figures.png")
-            -> frame(600, 200, 200, 200)
-            -> scale(CELL_SIZE / 200.0)
-            -> create();
+        auto knight = gui -> sprite()
+                        -> x(x)
+                        -> y(y)
+                        -> image("../figures.png")
+                        -> frame(600, 200, 200, 200)
+                        -> scale(CELL_SIZE / 200.0);
+        EventHandler eh(onHover(knight),
+                [pos]() -> void {
+                    std::cerr << "knight at " << pos << '\n';
+                });
+        gui->addEventHandler(eh);
+        knight->create();
     }
 }
 
@@ -138,23 +180,33 @@ void setupBishops(std::shared_ptr<GUIFactory> gui) {
     using namespace std::literals;
     for (auto pos : {"c1"s, "f1"s}) {
         auto [x, y] = cell(pos);
-        gui -> sprite()
-            -> x(x)
-            -> y(y)
-            -> image("../figures.png")
-            -> frame(400, 0, 200, 200)
-            -> scale(CELL_SIZE / 200.0)
-            -> create();
+        auto bishop = gui -> sprite()
+                        -> x(x)
+                        -> y(y)
+                        -> image("../figures.png")
+                        -> frame(400, 0, 200, 200)
+                        -> scale(CELL_SIZE / 200.0);
+        EventHandler eh(onHover(bishop),
+                [pos]() -> void {
+                    std::cerr << "bishop at " << pos << '\n';
+                });
+        gui->addEventHandler(eh);
+        bishop->create();
     }
     for (auto pos : {"c8"s, "f8"s}) {
         auto [x, y] = cell(pos);
-        gui -> sprite()
-            -> x(x)
-            -> y(y)
-            -> image("../figures.png")
-            -> frame(400, 200, 200, 200)
-            -> scale(CELL_SIZE / 200.0)
-            -> create();
+        auto bishop = gui -> sprite()
+                        -> x(x)
+                        -> y(y)
+                        -> image("../figures.png")
+                        -> frame(400, 200, 200, 200)
+                        -> scale(CELL_SIZE / 200.0);
+        EventHandler eh(onHover(bishop),
+                [pos]() -> void {
+                    std::cerr << "bishop at " << pos << '\n';
+                });
+        gui->addEventHandler(eh);
+        bishop->create();
     }
 }
 

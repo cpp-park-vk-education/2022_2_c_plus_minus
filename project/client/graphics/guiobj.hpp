@@ -3,6 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <any>
+#include <set>
+#include <utility>
 
 
 struct GUIObj {
@@ -161,7 +163,7 @@ struct GUIFactory {
 
     virtual GUISprite* sprite() = 0;
 
-    virtual void add(GUIObj*) = 0;
+    virtual void add(GUIObj*);
 
     virtual void display() = 0;
 
@@ -174,6 +176,8 @@ struct GUIFactory {
 struct EventHandler {
     std::function<bool(sf::Event)> trigger;
     std::function<void()> callback;
+    explicit EventHandler(std::function<bool(sf::Event)> t, std::function<void()> c) : trigger{std::move(t)}, callback{std::move(c)} {
+    }
 };
 
 
@@ -190,8 +194,6 @@ struct SFMLGUIFactory : public GUIFactory {
     GUIText* text() override;
 
     GUISprite* sprite() override;
-
-    void add(GUIObj* obj) override;
 
     void display() override;
 

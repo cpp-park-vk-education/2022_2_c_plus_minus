@@ -1,3 +1,4 @@
+#include <iostream>
 #include "guiobj.hpp"
 
 
@@ -124,7 +125,7 @@ bool SFMLSprite::contains(int x, int y) {
 
 
 
-void SFMLGUIFactory::add(GUIObj* obj) {
+void GUIFactory::add(GUIObj* obj) {
     objects.push_back(obj);
 }
 
@@ -149,6 +150,7 @@ bool SFMLGUIFactory::handleEvents() {
         for (auto& [trigger, callback] : eventHandlers) {
             if (trigger(event)) {
                 callback();
+                break;
             }
         }
     }
@@ -185,6 +187,7 @@ GUISprite* SFMLSprite::scale(float k) {
     return this;
 }
 
-void SFMLGUIFactory::addEventHandler(std::any) {
-
+void SFMLGUIFactory::addEventHandler(std::any event) {
+    auto e = std::any_cast<EventHandler>(event);
+    eventHandlers.push_back(e);
 }
