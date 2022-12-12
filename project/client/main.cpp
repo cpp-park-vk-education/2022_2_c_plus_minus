@@ -16,8 +16,8 @@ int main() {
     Client c(io_context, "127.0.0.1", "8080");
     std::thread thread(boost::bind(&boost::asio::io_context::run, &io_context));
     sleep(1);
-//    c.createRoom("MyRoom");
-//    sleep(1);
+    //    c.createRoom("MyRoom");
+    //    sleep(1);
     c.getAllRooms();
     sleep(1);
     char str[5];

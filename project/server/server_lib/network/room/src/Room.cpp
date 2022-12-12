@@ -45,18 +45,20 @@ const ClientData* Room::getClient(const std::string& id) {
     }
 }
 
-void Room::broadcast(const std::string& id, const std::string& method, const std::string& data) {
-//    if (method == "GameStart") {
+void Room::broadcast(const std::string& id, const std::string& method,
+                     const std::string& data) {
+    //    if (method == "GameStart") {
     for (auto& client : clients_) {
         if (client.first != id) {
             boost::json::object object({{"type", method}});
             if (!data.empty()) {
                 object["data"] = data;
-            }
-            else object["data"].emplace_object();
+            } else
+                object["data"].emplace_object();
             std::string buffer = boost::json::serialize(object);
-            boost::asio::write(client.second->socket,
-                               boost::asio::buffer(buffer.data(), buffer.size()));
+            boost::asio::write(
+                client.second->socket,
+                boost::asio::buffer(buffer.data(), buffer.size()));
         }
     }
 }
