@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(server)
 set(CMAKE_CXX_STANDARD 20)
-add_subdirectory(database_lib)
 add_subdirectory(server_lib)
 
 add_executable(${PROJECT_NAME} main.cpp)

@@ -1,10 +1,7 @@
-#include "ServerImpl.hpp"
-#include "boost/asio.hpp"
-#include <iostream>
+#include "server_lib/network/server/include/Server.hpp"
+
 int main() {
-//    std::shared_ptr<boost::asio::io_context> io_ctx =
-//            std::make_shared<boost::asio::io_context>();
-//    ServerImpl s(io_ctx, 7777); not implemented now
-//    std::cout << "__Server_Main__";
-//    s.Run();
-};
+    Server s("127.0.0.1", "8080", 1);
+    s.run();
+    return EXIT_SUCCESS;
+}

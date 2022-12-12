@@ -1,14 +1,14 @@
 #pragma once
 
+#include "BasicMenu.hpp"
+#include "ClientData.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
+
 class Handler {
    public:
-    Handler(const Handler&) = delete;
-    Handler& operator=(const Handler&) = delete;
     Handler() = default;
+    virtual void process(const Request* request, Response* response,
+                         ClientData& m_clientData, BasicMenu& m_mainMenu) = 0;
     virtual ~Handler() = default;
-    virtual void Run() = 0;
-
-   protected:
-    virtual void Respond() = 0;
-    virtual bool Check() = 0;
 };

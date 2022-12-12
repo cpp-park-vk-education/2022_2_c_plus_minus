@@ -28,7 +28,9 @@ add_executable(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
         )
 
+find_package(Boost REQUIRED COMPONENTS system  json)
+include_directories(${Boost_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME}_lib
-        general_lib)
+        ${Boost_LIBRARIES} general_lib)
 
 target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_lib)

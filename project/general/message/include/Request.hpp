@@ -1,34 +1,27 @@
 #pragma once
 
-#include "Message.hpp"
+#include <string>
 
-// types of requests
-// Add then other types
-enum class ReqType {
-    DEFAULT,
-    GET_ID,
+#include "boost/json.hpp"
 
-    USER_ENTER,
-    USER_EXIT,
-    // Types for handling rooms
-    ROOM_CREATE,
-    ROOM_JOIN,
-    ROOM_EXIT,
+struct Request {
+    virtual void parse(boost::json::object &requestData) = 0;
+    bool is_valid() { return operation_result_; }
 
-    GAME_START,
-    FIGURE_MOVE,
+    virtual std::string toJSON() = 0;
 
-    NONE,
-};
+    std::string basicRequest(std::string type) {
+        boost::json::object object({{"type", type}});
+        object["data"].emplace_object();
+        return boost::json::serialize(object);
+    }
 
-// functions for working with ReqType
-std::string ReqToStr(const ReqType type);
-ReqType StrToReq(const std::string& str);
+    std::string dataRequest(std::string type, boost::json::object data) {
+        boost::json::object object({{"type", type}});
+        object["data"] = data;
+        return boost::json::serialize(object);
+    }
 
-class Request : public Message {
-   public:
-    ReqType type_ = ReqType::DEFAULT;
-    std::string data_;
-    void FromJSON(const std::string& json) override;
-    void ToJSON(std::string& json) const override;
+   protected:
+    bool operation_result_ = true;
 };

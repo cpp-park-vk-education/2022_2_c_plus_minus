@@ -5,7 +5,6 @@
 
 class User {
     uint64_t id_;
-    std::string password_;
     std::string nick_;
 
    public:
@@ -14,12 +13,10 @@ class User {
     bool IsEmpty() const noexcept;
 
     void SetId(const uint64_t &id) noexcept;
-    void SetPassword(const std::string &password) noexcept;
     void SetNick(const std::string &nickname) noexcept;
 
-    uint64_t &GetId() noexcept;
-    std::string &GetPassword() noexcept;
-    std::string &GetNick() noexcept;
+    const uint64_t &GetId() const noexcept;
+    const std::string &GetNick() const noexcept;
 };
 
 // class User {

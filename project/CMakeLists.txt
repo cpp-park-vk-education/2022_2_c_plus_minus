@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 
 OPTION(BUILD_SERVER "Build server" OFF)
 OPTION(BUILD_CLIENT "Build client" OFF)
-OPTION(BUILD_ALL    "Build all"    OFF)
+OPTION(BUILD_ALL    "Build all"    ON)
 
 add_subdirectory(general)
 

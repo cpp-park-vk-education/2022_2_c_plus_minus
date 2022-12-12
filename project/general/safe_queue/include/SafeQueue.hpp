@@ -1,9 +1,9 @@
 #pragma once
 
-    #include <condition_variable>
-    #include <memory>
-    #include <mutex>
-    #include <queue>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <queue>
 
 template <typename T>
 class SafeQueue {
@@ -58,7 +58,7 @@ class SafeQueue {
         return res;
     }
 
-    void PopToQueue(SafeQueue<T>& other) {
+    void PopToQueue(std::queue<T>& other) {
         std::lock_guard<std::mutex> guard(mutex_);
         while (!queue_.empty()) {
             other.push(queue_.front());
