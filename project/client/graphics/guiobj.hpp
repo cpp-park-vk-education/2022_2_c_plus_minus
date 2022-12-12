@@ -165,11 +165,20 @@ struct GUIFactory {
     virtual void display() = 0;
 
     virtual bool handleEvents() = 0;
+
+    virtual void addEventListener() = 0;
+};
+
+
+struct EventHandler {
+    std::function<bool(sf::Event)> trigger;
+    std::function<void()> callback;
 };
 
 
 struct SFMLGUIFactory : public GUIFactory {
     std::unique_ptr<sf::RenderWindow> window;
+    std::vector<EventHandler> eventHandlers;
 
     virtual ~SFMLGUIFactory();
 
@@ -186,4 +195,6 @@ struct SFMLGUIFactory : public GUIFactory {
     void display() override;
 
     bool handleEvents() override;
+
+    void addEventListener() override;
 };

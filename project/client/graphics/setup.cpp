@@ -4,15 +4,6 @@ const int CELL_SIZE = 100;
 const int CELL_TITLE_SIZE = 20;
 
 
-struct Event {
-    std::function<bool(sf::Event)> trigger;
-    std::function<void()> callback;
-};
-
-
-std::vector<std::function<bool(sf::Event)>> eventHandlers;
-
-
 std::tuple<int, int> cell(std::string pos) {
     char letter = pos[0];
     char number = pos[1];

@@ -146,6 +146,11 @@ bool SFMLGUIFactory::handleEvents() {
             window->close();
             return false;
         }
+        for (auto& [trigger, callback] : eventHandlers) {
+            if (trigger(event)) {
+                callback();
+            }
+        }
     }
     return true;
 }
