@@ -18,15 +18,9 @@ jobs:
     container: dyndtikj/cpp_gtest_linters:v0.0.1
     steps:
       - uses: actions/checkout@v3
+
       - name: prepare
         run: apt install clang-format -y
-             apt install libmpich-dev -y
-             apt install libcoarrays-mpich-dev -y 
-             apt install libopenmpi-dev -y 
-             apt install libcoarrays-openmpi-dev -y 
-             apt install libcoarrays-dev -y         # already there
-             apt gfortran libboost-all-dev libpqxx-dev libssl-dev -y
-
       # run clang-format
       - name: format
         run: make format
