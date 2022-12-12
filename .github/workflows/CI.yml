@@ -18,7 +18,6 @@ jobs:
     container: dyndtikj/cpp_gtest_linters:v0.0.1
     steps:
       - uses: actions/checkout@v3
-
       - name: prepare
         run: apt install clang-format -y
              apt install libmpich-dev -y
