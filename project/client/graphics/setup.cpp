@@ -17,12 +17,12 @@ void setupCells(std::shared_ptr<GUIFactory> gui) {
         for (auto number : "12345678") {
             auto [x, y] = cell(std::string{letter, number});
             gui -> rect()
-                    -> x(x)
-                    -> y(y)
-                    -> width(CELL_SIZE)
-                    -> height(CELL_SIZE)
-                    -> color((letter - 'a' + number - '1') % 2 ? 0x01796fffu : 0xf0fff0ffu)
-                    -> create();
+                -> x(x)
+                -> y(y)
+                -> width(CELL_SIZE)
+                -> height(CELL_SIZE)
+                -> color((letter - 'a' + number - '1') % 2 ? 0x01796fffu : 0xf0fff0ffu)
+                -> create();
         }
     }
 }
@@ -40,7 +40,6 @@ void setupCellTitles(std::shared_ptr<GUIFactory> gui) {
             -> text(std::string{letter})
             -> create();
     }
-
     for (auto number : "12345678") {
         char letter = 'a';
         auto [x, y] = cell(std::string{letter, number});
@@ -81,48 +80,125 @@ void setupPawns(std::shared_ptr<GUIFactory> gui) {
     }
 }
 
-void setupKnights(std::shared_ptr<GUIFactory> gui) {
+void setupRooks(std::shared_ptr<GUIFactory> gui) {
+    using namespace std::literals;
+    for (auto pos : {"a1"s, "h1"s}) {
+        auto [x, y] = cell(pos);
+        gui -> sprite()
+            -> x(x)
+            -> y(y)
+            -> image("../figures.png")
+            -> frame(800, 0, 200, 200)
+            -> scale(CELL_SIZE / 200.0)
+            -> create();
+    }
+    for (auto pos : {"a8"s, "h8"s}) {
+        auto [x, y] = cell(pos);
+        gui -> sprite()
+            -> x(x)
+            -> y(y)
+            -> image("../figures.png")
+            -> frame(800, 200, 200, 200)
+            -> scale(CELL_SIZE / 200.0)
+            -> create();
+    }
+}
 
+void setupKnights(std::shared_ptr<GUIFactory> gui) {
+    using namespace std::literals;
+    for (auto pos : {"b1"s, "g1"s}) {
+        auto [x, y] = cell(pos);
+        gui -> sprite()
+            -> x(x)
+            -> y(y)
+            -> image("../figures.png")
+            -> frame(600, 0, 200, 200)
+            -> scale(CELL_SIZE / 200.0)
+            -> create();
+    }
+    for (auto pos : {"b8"s, "g8"s}) {
+        auto [x, y] = cell(pos);
+        gui -> sprite()
+            -> x(x)
+            -> y(y)
+            -> image("../figures.png")
+            -> frame(600, 200, 200, 200)
+            -> scale(CELL_SIZE / 200.0)
+            -> create();
+    }
+}
+
+void setupBishops(std::shared_ptr<GUIFactory> gui) {
+    using namespace std::literals;
+    for (auto pos : {"c1"s, "f1"s}) {
+        auto [x, y] = cell(pos);
+        gui -> sprite()
+            -> x(x)
+            -> y(y)
+            -> image("../figures.png")
+            -> frame(400, 0, 200, 200)
+            -> scale(CELL_SIZE / 200.0)
+            -> create();
+    }
+    for (auto pos : {"c8"s, "f8"s}) {
+        auto [x, y] = cell(pos);
+        gui -> sprite()
+            -> x(x)
+            -> y(y)
+            -> image("../figures.png")
+            -> frame(400, 200, 200, 200)
+            -> scale(CELL_SIZE / 200.0)
+            -> create();
+    }
+}
+
+void setupQueens(std::shared_ptr<GUIFactory> gui) {
+    using namespace std::literals;
+    auto [x, y] = cell("d1"s);
+    gui -> sprite()
+        -> x(x)
+        -> y(y)
+        -> image("../figures.png")
+        -> frame(200, 0, 200, 200)
+        -> scale(CELL_SIZE / 200.0)
+        -> create();
+    std::tie(x, y) = cell("d8"s);
+    gui -> sprite()
+        -> x(x)
+        -> y(y)
+        -> image("../figures.png")
+        -> frame(200, 200, 200, 200)
+        -> scale(CELL_SIZE / 200.0)
+        -> create();
+}
+
+void setupKings(std::shared_ptr<GUIFactory> gui) {
+    using namespace std::literals;
+    auto [x, y] = cell("e1"s);
+    gui -> sprite()
+            -> x(x)
+            -> y(y)
+            -> image("../figures.png")
+            -> frame(0, 0, 200, 200)
+            -> scale(CELL_SIZE / 200.0)
+            -> create();
+    std::tie(x, y) = cell("e8"s);
+    gui -> sprite()
+            -> x(x)
+            -> y(y)
+            -> image("../figures.png")
+            -> frame(0, 200, 200, 200)
+            -> scale(CELL_SIZE / 200.0)
+            -> create();
 }
 
 void setupFigures(std::shared_ptr<GUIFactory> gui) {
     setupPawns(gui);
-
-//    for (int i = 0; i < 8; ++i) {
-//        int row = 6;
-//        int col = i;
-//        gui -> sprite()
-//            -> x(CELL_SIZE * col)
-//            -> y(CELL_SIZE * row)
-//            -> image("../figures.png")
-//            -> frame(1000, 0, 200, 200)
-//            -> scale(CELL_SIZE / 200.0)
-//            -> create();
-//    }
-//
-//    for (int i = 0; i < 8; ++i) {
-//        int row = 6;
-//        int col = i;
-//        gui -> sprite()
-//                -> x(CELL_SIZE * col)
-//                -> y(CELL_SIZE * row)
-//                -> image("../figures.png")
-//                -> frame(1000, 0, 200, 200)
-//                -> scale(CELL_SIZE / 200.0)
-//                -> create();
-//    }
-//
-//    for (int i = 0; i < 8; ++i) {
-//        int row = 1;
-//        int col = i;
-//        gui -> sprite()
-//                -> x(CELL_SIZE * col)
-//                -> y(CELL_SIZE * row)
-//                -> image("../figures.png")
-//                -> frame(0, 0, 200, 200)
-//                -> scale(CELL_SIZE / 200.0)
-//                -> create();
-//    }
+    setupRooks(gui);
+    setupKnights(gui);
+    setupBishops(gui);
+    setupQueens(gui);
+    setupKings(gui);
 }
 
 void setup(std::shared_ptr<GUIFactory> gui) {
