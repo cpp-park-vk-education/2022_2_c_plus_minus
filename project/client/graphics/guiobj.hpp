@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <any>
 
 
 struct GUIObj {
@@ -166,7 +167,7 @@ struct GUIFactory {
 
     virtual bool handleEvents() = 0;
 
-    virtual void addEventListener() = 0;
+    virtual void addEventHandler(std::any) = 0;
 };
 
 
@@ -196,5 +197,5 @@ struct SFMLGUIFactory : public GUIFactory {
 
     bool handleEvents() override;
 
-    void addEventListener() override;
+    void addEventHandler(std::any) override;
 };

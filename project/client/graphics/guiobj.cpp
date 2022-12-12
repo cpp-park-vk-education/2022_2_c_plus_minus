@@ -184,3 +184,7 @@ GUISprite* SFMLSprite::scale(float k) {
     sprite.setScale(k, k);
     return this;
 }
+
+void SFMLGUIFactory::addEventHandler(std::any) {
+
+}
