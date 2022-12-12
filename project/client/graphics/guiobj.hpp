@@ -10,6 +10,8 @@ struct GUIObj {
     virtual void draw() = 0;
 
     virtual void create() = 0;
+
+    virtual bool contains(int, int) = 0;
 };
 
 
@@ -86,6 +88,8 @@ struct SFMLRect : public GUIRect {
     void create() override;
 
     void draw() override;
+
+    bool contains(int, int) override;
 };
 
 struct SFMLText : public GUIText {
@@ -111,6 +115,8 @@ struct SFMLText : public GUIText {
     void create() override;
 
     void draw() override;
+
+    bool contains(int, int) override;
 };
 
 
@@ -120,10 +126,6 @@ struct SFMLSprite : public GUISprite {
     sf::Image _image;
 
     SFMLGUIFactory* factory;
-
-    void draw() override;
-
-    void create() override;
 
     explicit SFMLSprite(SFMLGUIFactory* factory);
 
@@ -138,6 +140,12 @@ struct SFMLSprite : public GUISprite {
     GUISprite* mask(uint32_t color) override;
 
     GUISprite* scale(float k) override;
+
+    void draw() override;
+
+    void create() override;
+
+    bool contains(int, int) override;
 };
 
 

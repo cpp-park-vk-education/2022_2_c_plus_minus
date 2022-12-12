@@ -4,6 +4,15 @@ const int CELL_SIZE = 100;
 const int CELL_TITLE_SIZE = 20;
 
 
+struct Event {
+    std::function<bool(sf::Event)> trigger;
+    std::function<void()> callback;
+};
+
+
+std::vector<std::function<bool(sf::Event)>> eventHandlers;
+
+
 std::tuple<int, int> cell(std::string pos) {
     char letter = pos[0];
     char number = pos[1];
@@ -23,6 +32,12 @@ void setupCells(std::shared_ptr<GUIFactory> gui) {
                 -> height(CELL_SIZE)
                 -> color((letter - 'a' + number - '1') % 2 ? 0x01796fffu : 0xf0fff0ffu)
                 -> create();
+//            std::function<bool(sf::Event)> handler = [](sf::Event e) {
+//
+//            };
+//            eventHandlers.push_back(
+//                    st
+//                    )
         }
     }
 }
@@ -176,20 +191,20 @@ void setupKings(std::shared_ptr<GUIFactory> gui) {
     using namespace std::literals;
     auto [x, y] = cell("e1"s);
     gui -> sprite()
-            -> x(x)
-            -> y(y)
-            -> image("../figures.png")
-            -> frame(0, 0, 200, 200)
-            -> scale(CELL_SIZE / 200.0)
-            -> create();
+        -> x(x)
+        -> y(y)
+        -> image("../figures.png")
+        -> frame(0, 0, 200, 200)
+        -> scale(CELL_SIZE / 200.0)
+        -> create();
     std::tie(x, y) = cell("e8"s);
     gui -> sprite()
-            -> x(x)
-            -> y(y)
-            -> image("../figures.png")
-            -> frame(0, 200, 200, 200)
-            -> scale(CELL_SIZE / 200.0)
-            -> create();
+        -> x(x)
+        -> y(y)
+        -> image("../figures.png")
+        -> frame(0, 200, 200, 200)
+        -> scale(CELL_SIZE / 200.0)
+        -> create();
 }
 
 void setupFigures(std::shared_ptr<GUIFactory> gui) {

@@ -37,6 +37,10 @@ void SFMLRect::draw() {
     factory->window->draw(rect);
 }
 
+bool SFMLRect::contains(int x, int y) {
+    return rect.getGlobalBounds().contains(x, y);
+}
+
 
 SFMLText::SFMLText(SFMLGUIFactory* factory) : factory{factory} {
 }
@@ -81,14 +85,8 @@ void SFMLText::draw() {
     factory->window->draw(_text);
 }
 
-void SFMLSprite::create() {
-    _texture.loadFromImage(_image);
-    sprite.setTexture(_texture);
-    factory->add(this);
-}
-
-void SFMLSprite::draw() {
-    factory->window->draw(sprite);
+bool SFMLText::contains(int x, int y) {
+    return _text.getGlobalBounds().contains(x, y);
 }
 
 SFMLSprite::SFMLSprite(SFMLGUIFactory* factory) : factory{factory} {
@@ -108,6 +106,20 @@ GUIText* SFMLGUIFactory::text() {
 
 GUISprite* SFMLGUIFactory::sprite() {
     return new SFMLSprite(this);
+}
+
+void SFMLSprite::create() {
+    _texture.loadFromImage(_image);
+    sprite.setTexture(_texture);
+    factory->add(this);
+}
+
+void SFMLSprite::draw() {
+    factory->window->draw(sprite);
+}
+
+bool SFMLSprite::contains(int x, int y) {
+    return sprite.getGlobalBounds().contains(x, y);
 }
 
 
