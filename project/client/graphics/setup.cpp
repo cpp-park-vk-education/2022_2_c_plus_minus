@@ -23,12 +23,6 @@ void setupCells(std::shared_ptr<GUIFactory> gui) {
                 -> height(CELL_SIZE)
                 -> color((letter - 'a' + number - '1') % 2 ? 0x01796fffu : 0xf0fff0ffu)
                 -> create();
-//            std::function<bool(sf::Event)> handler = [](sf::Event e) {
-//
-//            };
-//            eventHandlers.push_back(
-//                    st
-//                    )
         }
     }
 }
