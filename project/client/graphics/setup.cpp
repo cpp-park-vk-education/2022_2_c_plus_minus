@@ -91,16 +91,16 @@ void setupPawns(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
                         -> image("../figures.png")
                         -> frame(1000, 200, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onClick(pawn), [gui, pawn, cells]() -> void {
+        EventHandler eh(onClick(pawn), [gui, pawn, cells]() -> size_t {
             for (auto cell : cells) {
-                EventHandler eh(onClick(cell), [pawn, cell]() -> void {
+                EventHandler eh(onClick(cell), [gui, pawn, cell]() -> size_t {
                     pawn -> x(cell->getX())
-                         -> y(cell->getY())
-                         -> create();
+                         -> y(cell->getY());
+                    return 65;
                 });
                 gui->addEventHandler(eh);
             }
-//                    std::cerr << "pawn at " << letter << number << '\n';
+            return 0;
         });
         gui->addEventHandler(eh);
         pawn -> create();
@@ -116,8 +116,9 @@ void setupPawns(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
                         -> frame(1000, 0, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
         EventHandler eh(onClick(pawn),
-                [letter, number]() -> void {
+                [letter, number]() -> size_t {
                     std::cerr << "pawn at " << letter << number << '\n';
+                    return 0;
                 });
         gui->addEventHandler(eh);
         pawn->create();
@@ -134,9 +135,9 @@ void setupRooks(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(800, 0, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onClick(rook),
-                [pos]() -> void {
+        EventHandler eh(onClick(rook), [pos]() -> size_t {
                     std::cerr << "rook at " << pos << '\n';
+                    return 0;
                 });
         gui->addEventHandler(eh);
         rook->create();
@@ -149,9 +150,9 @@ void setupRooks(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(800, 200, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onClick(rook),
-                [pos]() -> void {
+        EventHandler eh(onClick(rook), [pos]() -> size_t {
                     std::cerr << "rook at " << pos << '\n';
+                    return 0;
                 });
         gui->addEventHandler(eh);
         rook->create();
@@ -168,9 +169,9 @@ void setupKnights(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(600, 0, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onClick(knight),
-                [pos]() -> void {
+        EventHandler eh(onClick(knight), [pos]() -> size_t {
                     std::cerr << "knight at " << pos << '\n';
+                    return 0;
                 });
         gui->addEventHandler(eh);
         knight->create();
@@ -183,9 +184,9 @@ void setupKnights(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(600, 200, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onClick(knight),
-                [pos]() -> void {
+        EventHandler eh(onClick(knight), [pos]() -> size_t {
                     std::cerr << "knight at " << pos << '\n';
+                    return 0;
                 });
         gui->addEventHandler(eh);
         knight->create();
@@ -202,9 +203,9 @@ void setupBishops(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(400, 0, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onClick(bishop),
-                [pos]() -> void {
+        EventHandler eh(onClick(bishop), [pos]() -> size_t {
                     std::cerr << "bishop at " << pos << '\n';
+                    return 0;
                 });
         gui->addEventHandler(eh);
         bishop->create();
@@ -217,9 +218,9 @@ void setupBishops(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(400, 200, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onClick(bishop),
-                [pos]() -> void {
+        EventHandler eh(onClick(bishop), [pos]() -> size_t {
                     std::cerr << "bishop at " << pos << '\n';
+                    return 0;
                 });
         gui->addEventHandler(eh);
         bishop->create();

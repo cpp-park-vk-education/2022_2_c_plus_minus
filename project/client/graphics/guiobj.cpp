@@ -156,10 +156,14 @@ bool SFMLGUIFactory::handleEvents() {
             return false;
         }
         for (auto& [trigger, callback] : eventHandlers) {
-            if (trigger(event)) {
-                callback();
-                break;
+            if (!trigger(event)) {
+                continue;
             }
+            auto pop = callback();
+            for (size_t i = 0; i < pop; ++i) {
+                eventHandlers.pop_back();
+            }
+            break;
         }
     }
     return true;
@@ -198,6 +202,10 @@ GUISprite* SFMLSprite::scale(float k) {
 void SFMLGUIFactory::addEventHandler(std::any event) {
     auto e = std::any_cast<EventHandler>(event);
     eventHandlers.push_back(e);
+}
+
+void SFMLGUIFactory::popEventHandler() {
+    eventHandlers.pop_back();
 }
 
 int GUIObj::getX() {

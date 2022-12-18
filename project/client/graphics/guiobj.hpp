@@ -16,7 +16,7 @@ struct GUIObj {
 
     virtual bool contains(int, int) = 0;
 
-    virtual int getX();
+    virtual int getX(); // TODO make them pure virtual
 
     virtual int getY();
 };
@@ -178,13 +178,15 @@ struct GUIFactory {
     virtual bool handleEvents() = 0;
 
     virtual void addEventHandler(std::any) = 0;
+
+    virtual void popEventHandler() = 0;
 };
 
 
 struct EventHandler {
     std::function<bool(sf::Event)> trigger;
-    std::function<void()> callback;
-    explicit EventHandler(std::function<bool(sf::Event)> t, std::function<void()> c) : trigger{std::move(t)}, callback{std::move(c)} {
+    std::function<size_t()> callback;                        // callback returns the amount of events which must be popped
+    explicit EventHandler(std::function<bool(sf::Event)> t, std::function<size_t()> c) : trigger{std::move(t)}, callback{std::move(c)} {
     }
 };
 
@@ -208,4 +210,6 @@ struct SFMLGUIFactory : public GUIFactory {
     bool handleEvents() override;
 
     void addEventHandler(std::any) override;
+
+    void popEventHandler() override;
 };
