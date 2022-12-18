@@ -42,6 +42,14 @@ bool SFMLRect::contains(int x, int y) {
     return rect.getGlobalBounds().contains(x, y);
 }
 
+int SFMLRect::getX() {
+    return rect.getPosition().x;
+}
+
+int SFMLRect::getY() {
+    return rect.getPosition().y;
+}
+
 
 SFMLText::SFMLText(SFMLGUIFactory* factory) : factory{factory} {
 }
@@ -190,4 +198,12 @@ GUISprite* SFMLSprite::scale(float k) {
 void SFMLGUIFactory::addEventHandler(std::any event) {
     auto e = std::any_cast<EventHandler>(event);
     eventHandlers.push_back(e);
+}
+
+int GUIObj::getX() {
+    return 0;
+}
+
+int GUIObj::getY() {
+    return 0;
 }

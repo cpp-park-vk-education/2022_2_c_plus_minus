@@ -15,6 +15,10 @@ struct GUIObj {
     virtual void create() = 0;
 
     virtual bool contains(int, int) = 0;
+
+    virtual int getX();
+
+    virtual int getY();
 };
 
 
@@ -93,6 +97,10 @@ struct SFMLRect : public GUIRect {
     void draw() override;
 
     bool contains(int, int) override;
+
+    int getX() override;
+
+    int getY() override;
 };
 
 struct SFMLText : public GUIText {

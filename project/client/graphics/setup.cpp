@@ -12,19 +12,22 @@ std::tuple<int, int> cell(std::string pos) {
     return std::tuple{CELL_SIZE * x, CELL_SIZE * (7 - y)};
 }
 
-void setupCells(std::shared_ptr<GUIFactory> gui) {
+std::vector<GUIObj*> setupCells(std::shared_ptr<GUIFactory> gui) {
+    std::vector<GUIObj*> cells;
     for (auto letter : "abcdefgh") {
         for (auto number : "12345678") {
             auto [x, y] = cell(std::string{letter, number});
-            gui -> rect()
-                -> x(x)
-                -> y(y)
-                -> width(CELL_SIZE)
-                -> height(CELL_SIZE)
-                -> color((letter - 'a' + number - '1') % 2 ? 0x01796fffu : 0xf0fff0ffu)
-                -> create();
+            auto cell = gui -> rect()
+                            -> x(x)
+                            -> y(y)
+                            -> width(CELL_SIZE)
+                            -> height(CELL_SIZE)
+                            -> color((letter - 'a' + number - '1') % 2 ? 0x01796fffu : 0xf0fff0ffu);
+            cells.push_back(cell);
+            cell -> create();
         }
     }
+    return cells;
 }
 
 void setupCellTitles(std::shared_ptr<GUIFactory> gui) {
@@ -78,7 +81,7 @@ std::function<bool(sf::Event e)> onClick(GUIObj* obj) {
     };
 }
 
-void setupPawns(std::shared_ptr<GUIFactory> gui) {
+void setupPawns(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
     char number = '7';
     for (auto letter : "abcdefgh") {
         auto [x, y] = cell(std::string{letter, number});
@@ -88,10 +91,17 @@ void setupPawns(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(1000, 200, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onHover(pawn),
-                [letter, number]() -> void {
-                    std::cerr << "pawn at " << letter << number << '\n';
+        EventHandler eh(onClick(pawn), [gui, pawn, cells]() -> void {
+            for (auto cell : cells) {
+                EventHandler eh(onClick(cell), [pawn, cell]() -> void {
+                    pawn -> x(cell->getX())
+                         -> y(cell->getY())
+                         -> create();
                 });
+                gui->addEventHandler(eh);
+            }
+//                    std::cerr << "pawn at " << letter << number << '\n';
+        });
         gui->addEventHandler(eh);
         pawn -> create();
     }
@@ -105,7 +115,7 @@ void setupPawns(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(1000, 0, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onHover(pawn),
+        EventHandler eh(onClick(pawn),
                 [letter, number]() -> void {
                     std::cerr << "pawn at " << letter << number << '\n';
                 });
@@ -124,7 +134,7 @@ void setupRooks(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(800, 0, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onHover(rook),
+        EventHandler eh(onClick(rook),
                 [pos]() -> void {
                     std::cerr << "rook at " << pos << '\n';
                 });
@@ -139,7 +149,7 @@ void setupRooks(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(800, 200, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onHover(rook),
+        EventHandler eh(onClick(rook),
                 [pos]() -> void {
                     std::cerr << "rook at " << pos << '\n';
                 });
@@ -158,7 +168,7 @@ void setupKnights(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(600, 0, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onHover(knight),
+        EventHandler eh(onClick(knight),
                 [pos]() -> void {
                     std::cerr << "knight at " << pos << '\n';
                 });
@@ -173,7 +183,7 @@ void setupKnights(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(600, 200, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onHover(knight),
+        EventHandler eh(onClick(knight),
                 [pos]() -> void {
                     std::cerr << "knight at " << pos << '\n';
                 });
@@ -192,7 +202,7 @@ void setupBishops(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(400, 0, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onHover(bishop),
+        EventHandler eh(onClick(bishop),
                 [pos]() -> void {
                     std::cerr << "bishop at " << pos << '\n';
                 });
@@ -256,8 +266,8 @@ void setupKings(std::shared_ptr<GUIFactory> gui) {
         -> create();
 }
 
-void setupFigures(std::shared_ptr<GUIFactory> gui) {
-    setupPawns(gui);
+void setupFigures(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
+    setupPawns(gui, cells);
     setupRooks(gui);
     setupKnights(gui);
     setupBishops(gui);
@@ -266,7 +276,7 @@ void setupFigures(std::shared_ptr<GUIFactory> gui) {
 }
 
 void setup(std::shared_ptr<GUIFactory> gui) {
-    setupCells(gui);
+    auto cells = setupCells(gui);
     setupCellTitles(gui);
-    setupFigures(gui);
+    setupFigures(gui, cells);
 }
