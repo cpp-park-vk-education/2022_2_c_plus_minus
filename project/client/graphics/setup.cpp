@@ -66,6 +66,18 @@ std::function<bool(sf::Event e)> onHover(GUIObj* obj) {
     };
 }
 
+std::function<bool(sf::Event e)> onClick(GUIObj* obj) {
+    return [obj](sf::Event e) -> bool {
+        if (e.type == sf::Event::MouseButtonPressed) {
+            auto [button, x, y] = e.mouseButton;
+            if (obj->contains(x, y) && button == sf::Mouse::Left) {
+                return true;
+            }
+        }
+        return false;
+    };
+}
+
 void setupPawns(std::shared_ptr<GUIFactory> gui) {
     char number = '7';
     for (auto letter : "abcdefgh") {
@@ -195,7 +207,7 @@ void setupBishops(std::shared_ptr<GUIFactory> gui) {
                         -> image("../figures.png")
                         -> frame(400, 200, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
-        EventHandler eh(onHover(bishop),
+        EventHandler eh(onClick(bishop),
                 [pos]() -> void {
                     std::cerr << "bishop at " << pos << '\n';
                 });
