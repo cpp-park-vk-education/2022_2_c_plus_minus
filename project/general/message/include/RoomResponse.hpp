@@ -14,13 +14,32 @@ struct CreateRoomResponse : public Response {
     }
 };
 
+struct OnEnterRoomResponse : public Response {
+    int status;
+    bool game_started = 0;
+    std::string id;
+
+    OnEnterRoomResponse() = default;
+    void parse(const std::string &requestData) override {}
+    std::string toJSON() override {
+        boost::json::object object({{"status", status},
+                                    {"game_started", game_started},
+                                    {"id", id}});
+
+        return boost::json::serialize(object);
+    }
+};
+
+
 struct EnterRoomResponse : public Response {
     int status;
+    bool game_started = 0;
 
     EnterRoomResponse() = default;
     void parse(const std::string &requestData) override {}
     std::string toJSON() override {
-        boost::json::object object({{"status", status}});
+        boost::json::object object({{"status", status},
+                                    {"game_started", game_started}});
 
         return boost::json::serialize(object);
     }
@@ -48,7 +67,7 @@ struct GetRoomsResponse : public Response {
         boost::json::object object({{"status", status}});
         boost::json::array arr;
         for (auto el : rooms) {
-            boost::json::object room({{el.first.data(), el.second->getName()}});
+            boost::json::object room({{el.first.data(), {el.second->getName(), el.second->getHost()->nickname}}}); //Get->nickname}}});
             arr.push_back(room);
         }
         object["rooms"] = arr;

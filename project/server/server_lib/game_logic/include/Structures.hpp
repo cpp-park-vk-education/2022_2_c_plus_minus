@@ -3,7 +3,8 @@
 #include "Response.hpp"
 #include "string"
 
-#define START_POSITION "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+//
+#define START_POSITION "rnbqkbnr/ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
 #define BOARD_SIZE 64
 
 enum figure_color { WHITE = 1, BLACK = -1 };

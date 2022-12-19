@@ -2,7 +2,7 @@
 #include <boost/asio.hpp>
 #include <string>
 
-#include "Connection.hpp"
+#include "../../connection/include/Connection.hpp"
 #include "BasicMenu.hpp"
 #include "Router.hpp"
 

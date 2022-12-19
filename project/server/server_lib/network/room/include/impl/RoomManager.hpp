@@ -10,9 +10,10 @@ class RoomManager {
     Room* getRoom(std::string roomId);
     bool haveRoom(std::string id);
     std::map<std::string, Room*> getAllRooms();
-    void createRoom(std::string name, std::string roomId,
+    void createRoom(std::string name, std::string roomId,std::string host_id,
                     unsigned int maxClientNumber);
     void deleteRoom(std::string roomId);
+    void deleteFromRoom(std::string user_id);
 
     ~RoomManager() = default;
 

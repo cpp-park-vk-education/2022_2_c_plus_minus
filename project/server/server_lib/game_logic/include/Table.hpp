@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Bishop.hpp"
 #include "Figure.hpp"
 #include "GameResponse.hpp"

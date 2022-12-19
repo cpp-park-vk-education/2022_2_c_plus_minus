@@ -1,6 +1,22 @@
 #pragma once
 #include "Request.hpp"
 
+struct AuthRequest : public Request {
+    std::string nick;
+    void parse(boost::json::object& requestData) override {
+        nick = requestData["nick"].as_string().c_str();
+    }
+
+    std::string toJSON() override {
+        boost::json::object object({{"nick", nick}});
+        return dataRequest(QueryType::AUTHORISE, object);
+    }
+    AuthRequest(){
+        nick = "Unidentified turtle";
+    }
+    AuthRequest(std::string nickname) : nick(nickname) {}
+};
+
 struct MoveFigureRequest : public Request {
     std::string move;
 
@@ -16,7 +32,7 @@ struct MoveFigureRequest : public Request {
 
     std::string toJSON() override {
         boost::json::object object({{"moveStr", move}});
-        return dataRequest("MoveFigure", object);
+        return dataRequest(QueryType::MOVE_FIGURE, object);
     }
     MoveFigureRequest() = default;
     MoveFigureRequest(std::string fromTo) : move(fromTo) {}

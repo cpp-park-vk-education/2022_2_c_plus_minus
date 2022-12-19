@@ -53,7 +53,7 @@ class SafeQueue {
     std::shared_ptr<T> TryPop() {
         std::lock_guard<std::mutex> lock{mutex_};
         if (queue_.empty()) return std::shared_ptr<T>{};
-        std::shared_ptr<T> res{std::make_shared<T>(queue_.front())};
+        std::shared_ptr<std::mutex> res{std::make_shared<T>(queue_.front())};
         queue_.pop();
         return res;
     }

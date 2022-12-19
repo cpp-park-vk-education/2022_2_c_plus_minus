@@ -1,4 +1,4 @@
-#include "server_lib/network/server/include/Server.hpp"
+#include "Server.hpp"
 
 int main() {
     Server s("127.0.0.1", "8080", 1);

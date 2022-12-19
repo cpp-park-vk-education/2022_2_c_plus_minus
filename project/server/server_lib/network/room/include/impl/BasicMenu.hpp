@@ -3,7 +3,6 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <map>
 
-#include "ClientData.hpp"
 #include "RoomInterface.hpp"
 #include "RoomManager.hpp"
 
@@ -11,18 +10,17 @@ class BasicMenu : public RoomInterface {
    public:
     BasicMenu() = default;
 
-    void addClient(const ClientData& clientData) override;
-    const ClientData* removeClient(const std::string& id) override;
+    void addClient(const User& user) override;
+    const User* removeClient(const std::string& id) override;
     boost::asio::ip::tcp::socket& getClientSocket(
         const std::string& id) override;
     bool haveClient(const std::string& id) override;
-    const ClientData* getClient(const std::string& id) override;
+    const User* getClient(const std::string& id) override;
 
     ~BasicMenu() = default;
 
-   public:
-    RoomManager roomController;
+    RoomManager room_manager_;
 
    private:
-    std::map<std::string, const ClientData*> clients_;
+    std::map<std::string, const User*> clients_;
 };

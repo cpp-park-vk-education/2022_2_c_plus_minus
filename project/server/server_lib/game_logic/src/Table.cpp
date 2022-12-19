@@ -200,6 +200,7 @@ move_status ChessTable::move_figure(int from, int to) {
     White_king_ind = temp_White_king_ind;
     Black_king_ind = temp_Black_king_ind;
 
+
     if (get_figure(from)->color == WHITE) {
         while (!white_enpassant.empty()) {
             int get_fig = white_enpassant.back();

@@ -4,42 +4,46 @@
 #include <boost/asio/write.hpp>
 #include <map>
 #include <string>
-
-#include "ClientData.hpp"
-#include "Game.hpp"
+#include "RoomInterface.hpp"
+#include "GameSession.hpp"
 
 class Room : public RoomInterface {
    public:
     Room(const std::string& roomId, const std::string& name,
-         unsigned int maxClientNumber);
+         const std::string host_id, unsigned int maxClientNumber);
 
     unsigned int getCurrentClientNumber();
     unsigned int getMaxClientNumber();
     std::string getId();
     std::string getName();
 
-    void addClient(const ClientData& clientData) override;
-    const ClientData* removeClient(const std::string& id) override;
+    void addClient(const User& user) override;
+    const User* removeClient(const std::string& id) override;
     boost::asio::ip::tcp::socket& getClientSocket(
         const std::string& id) override;
     bool haveClient(const std::string& id) override;
-    const ClientData* getClient(const std::string& id) override;
+    const User* getClient(const std::string& id) override;
 
-    void broadcast(const std::string& id, const std::string& method,
+    std::string getHostId();
+    const User* getHost();
+    void broadcast(const std::string& id, QueryType method,
                    const std::string& data = "");
     void startGame();
-    Game& getGame();
     bool gameStarted();
+    return_after_move makeAction(const std::string& id,
+                                 const std::string& action);
+    void onEnd();
 
     ~Room();
 
    private:
     std::string id_;
     std::string name_;
+    std::string host_id_;
 
-    std::map<const std::string, const ClientData*> clients_;
+    std::map<const std::string, const User*> clients_;
+    GameSession* game_session_;
     unsigned int current_count_ = 0;
     unsigned int max_count_;
-    Game game_;
     bool game_started_ = false;
 };

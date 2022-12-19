@@ -1,5 +1,4 @@
-#include "../include/Connection.hpp"
-
+#include "Connection.hpp"
 #include <boost/bind.hpp>
 #include <iostream>
 
@@ -7,53 +6,107 @@ Connection::Connection(boost::asio::io_context& ioContext, BasicMenu& menu,
                        Router& router)
     : strand_(boost::asio::make_strand(ioContext)),
       socket_(strand_),
-      client_data_(socket_),
+      user_(socket_),
       basic_menu_(menu),
       router_(router) {}
+
+Connection::~Connection() {
+    close();
+}
 
 boost::asio::ip::tcp::socket& Connection::getSocket() { return socket_; }
 
 void Connection::start() {
-    client_data_.id = socket_.remote_endpoint().address().to_string() + ":" +
+    user_.id = socket_.remote_endpoint().address().to_string() + ":" +
                       std::to_string(socket_.remote_endpoint().port());
-    // client_data_.nickname = client_data_.id;
-    client_data_.position = {Location::MainMenu, ""};
-    basic_menu_.addClient(client_data_);
+    user_.nickname = "Unidentified turtle";
+    user_.position = {Location::MainMenu, ""};
+    basic_menu_.addClient(user_);
 
-    socket_.async_read_some(
-        boost::asio::buffer(read_buffer_),
-        boost::bind(&Connection::handleRead, shared_from_this(),
-                    boost::asio::placeholders::error,
-                    boost::asio::placeholders::bytes_transferred));
+    boost::asio::async_read_until(socket_,
+                                  read_buffer_,
+                                  separator,
+                                  boost::asio::bind_executor(
+                                      strand_,
+                                      boost::bind(&Connection::handleRead,
+                                                shared_from_this(),
+                                                boost::placeholders::_1,
+                                                boost::placeholders::_2))
+                                                );
+//    socket_.async_read_some(
+//        boost::asio::buffer(read_buffer_),
+//        boost::bind(&Connection::handleRead, shared_from_this(),
+//                    boost::asio::placeholders::error,
+//                    boost::asio::placeholders::bytes_transferred));
 }
 
 void Connection::handleRead(const boost::system::error_code& err,
                             std::size_t bytes_transferred) {
     if (!err) {
-        read_buffer_[bytes_transferred] = '\0';
-        std::cout << "Read (" << client_data_.id << "): " << read_buffer_.data()
+        const auto data = read_buffer_.data();
+        std::string str(boost::asio::buffers_begin(data),
+                        boost::asio::buffers_begin(data) + bytes_transferred - separator.size());
+        read_buffer_.consume(bytes_transferred);
+        boost::system::error_code socketErr;
+        std::cout << "Recieved (" << user_.id << "): " << str
                   << std::endl;
+//        Request request;
+//        request.parseJSON(str);
+//
+//        m_requestQueue->push(std::move(request));
+//        publishRequest();
+//        read();
+//
+//        read_buffer_[bytes_transferred] = '\0';
+//        std::cout << "Read (" << user_.id << "): " << read_buffer_.data()
+//                  << std::endl;
 
         std::string writeBuffer = router_.process(
-            std::string(read_buffer_.data()), client_data_, basic_menu_);
+            str, user_, basic_menu_);
 
-        std::cout << "Write (" << client_data_.id << "): " << writeBuffer
+        std::cout << "Write (" << user_.id << "): " << writeBuffer
                   << std::endl;
 
         boost::asio::async_write(
             socket_,
             boost::asio::buffer(writeBuffer.data(), writeBuffer.size()),
             boost::bind(&Connection::handleWrite, shared_from_this(),
-                        boost::asio::placeholders::error));
+                        boost::placeholders::_1,
+                        boost::placeholders::_2));
     } else {
-        std::cout << "Сonnection was broken: " << client_data_.id << std::endl;
+        std::cout << "Сonnection was broken: " << user_.id << std::endl;
     }
 }
 
-void Connection::handleWrite(const boost::system::error_code& err) {
-    socket_.async_read_some(
-        boost::asio::buffer(read_buffer_),
-        boost::bind(&Connection::handleRead, shared_from_this(),
-                    boost::asio::placeholders::error,
-                    boost::asio::placeholders::bytes_transferred));
+void Connection::handleWrite(const boost::system::error_code& error, std::size_t transferredBytes) {
+    boost::asio::async_read_until(socket_,
+                                  read_buffer_,
+                                  separator,
+                                  boost::asio::bind_executor(
+                                      strand_,
+                                      boost::bind(&Connection::handleRead,
+                                                shared_from_this(),
+                                                boost::placeholders::_1,
+                                                boost::placeholders::_2))
+    );
+}
+
+void Connection::close() {
+    boost::asio::post(strand_, [this]() {
+//            connection->m_logger->write(LogType::INFO, "Closing the connection...");
+            std::cout << "Closing connection" << std::endl;
+            boost::system::error_code error;
+
+            this->socket_.lowest_layer().shutdown(boost::asio::ip::tcp::socket::shutdown_both, error);
+//            if (error) {
+//                this->m_logger->write(LogType::ERROR, "(socket shutdown)", error.message());
+//            }
+
+            this->socket_.lowest_layer().close(error);
+//            if (error) {
+//                connection->m_logger->write(LogType::ERROR, "(closing the socket)", error.message());
+//            }
+            this->basic_menu_.room_manager_.deleteFromRoom(user_.id);
+        }
+    );
 }

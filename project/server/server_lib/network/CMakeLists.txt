@@ -41,7 +41,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         connection/include
         handlers/include/interface handlers/include/impl
         room/include/interface room/include/impl
-        server/include/interface server/include/impl
+        server/include/
         router/include/
 )
 

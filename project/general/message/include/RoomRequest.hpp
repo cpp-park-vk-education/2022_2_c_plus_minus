@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-
 #include "Request.hpp"
 
 struct CreateRoomRequest : public Request {
@@ -15,7 +14,7 @@ struct CreateRoomRequest : public Request {
 
     std::string toJSON() override {
         boost::json::object object({{"roomName", name}});
-        return dataRequest("CreateRoom", object);
+        return dataRequest(QueryType::CREATE_ROOM, object);
     }
 };
 
@@ -33,21 +32,22 @@ struct EnterRoomRequest : public Request {
 
     std::string toJSON() override {
         boost::json::object object({{"roomId", roomId}});
-        return dataRequest("EnterRoom", object);
+        return dataRequest(QueryType::ENTER_ROOM, object);
     }
 };
 
 struct LeaveRoomRequest : public Request {
     void parse(boost::json::object &requestData) override { return; }
-    std::string toJSON() override { return basicRequest("LeaveRoom"); }
+    std::string toJSON() override { return basicRequest(QueryType::LEAVE_ROOM); }
 };
 
 struct GetRoomsRequest : public Request {
     void parse(boost::json::object &requestData) override { return; }
-    std::string toJSON() override { return basicRequest("GetRooms"); }
+    std::string toJSON() override { return basicRequest(QueryType::GET_ROOMS); }
+//    std::string toJSON() override { return basicRequest(QueryType::GET_ROOMS); }
 };
 
 struct StartGameRequest : public Request {
     void parse(boost::json::object &requestData) override { return; }
-    std::string toJSON() override { return basicRequest("StartGame"); }
+    std::string toJSON() override { return basicRequest(QueryType::START_GAME); }
 };
