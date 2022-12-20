@@ -9,7 +9,7 @@ TEST_CLIENT = ${CLIENT_DIR}/tests/client_tests
 all: clean format linters build test run
 
 build: clean
-	scripts/build.sh -DBUILD_ALL=true -DBUILD_TESTS=ON
+	scripts/build.sh -DBUILD_ALL=true -DBUILD_TESTS=true
 
 rebuild: clean build
 
