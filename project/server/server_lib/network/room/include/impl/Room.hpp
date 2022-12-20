@@ -38,7 +38,7 @@ class Room : public RoomInterface {
 
     void startGame();
     bool gameStarted();
-    return_after_move makeAction(const std::string& id,
+    move_response makeAction(const std::string& id,
                                  const std::string& action);
     void onEnd();
 

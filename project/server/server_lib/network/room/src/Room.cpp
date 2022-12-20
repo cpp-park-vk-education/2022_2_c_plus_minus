@@ -99,7 +99,7 @@ Room::~Room() {
     }
 }
 
-return_after_move Room::makeAction(const std::string& id,
+move_response Room::makeAction(const std::string& id,
                                    const std::string& action) {
     return game_session_->makeMove(action, id);
 }

@@ -34,7 +34,7 @@ class GameHandler : public Handler {
 
         Room* clientGame = menu.room_manager_.getRoom(user.position.second);
         std::string move = game_request->move;
-        return_after_move moveResult = clientGame->makeAction(user.id, move);
+        move_response moveResult = clientGame->makeAction(user.id, move);
 
         gameResponse->moveStatus = moveResult.moveStatus;
         gameResponse->tableFEN = moveResult.table_fen;
