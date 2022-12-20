@@ -7,6 +7,6 @@ TEST(FIRST_TEST, NOTHING_REALLY) {
 }
 
 int main(){
-//    ::testing::InitGoogleTest();
+    ::testing::InitGoogleTest();
     return RUN_ALL_TESTS();
 }
