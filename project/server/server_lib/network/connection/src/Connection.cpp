@@ -18,7 +18,7 @@ boost::asio::ip::tcp::socket& Connection::getSocket() { return socket_; }
 void Connection::start() {
     user_.id = socket_.remote_endpoint().address().to_string() + ":" +
                std::to_string(socket_.remote_endpoint().port());
-    user_.nickname = "Unidentified turtle";
+    user_.nickname = "Unidentified turtle"; // by default
     user_.position = {Location::MainMenu, ""};
     basic_menu_.addClient(user_);
 
