@@ -8,7 +8,6 @@
 #include "Request.hpp"
 #include "Response.hpp"
 
-
 class Router {
    public:
     struct Route {
@@ -19,8 +18,8 @@ class Router {
 
     Router() = default;
     void addRoute(QueryType type, Route route);
-    std::string process(const std::string& requestData,
-                             User& user, BasicMenu& m_mainMenu);
+    std::string process(const std::string& requestData, User& user,
+                        BasicMenu& m_mainMenu);
     ~Router();
 
    private:

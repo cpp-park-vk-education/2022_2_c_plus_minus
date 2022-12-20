@@ -9,8 +9,8 @@ class AuthHandler : public Handler {
    public:
     AuthHandler() = default;
 
-    void process(const Request* request, Response* response,
-                 User& user, BasicMenu& menu) override {
+    void process(const Request* request, Response* response, User& user,
+                 BasicMenu& menu) override {
         const AuthRequest* auth_request =
             dynamic_cast<const AuthRequest*>(request);
         AuthResponse* auth_response = dynamic_cast<AuthResponse*>(response);
@@ -26,17 +26,15 @@ class GameHandler : public Handler {
    public:
     GameHandler() = default;
 
-    void process(const Request* request, Response* response,
-                 User& user, BasicMenu& menu) override {
+    void process(const Request* request, Response* response, User& user,
+                 BasicMenu& menu) override {
         const MoveFigureRequest* game_request =
             dynamic_cast<const MoveFigureRequest*>(request);
         GameResponse* gameResponse = dynamic_cast<GameResponse*>(response);
 
-        Room* clientGame =
-            menu.room_manager_.getRoom(user.position.second);
+        Room* clientGame = menu.room_manager_.getRoom(user.position.second);
         std::string move = game_request->move;
-        return_after_move moveResult =
-            clientGame->makeAction(user.id, move);
+        return_after_move moveResult = clientGame->makeAction(user.id, move);
 
         gameResponse->moveStatus = moveResult.moveStatus;
         gameResponse->tableFEN = moveResult.table_fen;
@@ -44,7 +42,8 @@ class GameHandler : public Handler {
         gameResponse->moveTo = moveResult.move_to;
 
         if (moveResult.moveStatus != MOVE_ERROR) {
-            clientGame->broadcast(user.id, QueryType::MOVE_FIGURE, gameResponse->toJSON());
+            clientGame->broadcast(user.id, QueryType::MOVE_FIGURE,
+                                  gameResponse->toJSON());
         }
     }
 

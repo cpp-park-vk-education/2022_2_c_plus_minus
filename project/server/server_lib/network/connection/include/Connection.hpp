@@ -2,12 +2,13 @@
 
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/noncopyable.hpp>
-#include <boost/bind/bind.hpp>
-#include "User.hpp"
+
 #include "Router.hpp"
 #include "SafeQueue.hpp"
+#include "User.hpp"
 
 class Connection : public boost::enable_shared_from_this<Connection> {
    public:
@@ -22,10 +23,10 @@ class Connection : public boost::enable_shared_from_this<Connection> {
     ~Connection();
 
    private:
-
     void handleRead(const boost::system::error_code& err,
                     std::size_t bytes_transferred);
-    void handleWrite(const boost::system::error_code& err, std::size_t transferredBytes);
+    void handleWrite(const boost::system::error_code& err,
+                     std::size_t transferredBytes);
 
     boost::asio::strand<boost::asio::io_context::executor_type> strand_;
     boost::asio::ip::tcp::socket socket_;
@@ -34,6 +35,5 @@ class Connection : public boost::enable_shared_from_this<Connection> {
     BasicMenu& basic_menu_;
     Router& router_;
     boost::asio::streambuf read_buffer_;
-//    SafeQueue<Request> request_queue_;
+    //    SafeQueue<Request> request_queue_;
 };
-

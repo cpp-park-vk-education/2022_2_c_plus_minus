@@ -11,9 +11,7 @@ struct AuthRequest : public Request {
         boost::json::object object({{"nick", nick}});
         return dataRequest(QueryType::AUTHORISE, object);
     }
-    AuthRequest(){
-        nick = "Unidentified turtle";
-    }
+    AuthRequest() { nick = "Unidentified turtle"; }
     AuthRequest(std::string nickname) : nick(nickname) {}
 };
 

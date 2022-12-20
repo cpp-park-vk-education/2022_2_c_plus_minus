@@ -12,4 +12,5 @@ class RoomInterface {
         const std::string& id) = 0;
     virtual bool haveClient(const std::string& id) = 0;
     virtual const User* getClient(const std::string& id) = 0;
+    virtual ~RoomInterface(){ }
 };

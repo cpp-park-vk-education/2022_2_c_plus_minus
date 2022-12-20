@@ -1,12 +1,13 @@
 #pragma once
 
 #include <string>
-#include "boost/json.hpp"
+
 #include "Base.hpp"
+#include "boost/json.hpp"
 
 struct Request {
-    QueryType req_type {QueryType::UNDEFINED};
-    boost::json::object req_data {};
+    QueryType req_type{QueryType::UNDEFINED};
+    boost::json::object req_data{};
 
     virtual void parse(boost::json::object &json) {
         try {
@@ -16,8 +17,7 @@ struct Request {
             // in some cases data is empty
         }
     };
-    bool is_valid() {
-        return operation_result_; }
+    bool is_valid() { return operation_result_; }
 
     virtual std::string toJSON() {
         boost::json::object object({{"type", AsStringInternal(req_type)}});

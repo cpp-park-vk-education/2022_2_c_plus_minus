@@ -3,11 +3,10 @@
 #include "Response.hpp"
 #include "string"
 
-//
-#define START_POSITION "rnbqkbnr/ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+// FEN notation
+// https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
+#define START_POSITION "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
 #define BOARD_SIZE 64
-
-enum figure_color { WHITE = 1, BLACK = -1 };
 
 struct coords {
     std::string str;

@@ -1,8 +1,11 @@
 #pragma once
 
-#include "string"
 #include "map"
+#include "string"
+
 const std::string separator = "\r\n\r\n";
+
+enum figure_color: int8_t { WHITE = 1, BLACK = -1 };
 
 enum move_status {
     MOVE_OK,
@@ -35,5 +38,5 @@ enum class QueryType {
     MOVE_FIGURE
 };
 
-std::string AsStringInternal(const QueryType ty) ;
-QueryType AsQueryTypeInternal(const std::string& str) ;
+std::string AsStringInternal(const QueryType ty);
+QueryType AsQueryTypeInternal(const std::string& str);

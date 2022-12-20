@@ -6,7 +6,7 @@
 
 struct ErrorResponse : public Response {
     ErrorResponse() {}
-    std::string toJSON() override{
+    std::string toJSON() override {
         boost::json::object object({{"ERROR", "DSC"}});
         return boost::json::serialize(object);
     }

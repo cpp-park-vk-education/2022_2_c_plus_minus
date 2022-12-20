@@ -1,7 +1,8 @@
+#include "Server.hpp"
+
 #include <boost/bind.hpp>
 #include <iostream>
 
-#include "Server.hpp"
 #include "GameHandler.hpp"
 #include "RoomHandler.hpp"
 
@@ -17,31 +18,31 @@ Server::Server(const std::string address, const std::string port,
     signals_.add(SIGTERM);
     signals_.async_wait(boost::bind(&Server::handleStop, this));
 
-    router_.addRoute(QueryType::CREATE_ROOM, Router::Route{ new CreateRoomRequest(),
-                                         new CreateRoomHandler(),
-                                         new CreateRoomResponse()});
-    router_.addRoute(QueryType::ENTER_ROOM,Router::Route{new EnterRoomRequest(),
-                                       new EnterRoomHandler(),
-                                       new EnterRoomResponse()});
-    router_.addRoute(QueryType::LEAVE_ROOM,Router::Route{new LeaveRoomRequest(),
-                                       new LeaveRoomHandler(),
-                                       new LeaveRoomResponse()});
     router_.addRoute(
-        QueryType::GET_ROOMS,Router::Route{new GetRoomsRequest(),
-                         new GetRoomsHandler(),
-                         new GetRoomsResponse()});
-    router_.addRoute(QueryType::START_GAME,Router::Route{new StartGameRequest(),
-                                       new StartGameHandler(),
-                                       new StartGameResponse()});
+        QueryType::CREATE_ROOM,
+        Router::Route{new CreateRoomRequest(), new CreateRoomHandler(),
+                      new CreateRoomResponse()});
+    router_.addRoute(
+        QueryType::ENTER_ROOM,
+        Router::Route{new EnterRoomRequest(), new EnterRoomHandler(),
+                      new EnterRoomResponse()});
+    router_.addRoute(
+        QueryType::LEAVE_ROOM,
+        Router::Route{new LeaveRoomRequest(), new LeaveRoomHandler(),
+                      new LeaveRoomResponse()});
+    router_.addRoute(QueryType::GET_ROOMS,
+                     Router::Route{new GetRoomsRequest(), new GetRoomsHandler(),
+                                   new GetRoomsResponse()});
+    router_.addRoute(
+        QueryType::START_GAME,
+        Router::Route{new StartGameRequest(), new StartGameHandler(),
+                      new StartGameResponse()});
     router_.addRoute(QueryType::MOVE_FIGURE,
-                      Router::Route{new MoveFigureRequest(),
-                            new GameHandler(),
-                            new GameResponse()});
+                     Router::Route{new MoveFigureRequest(), new GameHandler(),
+                                   new GameResponse()});
     router_.addRoute(QueryType::AUTHORISE,
-                     Router::Route{new AuthRequest(),
-                           new AuthHandler(),
-                           new AuthResponse()});
-
+                     Router::Route{new AuthRequest(), new AuthHandler(),
+                                   new AuthResponse()});
 
     boost::asio::ip::tcp::resolver resolver(io_ctx_);
     boost::asio::ip::tcp::endpoint endpoint =
@@ -70,9 +71,9 @@ void Server::run() {
 
 void Server::accept() {
     client_.reset(new Connection(io_ctx_, basic_menu_, router_));
-    acceptor_.async_accept(
-        client_->getSocket(),
-        boost::bind(&Server::handleAccept, this, boost::asio::placeholders::error));
+    acceptor_.async_accept(client_->getSocket(),
+                           boost::bind(&Server::handleAccept, this,
+                                       boost::asio::placeholders::error));
 }
 
 void Server::handleAccept(const boost::system::error_code& err) {

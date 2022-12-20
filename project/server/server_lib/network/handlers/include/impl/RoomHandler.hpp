@@ -8,8 +8,8 @@ class CreateRoomHandler : public Handler {
    public:
     CreateRoomHandler() = default;
 
-    void process(const Request* request, Response* response,
-                 User& user, BasicMenu& mainMenu) override {
+    void process(const Request* request, Response* response, User& user,
+                 BasicMenu& mainMenu) override {
         const CreateRoomRequest* roomRequest =
             dynamic_cast<const CreateRoomRequest*>(request);
         CreateRoomResponse* roomResponse =
@@ -17,12 +17,12 @@ class CreateRoomHandler : public Handler {
 
         std::string roomId = user.id;
         std::string hostId = user.id;
+        figure_color color = roomRequest->player_color;
         std::string roomName = roomRequest->name;
-        mainMenu.room_manager_.createRoom(roomName, roomId, hostId, 2);
+        mainMenu.room_manager_.createRoom(roomName, roomId, hostId, color, 2);
         const User* mainMenuClient = mainMenu.removeClient(user.id);
-        mainMenu.room_manager_.getRoom(roomId)->addClient(*mainMenuClient);
+        mainMenu.room_manager_.getRoom(roomId)->addClient(*mainMenuClient, color);
         user.position = {Location::Room, roomId};
-
         roomResponse->status = 0;
     }
 
@@ -33,8 +33,8 @@ class EnterRoomHandler : public Handler {
    public:
     EnterRoomHandler() = default;
 
-    void process(const Request* request, Response* response,
-                 User& user, BasicMenu& mainMenu) override {
+    void process(const Request* request, Response* response, User& user,
+                 BasicMenu& mainMenu) override {
         const EnterRoomRequest* roomRequest =
             dynamic_cast<const EnterRoomRequest*>(request);
         EnterRoomResponse* roomResponse =
@@ -42,15 +42,18 @@ class EnterRoomHandler : public Handler {
         std::string roomId = roomRequest->roomId;
         const User* mainMenuClient = mainMenu.removeClient(user.id);
         Room* room = mainMenu.room_manager_.getRoom(roomId);
-        room->addClient(*mainMenuClient);
+        figure_color color = (room->getHostColor() == figure_color::WHITE ? figure_color::BLACK
+                                                                                : figure_color::WHITE);
+        room->addClient(*mainMenuClient, color);
         user.position = {Location::Room, roomId};
 
-        if (room->getCurrentClientNumber() == room->getMaxClientNumber()) {
-            room->broadcast(mainMenuClient->id, QueryType::START_GAME);
-            room->startGame();
-            roomResponse->game_started = true;
-        }
-
+        roomResponse->enemy_id = room->getHostId();
+        roomResponse->player_color = color;
+//        if (room->getCurrentClientNumber() == room->getMaxClientNumber()) {
+//            room->broadcast(mainMenuClient->id, QueryType::START_GAME);
+//            room->startGame();
+//            room->write(mainMenuClient->id, QueryType::START_GAME);
+//        }
         roomResponse->status = 0;
     }
 
@@ -61,15 +64,14 @@ class LeaveRoomHandler : public Handler {
    public:
     LeaveRoomHandler() = default;
 
-    void process(const Request* request, Response* response,
-                 User& user, BasicMenu& mainMenu) override {
+    void process(const Request* request, Response* response, User& user,
+                 BasicMenu& mainMenu) override {
         LeaveRoomResponse* roomResponse =
             dynamic_cast<LeaveRoomResponse*>(response);
 
         std::string roomId = user.position.second;
         const User* roomClient =
-            mainMenu.room_manager_.getRoom(roomId)->removeClient(
-                user.id);
+            mainMenu.room_manager_.getRoom(roomId)->removeClient(user.id);
         mainMenu.addClient(*roomClient);
         user.position = {Location::MainMenu, ""};
 
@@ -83,8 +85,8 @@ class GetRoomsHandler : public Handler {
    public:
     GetRoomsHandler() = default;
 
-    void process(const Request* request, Response* response,
-                 User& user, BasicMenu& mainMenu) override {
+    void process(const Request* request, Response* response, User& user,
+                 BasicMenu& mainMenu) override {
         GetRoomsResponse* roomResponse =
             dynamic_cast<GetRoomsResponse*>(response);
         auto rooms = mainMenu.room_manager_.getAllRooms();
@@ -99,18 +101,22 @@ class StartGameHandler : public Handler {
    public:
     StartGameHandler() = default;
 
-    void process(const Request* request, Response* response,
-                 User& user, BasicMenu& mainMenu) override {
-        const StartGameRequest* roomRequest =
-            dynamic_cast<const StartGameRequest*>(request);
+    void process(const Request* request, Response* response, User& user,
+                 BasicMenu& mainMenu) override {
         StartGameResponse* roomResponse =
-            dynamic_cast<StartGameResponse*>(response);
-
+                dynamic_cast<StartGameResponse*>(response);
         std::string roomId = user.position.second;
-        mainMenu.room_manager_.getRoom(roomId)->startGame();
-        user.position = {Location::Game, roomId};
-
-        roomResponse->status = 0;
+        auto room = mainMenu.room_manager_.getRoom(roomId);
+        if (room->getCurrentClientNumber() == room->getMaxClientNumber()) {
+            if (user.id == room->getHostId() ) {
+                room->broadcast(user.id, QueryType::START_GAME);
+                room->startGame();
+                user.position = {Location::Game, roomId};
+                roomResponse->status = 0;
+            }
+            return;
+        }
+        roomResponse->status = 1;
     }
 
     ~StartGameHandler() = default;

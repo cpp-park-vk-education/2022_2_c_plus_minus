@@ -7,8 +7,7 @@ struct AuthResponse : public Response {
     int status;
 
     std::string toJSON() override {
-        boost::json::object object({{ "status", status},
-                                    { "message", message}});
+        boost::json::object object({{"status", status}, {"message", message}});
         return boost::json::serialize(object);
     }
 
@@ -23,11 +22,9 @@ struct AuthResponse : public Response {
         operation_result_ = true;
 
         status = parsedData.at("status").to_number<int>();
-        message =
-            boost::json::value_to<std::string>(parsedData.at("message"));
+        message = boost::json::value_to<std::string>(parsedData.at("message"));
     }
 };
-
 
 struct GameResponse : public Response {
     int moveStatus;
