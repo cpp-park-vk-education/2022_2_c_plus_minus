@@ -5,6 +5,7 @@
 #include "Connection.hpp"
 #include "BasicMenu.hpp"
 #include "Router.hpp"
+#include "Logger.hpp"
 
 class Server {
    public:
@@ -27,4 +28,5 @@ class Server {
     boost::shared_ptr<Connection> client_;
     BasicMenu basic_menu_;
     Router router_;
+    Log logger_{"server_log.txt"};
 };

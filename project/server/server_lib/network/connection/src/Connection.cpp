@@ -9,7 +9,11 @@ Connection::Connection(boost::asio::io_context& ioContext, BasicMenu& menu,
       socket_(strand_),
       user_(socket_),
       basic_menu_(menu),
-      router_(router) {}
+      router_(router) {
+    std::stringstream ss;
+    ss << "connection_" << user_.id << "_log.txt";
+    logger_ = std::make_shared<Log>(ss.str().c_str());
+}
 
 Connection::~Connection() { close(); }
 
@@ -39,11 +43,9 @@ void Connection::handleRead(const boost::system::error_code& err,
                             separator.size());
         read_buffer_.consume(bytes_transferred);
         boost::system::error_code socketErr;
-        std::cout << "Recieved (" << user_.id << "): " << str << std::endl;
-
+        logger_->Write(LogType::info, "Recieved (", user_.id ,"): ", str, "\n");
         std::string writeBuffer = router_.process(str, user_, basic_menu_);
-
-        std::cout << "Write (" << user_.id << "): " << writeBuffer << std::endl;
+        logger_->Write(LogType::info, "Write (", user_.id ,"): ", writeBuffer, "\n");
 
         boost::asio::async_write(
             socket_,
@@ -51,7 +53,7 @@ void Connection::handleRead(const boost::system::error_code& err,
             boost::bind(&Connection::handleWrite, shared_from_this(),
                         boost::placeholders::_1, boost::placeholders::_2));
     } else {
-        std::cout << "Сonnection was broken: " << user_.id << std::endl;
+        logger_->Write(LogType::error, "Сonnection was broken: ", user_.id ,"\n");
     }
 }
 
@@ -67,23 +69,21 @@ void Connection::handleWrite(const boost::system::error_code& error,
 
 void Connection::close() {
     boost::asio::post(strand_, [this]() {
-        //            connection->m_logger->write(LogType::INFO, "Closing the
-        //            connection...");
-        std::cout << "Closing connection" << std::endl;
+        logger_->Write(LogType::info, "Closing the connection...\n");
         boost::system::error_code error;
 
         this->socket_.lowest_layer().shutdown(
             boost::asio::ip::tcp::socket::shutdown_both, error);
-        //            if (error) {
-        //                this->m_logger->write(LogType::ERROR, "(socket
-        //                shutdown)", error.message());
-        //            }
+                    if (error) {
+                        logger_->Write(LogType::error, "(socket shutdown) ",
+                                       error.message() , "\n");
+                    }
 
         this->socket_.lowest_layer().close(error);
-        //            if (error) {
-        //                connection->m_logger->write(LogType::ERROR, "(closing
-        //                the socket)", error.message());
-        //            }
+        if (error) {
+            logger_->Write(LogType::error, "(closing the socket) ",
+                           error.message(), "\n");
+        }
         this->basic_menu_.room_manager_.deleteFromRoom(user_.id);
     });
 }

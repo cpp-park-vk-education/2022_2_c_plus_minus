@@ -39,6 +39,7 @@ class Client final : public std::enable_shared_from_this<Client> {
     void GetAllRooms();
     void CreateRoom(const std::string& name, const figure_color& color = figure_color::WHITE);
     void EnterRoom(const std::string& id);
+    void LeaveRoom();
     void StartGame();
     void MoveFigure(const std::string& fromTo);
     void Authorise(const std::string& nick);
@@ -61,7 +62,7 @@ class Client final : public std::enable_shared_from_this<Client> {
     void handleMoveFigure(const std::string& data);
     void handleStartGame(const std::string& data);
     void handleAuth(const std::string& data);
-
+    void handleLeaveRoom(const std::string& data);
     std::shared_ptr<boost::asio::io_context> io_ctx_{nullptr};
     std::shared_ptr<client::Connection> connection_{nullptr};
     Response response_;

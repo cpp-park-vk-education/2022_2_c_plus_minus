@@ -35,40 +35,38 @@ figure_color Client::GetColor() const noexcept { return game_.color; }
 
 void Client::GetAllRooms() {
     GetRoomsRequest req;
-    auto string = req.toJSON();
-    Write(string);
+    Write(req.toJSON());
 }
 
 void Client::Authorise(const std::string& nick) {
     AuthRequest req(nick);
-    auto string = req.toJSON();
-    Write(string);
+    Write(req.toJSON());
 }
 
 void Client::EnterRoom(const std::string& id) {
     EnterRoomRequest req(id);
-    auto string = req.toJSON();
-    Write(string);
+    Write(req.toJSON());
+}
+
+void Client::LeaveRoom() {
+    LeaveRoomRequest req;
+    Write(req.toJSON());
 }
 
 void Client::MoveFigure(const std::string& fromTo) {
     state_ = State::PERFORMING_ACTION;
     MoveFigureRequest req(fromTo);
-    auto string = req.toJSON();
-    Write(string);
+    Write(req.toJSON());
 }
 
 void Client::StartGame(){
     StartGameRequest req;
-    auto string = req.toJSON();
-    Write(string);
+    Write(req.toJSON());
 }
-
 
 void Client::CreateRoom(const std::string& name, const figure_color& color) {
     CreateRoomRequest req(name, color);
-    auto string = req.toJSON();
-    Write(string);
+    Write(req.toJSON());
 }
 
 void Client::Connect(std::string_view path, std::string_view port) {
@@ -108,7 +106,7 @@ void Client::HandleMessage(Response&& response) {
             handleStartGame(response_.resp_data);
             break;
         case QueryType::LEAVE_ROOM:
-            std::cout << "leave";
+            handleLeaveRoom(response_.resp_data);
             break;
         case QueryType::ENTER_ROOM:
             handleEnterRoom(response_.resp_data);
@@ -144,7 +142,19 @@ void Client::handleEnterRoom(const std::string& data) {
     response.parse(data);
     game_.color = response.player_color;
     game_.is_your_turn = response.player_color == figure_color::WHITE;
+    if (response.status == 0){
+        game_.is_started = true;
+        return;
+    }
+    game_.is_started = false;
 }
+
+void Client::handleLeaveRoom(const std::string& data) {
+    std::cout << "handling leaving room ... " << std::endl;
+    std::cout << data << std::endl;
+}
+
+
 void Client::handleGetAllRooms(const std::string& data) {
     std::cout << "handling getting rooms ... " << std::endl;
     std::cout << data << std::endl;

@@ -9,6 +9,7 @@
 #include "Router.hpp"
 #include "SafeQueue.hpp"
 #include "User.hpp"
+#include "Logger.hpp"
 
 class Connection : public boost::enable_shared_from_this<Connection> {
    public:
@@ -35,5 +36,5 @@ class Connection : public boost::enable_shared_from_this<Connection> {
     BasicMenu& basic_menu_;
     Router& router_;
     boost::asio::streambuf read_buffer_;
-    //    SafeQueue<Request> request_queue_;
+    std::shared_ptr<Log> logger_{ nullptr };
 };

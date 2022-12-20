@@ -53,7 +53,7 @@ Server::Server(const std::string address, const std::string port,
     acceptor_.listen();
 
     accept();
-    std::cout << "Started accept" << std::endl;
+    logger_.Write(LogType::info, "Started accept\n");
 }
 
 void Server::run() {
@@ -79,10 +79,9 @@ void Server::accept() {
 void Server::handleAccept(const boost::system::error_code& err) {
     if (!err) {
         boost::asio::ip::tcp::socket& socket = client_->getSocket();
-        std::cout << "Started handling: "
-                  << socket.remote_endpoint().address().to_string() + ":" +
-                         std::to_string(socket.remote_endpoint().port())
-                  << std::endl;
+        logger_.Write(LogType::info, "Started handling: ",
+                      socket.remote_endpoint().address().to_string() ,  ":" ,
+                      std::to_string(socket.remote_endpoint().port()), "\n");
         client_->start();
     }
 
@@ -90,6 +89,6 @@ void Server::handleAccept(const boost::system::error_code& err) {
 }
 
 void Server::handleStop() {
-    std::cout << "Stopped connection" << std::endl;
+    logger_.Write(LogType::info, "Stopped connection\n");
     io_ctx_.stop();
 }

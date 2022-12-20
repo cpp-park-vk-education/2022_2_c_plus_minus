@@ -13,8 +13,7 @@ std::string Router::process(const std::string& requestData, User& user,
     boost::json::object json_object =
         boost::json::parse(requestData, err).get_object();
     if (err) {
-        std::cout << err.message();
-        return "";
+        return ErrorResponse().toJSON();
     }
     Request req;
     req.parse(json_object);

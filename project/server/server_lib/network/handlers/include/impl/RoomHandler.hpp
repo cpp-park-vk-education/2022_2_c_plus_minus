@@ -14,16 +14,19 @@ class CreateRoomHandler : public Handler {
             dynamic_cast<const CreateRoomRequest*>(request);
         CreateRoomResponse* roomResponse =
             dynamic_cast<CreateRoomResponse*>(response);
-
-        std::string roomId = user.id;
-        std::string hostId = user.id;
-        figure_color color = roomRequest->player_color;
-        std::string roomName = roomRequest->name;
-        mainMenu.room_manager_.createRoom(roomName, roomId, hostId, color, 2);
-        const User* mainMenuClient = mainMenu.removeClient(user.id);
-        mainMenu.room_manager_.getRoom(roomId)->addClient(*mainMenuClient, color);
-        user.position = {Location::Room, roomId};
-        roomResponse->status = 0;
+        if (mainMenu.haveClient(user.id)) {
+            std::string roomId = user.id;
+            std::string hostId = user.id;
+            figure_color color = roomRequest->player_color;
+            std::string roomName = roomRequest->name;
+            mainMenu.room_manager_.createRoom(roomName, roomId, hostId, color, 2);
+            const User *mainMenuClient = mainMenu.removeClient(user.id);
+            mainMenu.room_manager_.getRoom(roomId)->addClient(*mainMenuClient, color);
+            user.position = {Location::Room, roomId};
+            roomResponse->status = 0;
+            return;
+        }
+        roomResponse->status = 1;
     }
 
     ~CreateRoomHandler() = default;
@@ -39,22 +42,21 @@ class EnterRoomHandler : public Handler {
             dynamic_cast<const EnterRoomRequest*>(request);
         EnterRoomResponse* roomResponse =
             dynamic_cast<EnterRoomResponse*>(response);
-        std::string roomId = roomRequest->roomId;
-        const User* mainMenuClient = mainMenu.removeClient(user.id);
-        Room* room = mainMenu.room_manager_.getRoom(roomId);
-        figure_color color = (room->getHostColor() == figure_color::WHITE ? figure_color::BLACK
-                                                                                : figure_color::WHITE);
-        room->addClient(*mainMenuClient, color);
-        user.position = {Location::Room, roomId};
+        if (mainMenu.haveClient(user.id)) {
+            std::string roomId = roomRequest->roomId;
+            const User *mainMenuClient = mainMenu.removeClient(user.id);
+            Room *room = mainMenu.room_manager_.getRoom(roomId);
+            figure_color color = (room->getHostColor() == figure_color::WHITE ? figure_color::BLACK
+                                                                              : figure_color::WHITE);
+            room->addClient(*mainMenuClient, color);
+            user.position = {Location::Room, roomId};
 
-        roomResponse->enemy_id = room->getHostId();
-        roomResponse->player_color = color;
-//        if (room->getCurrentClientNumber() == room->getMaxClientNumber()) {
-//            room->broadcast(mainMenuClient->id, QueryType::START_GAME);
-//            room->startGame();
-//            room->write(mainMenuClient->id, QueryType::START_GAME);
-//        }
-        roomResponse->status = 0;
+            roomResponse->enemy_id = room->getHostId();
+            roomResponse->player_color = color;
+            roomResponse->status = 0;
+            return;
+        }
+        roomResponse->status = 1;
     }
 
     ~EnterRoomHandler() = default;
@@ -70,12 +72,19 @@ class LeaveRoomHandler : public Handler {
             dynamic_cast<LeaveRoomResponse*>(response);
 
         std::string roomId = user.position.second;
-        const User* roomClient =
-            mainMenu.room_manager_.getRoom(roomId)->removeClient(user.id);
-        mainMenu.addClient(*roomClient);
-        user.position = {Location::MainMenu, ""};
+        if (mainMenu.room_manager_.getRoom(roomId)->haveClient(user.id)) {
+            const User *roomClient =
+                    mainMenu.room_manager_.getRoom(roomId)->removeClient(user.id);
+            if (mainMenu.room_manager_.getRoom(roomId)->getCurrentClientNumber() == 0){
+                mainMenu.room_manager_.deleteRoom(roomId);
+            }
+            mainMenu.addClient(*roomClient);
+            user.position = {Location::MainMenu, ""};
 
-        roomResponse->status = 0;
+            roomResponse->status = 0;
+            return;
+        }
+        roomResponse->status = 1;
     }
 
     ~LeaveRoomHandler() = default;
@@ -113,8 +122,8 @@ class StartGameHandler : public Handler {
                 room->startGame();
                 user.position = {Location::Game, roomId};
                 roomResponse->status = 0;
+                return;
             }
-            return;
         }
         roomResponse->status = 1;
     }

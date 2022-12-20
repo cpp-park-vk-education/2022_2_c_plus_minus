@@ -1,6 +1,5 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
-
 #include "Client.hpp"
 
 #define DEBUG
@@ -110,7 +109,7 @@ int main() {
     bool stop = false;
     while (!stop) {
         std::cout << "1 - GET ROOMS " << "2 - CREATE ROOM " << "3 - AUTHORISE "
-                  << "4 - ENTER ROOM " << "5 - START GAME (FOR HOST)" << std::endl;
+                  << "4 - ENTER ROOM " << "5 - START GAME (FOR HOST)" << "6 LEAVE ROOM" << std::endl;
         int choice;
         std::cin >> choice;
         switch (choice) {
@@ -146,7 +145,7 @@ int main() {
                 std::cout << "enter id of room" << std::endl;
                 std::cin >> id;
                 client->EnterRoom("127.0.0.1:" + id);
-                PlayGame(client);
+//                PlayGame(client);
                 break;
             }
             case 5:
@@ -154,6 +153,9 @@ int main() {
                 PlayGame(client);
                 break;
             case 6:
+                client->LeaveRoom();
+                break;
+            case 7:
                 stop = true;
         }
     }
