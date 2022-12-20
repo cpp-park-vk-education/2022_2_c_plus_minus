@@ -13,16 +13,16 @@ GameSession::GameSession(const std::string &id,
     GameSession::table.FEN_parser(FEN);
 }
 
-void GameSession::create_error_response(return_after_move &result) const {
+void GameSession::create_error_response(move_response &result) const {
     result.moveStatus = MOVE_ERROR;
     result.table_fen = GameSession::table.get_FEN();
     result.move_from = -1;
     result.move_to = -1;
 }
 
-return_after_move GameSession::makeMove(std::string move,
+move_response GameSession::makeMove(std::string move,
                                         const std::string &player_id) {
-    return_after_move result;
+    move_response result;
     if (!GameSession::beginned || GameSession::ended)  // если игра закончилась
     {
         GameSession::create_error_response(result);

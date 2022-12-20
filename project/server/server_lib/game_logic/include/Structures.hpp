@@ -15,7 +15,7 @@ struct coords {
     int y;
 };
 
-struct return_after_move {
+struct move_response {
     move_status moveStatus;
     std::string table_fen;
     int move_from;
