@@ -19,5 +19,5 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SRC)
 
 add_executable(${PROJECT_NAME} ${SRC})
 
-target_link_libraries(${PROJECT_NAME} client_lib GTest::Gtest)
+target_link_libraries(${PROJECT_NAME} client_lib GTest::GTest)
 gtest_discover_tests(${PROJECT_NAME})
