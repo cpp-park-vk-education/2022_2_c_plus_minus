@@ -23,7 +23,7 @@ void GameSession::create_error_response(return_after_move &result) const {
 return_after_move GameSession::makeMove(std::string move,
                                         const std::string &player_id) {
     return_after_move result;
-    if (!GameSession::beggined || GameSession::ended)  // если игра закончилась
+    if (!GameSession::beginned || GameSession::ended)  // если игра закончилась
     {
         GameSession::create_error_response(result);
         return result;
@@ -103,7 +103,7 @@ bool GameSession::end_game(move_status why) {
     if ((why == MOVE_DRAW) || (why == MOVE_CHECKMATE_BLACK) ||
         (why == MOVE_CHECKMATE_WHITE) || (why == WHITE_LEAVE) ||
         (why == BLACK_LEAVE)) {
-        beggined = 0;
+        beginned = 0;
         ended = 1;
         gameResult = why;
     }

@@ -15,7 +15,7 @@ jobs:
       (github.event_name == 'pull_request' && github.event.action == 'closed'
       && github.event.pull_request.merged == true))
     runs-on: ubuntu-latest
-    container: dyndtikj/cpp_gtest_linters:v0.0.1
+    container: dyndtikj/cpp_gtest_linters:latest
     steps:
       - uses: actions/checkout@v3
 
@@ -34,7 +34,7 @@ jobs:
       (github.event_name == 'pull_request' && github.event.action == 'closed'
                                 && github.event.pull_request.merged == true))
     runs-on: ubuntu-latest
-    container: dyndtikj/cpp_gtest_linters:v0.0.1
+    container: dyndtikj/cpp_gtest_linters:latest
     steps:
       - uses: actions/checkout@v3
       - name: build
@@ -52,7 +52,7 @@ jobs:
       (github.event_name == 'pull_request' && github.event.action == 'closed'
       && github.event.pull_request.merged == true))
     runs-on: ubuntu-latest
-    container: dyndtikj/cpp_gtest_linters:v0.0.1
+    container: dyndtikj/cpp_gtest_linters:latest
     steps:
       - uses: actions/checkout@v2
       - name: run tests
@@ -71,7 +71,7 @@ jobs:
       (github.event_name == 'pull_request' && github.event.action == 'closed'
       && github.event.pull_request.merged == true))
     runs-on: ubuntu-latest
-    container: dyndtikj/cpp_gtest_linters:v0.0.1
+    container: dyndtikj/cpp_gtest_linters:latest
     needs: [unit_tests]
     steps:
       - uses: actions/checkout@v3

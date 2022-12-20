@@ -22,5 +22,5 @@ class BasicMenu : public RoomInterface {
     RoomManager room_manager_;
 
    private:
-    std::map<std::string, const User*> clients_;
+        std::map<std::string, const User*> clients_;
 };

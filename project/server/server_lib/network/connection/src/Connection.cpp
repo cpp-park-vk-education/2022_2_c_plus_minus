@@ -28,11 +28,6 @@ void Connection::start() {
             strand_,
             boost::bind(&Connection::handleRead, shared_from_this(),
                         boost::placeholders::_1, boost::placeholders::_2)));
-    //    socket_.async_read_some(
-    //        boost::asio::buffer(read_buffer_),
-    //        boost::bind(&Connection::handleRead, shared_from_this(),
-    //                    boost::asio::placeholders::error,
-    //                    boost::asio::placeholders::bytes_transferred));
 }
 
 void Connection::handleRead(const boost::system::error_code& err,
@@ -45,17 +40,6 @@ void Connection::handleRead(const boost::system::error_code& err,
         read_buffer_.consume(bytes_transferred);
         boost::system::error_code socketErr;
         std::cout << "Recieved (" << user_.id << "): " << str << std::endl;
-        //        Request request;
-        //        request.parseJSON(str);
-        //
-        //        m_requestQueue->push(std::move(request));
-        //        publishRequest();
-        //        read();
-        //
-        //        read_buffer_[bytes_transferred] = '\0';
-        //        std::cout << "Read (" << user_.id << "): " <<
-        //        read_buffer_.data()
-        //                  << std::endl;
 
         std::string writeBuffer = router_.process(str, user_, basic_menu_);
 
