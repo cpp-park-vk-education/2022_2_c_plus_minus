@@ -20,7 +20,7 @@ if(BUILD_SANITIZE)
 endif()
 
 if(BUILD_TEST)
-    #add_subdirectory(tests)
+    add_subdirectory(tests)
 endif()
 
 # Collects the names of all the source files in the specified directory
