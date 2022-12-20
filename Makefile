@@ -1,7 +1,7 @@
-SERVER_DIR  = build/project/server
+SERVER_DIR  = build/project/server/server_lib
 CLIENT_DIR  = build/project/client
 TEST_DIR    = build/tests/tests
-TEST_SERVER	= ${SERVER_DIR}/tests/server_tests
+TEST_SERVER	= ${SERVER_DIR}/tests/server_lib_tests
 TEST_CLIENT = ${CLIENT_DIR}/tests/client_tests
 .PHONY: all build rebuild check tests_all coverage clean linters valgrind run run_client run_server build_server
 .PHONY:	build_client test test_server test_client test_all
@@ -9,7 +9,7 @@ TEST_CLIENT = ${CLIENT_DIR}/tests/client_tests
 all: clean format linters build test run
 
 build: clean
-	scripts/build.sh -DBUILD_ALL=true -DBUILD_TESTS=true
+	scripts/build.sh -DBUILD_ALL=true -DBUILD_TESTS=ON
 
 rebuild: clean build
 
