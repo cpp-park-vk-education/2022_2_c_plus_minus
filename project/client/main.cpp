@@ -99,7 +99,7 @@ int main() {
             for (;;) {
                 try {
                     io->run();
-                    break;  // run() exited normally
+                    break;
                 } catch (...) {
                     // Deal with exception as appropriate.
                 }
