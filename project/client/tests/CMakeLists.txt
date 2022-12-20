@@ -11,16 +11,6 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -coverage -lgcov" )
 enable_testing()
 find_package(Boost REQUIRED system json)
 include_directories(${Boost_INCLUDE_DIRS})
-#include(FetchContent)
-#FetchContent_Declare(
-#        googletest
-#
-#        GIT_REPOSITORY https://github.com/google/googletest.git
-#        GIT_TAG release-1.12.1
-#)
-#set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-#FetchContent_MakeAvailable(googletest)
-#
 include(GoogleTest)
 find_package(GTest REQUIRED)
 
