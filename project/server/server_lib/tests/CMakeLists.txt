@@ -17,5 +17,5 @@ aux_source_directory(. SRC)
 
 add_executable(${PROJECT_NAME} ${SRC})
 
-target_link_libraries(${PROJECT_NAME} server_lib database_lib GTest::gtest_main)
+target_link_libraries(${PROJECT_NAME} server_lib database_lib GTest::GTest)
 gtest_discover_tests(${PROJECT_NAME})
