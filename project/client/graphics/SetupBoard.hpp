@@ -36,3 +36,5 @@ void setupKings(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells, std
 void setupFigures(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells, std::queue<std::string>& movesChan);
 
 void setupBoard(std::shared_ptr<GUIFactory> gui, std::queue<std::string>& movesChan);
+
+void setupInfo(std::shared_ptr<GUIFactory> gui, std::string player1, std::string player2, std::string room);

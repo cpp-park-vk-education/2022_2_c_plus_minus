@@ -265,3 +265,43 @@ void setupBoard(std::shared_ptr<GUIFactory> gui, std::queue<std::string>& movesC
     setupCellTitles(gui);
     setupFigures(gui, cells, movesChan);
 }
+
+void setupInfo(std::shared_ptr<GUIFactory> gui, std::string player1, std::string player2, std::string room) {
+    std::replace(player1.begin(), player1.end(), ' ', '\n');
+    std::replace(player2.begin(), player2.end(), ' ', '\n');
+    std::replace(room.begin(), room.end(), ' ', '\n');
+    gui -> rect()
+        -> x(800)
+        -> y(0)
+        -> width(200)
+        -> height(800)
+        -> color(0x84c3beff)
+        ->create();
+
+    gui -> text()
+        -> x(810)
+        -> y(50)
+        -> size(30)
+        -> color(0xffffffffu)
+        -> text(player1)
+        -> font("Montserrat-Regular.ttf")
+        -> create();
+
+    gui -> text()
+        -> x(810)
+        -> y(700)
+        -> size(30)
+        -> color(0xffffffffu)
+        -> text(player2)
+        -> font("Montserrat-Regular.ttf")
+        -> create();
+
+    gui -> text()
+        -> x(810)
+        -> y(350)
+        -> size(30)
+        -> color(0xffffffffu)
+        -> text(room)
+        -> font("Montserrat-Regular.ttf")
+        -> create();
+}

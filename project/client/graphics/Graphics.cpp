@@ -6,7 +6,7 @@
 #include "SetupBoard.hpp"
 #include "SetupLogin.hpp"
 
-const int WINDOW_WIDTH = 800;
+const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 800;
 
 
@@ -22,8 +22,13 @@ int main() {
     std::shared_ptr<GUIFactory> gui(new SFMLGUIFactory(&window));
 
     std::queue<std::string> movesChan;
-
     setupBoard(gui, movesChan);
+
+    std::string player1 = "First Player";
+    std::string player2 = "Second Player";
+    std::string room = "This room's name";
+    setupInfo(gui, player1, player2, room);
+
     while (gui->handleEvents()) {
         while (!movesChan.empty()) {
             std::cerr << movesChan.front() << '\n';
