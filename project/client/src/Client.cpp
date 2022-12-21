@@ -17,6 +17,60 @@ Client::~Client() {
     }
 }
 
+void Client::Run() {
+    TextDrawer drawer;
+    drawer.Clear();
+    drawer.DrawAuthorise();
+    std::string nick;
+    std::cin >> nick;
+    if (nick.length() > 0) {
+        nick_ = nick;
+    }
+    Authorise();
+    while (!is_authorised) {}
+    drawer.Clear();
+    drawer.DrawBasicMenu();
+    int choice = 0;
+    bool stop = false;
+    while (!stop){
+        std::cin >> choice;
+        switch (choice) {
+            case 1:
+                GetAllRooms();
+                drawer.Clear();
+                drawer.DrawGetAllRooms(rooms_);
+                break;
+            case 2: {
+//                drawer.Clear();
+                drawer.DrawCreateRoom();
+                std::string room_name, color;
+                std::cin >> room_name;
+                std::cout << "your color --->       ";
+                std::cin >> color;
+                CreateRoom(room_name, StrToColor(color));
+                sleep(10);
+                break;
+            }
+            case 3: {
+//                drawer.Clear();
+                drawer.DrawEnterRoom();
+                std::string room_name;
+                std::cin >> room_name;
+                EnterRoom(room_name);
+                sleep(10);
+                break;
+            }
+            case 4:
+                stop = true;
+            default:
+                std::cout << "There's no this choice, try again" << std::endl;
+                sleep(1);
+                drawer.Clear();
+                drawer.DrawBasicMenu();
+        }
+    }
+}
+
 bool Client::IsGameStarted() const noexcept { return game_.is_started; }
 bool Client::IsGameFinished() const noexcept { return game_.is_finished; }
 bool Client::IsYourTurn() const noexcept {
@@ -38,8 +92,8 @@ void Client::GetAllRooms() {
     Write(req.toJSON());
 }
 
-void Client::Authorise(const std::string& nick) {
-    AuthRequest req(nick);
+void Client::Authorise() {
+    AuthRequest req(nick_);
     Write(req.toJSON());
 }
 
@@ -123,21 +177,23 @@ void Client::HandleMessage(Response&& response) {
 }
 
 void Client::handleCreateRoom(const std::string& data) {
-    std::cout << "handling creating room ... " << std::endl;
-    std::cout << data << std::endl;
+    connection_->WriteLog(LogType::info,  "handling creating rooms  ... \n");
+    connection_->WriteLog(LogType::info,  data);
 }
 
 void Client::handleAuth(const std::string& data) {
-    std::cout << "handling authorising  ... " << std::endl;
+    connection_->WriteLog(LogType::info,  "handling authorising  ... \n");
+    connection_->WriteLog(LogType::info,  data);
     AuthResponse response;
     response.parse(data);
-    std::cout << "Message: " << response.message
-              << " Status: " << response.status << std::endl;
+    if (response.status == 0){
+        is_authorised = true;
+    }
 }
 
 void Client::handleEnterRoom(const std::string& data) {
-    std::cout << "handling entering room ... " << std::endl;
-    std::cout << data << std::endl;
+    connection_->WriteLog(LogType::info,  "handling entering room  ... \n");
+    connection_->WriteLog(LogType::info,  data);
     EnterRoomResponse response;
     response.parse(data);
     game_.color = response.player_color;
@@ -156,8 +212,11 @@ void Client::handleLeaveRoom(const std::string& data) {
 
 
 void Client::handleGetAllRooms(const std::string& data) {
-    std::cout << "handling getting rooms ... " << std::endl;
-    std::cout << data << std::endl;
+    connection_->WriteLog(LogType::info,  "handling getting rooms  ... \n");
+    connection_->WriteLog(LogType::info,  data);
+    GetRoomsResponse response;
+    response.parse(data);
+    rooms_ = response.rooms;
 }
 
 void Client::handleMoveFigure(const std::string& data) {

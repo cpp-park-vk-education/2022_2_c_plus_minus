@@ -72,17 +72,39 @@ struct LeaveRoomResponse : public Response {
 
 struct GetRoomsResponse : public Response {
     int status;
-    std::map<std::string, Room *> rooms;
+    std::map<std::string, RoomData> rooms;
 
     GetRoomsResponse() = default;
-    void parse(const std::string &requestData) override {}
+    void parse(const std::string &responseData) override {
+        boost::json::error_code ec;
+        boost::json::value parsedData = boost::json::parse(responseData, ec);
+        if (ec) {
+            operation_result_ = false;
+            return;
+        }
+        operation_result_ = true;
+
+        status = parsedData.at("status").to_number<int>();
+        auto rooms_array = parsedData.at("rooms").as_array();
+        for (auto room : rooms_array){
+            rooms[room.at("id").as_string().c_str()] = RoomData{
+                    room.at("room-name").as_string().c_str(),
+                    room.at("host-nick").as_string().c_str(),
+                    room.at("id").as_string().c_str(),
+                    figure_color(room.at("host-color").as_int64()),
+            } ;
+        }
+    }
+
     std::string toJSON() override {
         boost::json::object object({{"status", status}});
         boost::json::array arr;
         for (auto el : rooms) {
-            boost::json::object room(
-                {{el.first.data(),
-                  {el.second->getName(), el.second->getHost()->nickname}}});
+            boost::json::object room({
+                  {"id", el.first.data()},
+                  {"room-name", el.second.room_name},
+                  {"host-nick", el.second.host_nick},
+                  {"host-color", int(el.second.host_color)}});
             arr.push_back(room);
         }
         object["rooms"] = arr;

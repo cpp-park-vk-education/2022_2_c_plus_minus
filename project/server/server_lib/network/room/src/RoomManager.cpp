@@ -1,5 +1,14 @@
 #include "RoomManager.hpp"
 
+std::string RoomManager::getRoomId(std::string name) {
+    for (const auto& room : rooms_){
+        if (room.second->getName() == name){
+            return room.first;
+        }
+    }
+    return "";
+}
+
 Room* RoomManager::getRoom(std::string roomId) {
     if (haveRoom(roomId)) {
         return rooms_[roomId];
@@ -12,7 +21,17 @@ bool RoomManager::haveRoom(std::string id) {
     return rooms_.find(id) != rooms_.end();
 }
 
-std::map<std::string, Room*> RoomManager::getAllRooms() { return rooms_; }
+std::map<std::string, RoomData> RoomManager::getAllRooms() {
+    std::map<std::string, RoomData> room_data_map;
+    for (const auto& room : rooms_){
+        room_data_map[room.first] = RoomData{
+                room.second->getName(),
+                room.second->getHost()->nickname,
+                room.first,
+                room.second->getHostColor()};
+    }
+    return room_data_map;
+}
 
 void RoomManager::createRoom(std::string name, std::string roomId,
                              std::string host_id, const figure_color& color,

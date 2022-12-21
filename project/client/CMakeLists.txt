@@ -22,7 +22,7 @@ endif()
 # Collects the names of all the source files in the specified directory
 aux_source_directory(src SRC)
 add_library(${PROJECT_NAME}_lib ${SRC})
-target_include_directories(${PROJECT_NAME}_lib PUBLIC include)
+target_include_directories(${PROJECT_NAME}_lib PUBLIC include include/tabulate)
 
 add_executable(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
