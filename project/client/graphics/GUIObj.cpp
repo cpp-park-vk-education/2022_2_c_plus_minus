@@ -1,5 +1,5 @@
 #include <iostream>
-#include "guiobj.hpp"
+#include "GUIObj.hpp"
 
 
 SFMLRect::SFMLRect(SFMLGUIFactory* factory) : factory{factory} {

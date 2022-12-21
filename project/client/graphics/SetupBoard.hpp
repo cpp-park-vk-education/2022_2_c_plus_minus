@@ -1,6 +1,6 @@
 #pragma once
 
-#include "guiobj.hpp"
+#include "GUIObj.hpp"
 
 const int CELL_SIZE = 100;
 const int CELL_TITLE_SIZE = 20;
@@ -34,4 +34,4 @@ void setupKings(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells);
 
 void setupFigures(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells);
 
-void setup(std::shared_ptr<GUIFactory> gui);
+void setupBoard(std::shared_ptr<GUIFactory> gui);

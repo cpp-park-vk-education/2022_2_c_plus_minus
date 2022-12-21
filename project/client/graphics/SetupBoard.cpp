@@ -1,4 +1,4 @@
-#include "setup.hpp"
+#include "SetupBoard.hpp"
 
 
 void setupLogin(std::shared_ptr<GUIFactory> gui) {
@@ -258,7 +258,7 @@ void setupFigures(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
     setupKings(gui, cells);
 }
 
-void setup(std::shared_ptr<GUIFactory> gui) {
+void setupBoard(std::shared_ptr<GUIFactory> gui) {
     auto cells = setupCells(gui);
     setupCellTitles(gui);
     setupFigures(gui, cells);
