@@ -8,8 +8,9 @@ class RoomManager {
     RoomManager() = default;
 
     Room* getRoom(std::string roomId);
+    std::string getRoomId(std::string name);
     bool haveRoom(std::string id);
-    std::map<std::string, Room*> getAllRooms();
+    std::map<std::string, RoomData> getAllRooms();
     void createRoom(std::string name, std::string roomId,
                                  std::string host_id, const figure_color& color,
                                  unsigned int maxClientNumber);

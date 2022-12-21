@@ -43,18 +43,21 @@ class EnterRoomHandler : public Handler {
         EnterRoomResponse* roomResponse =
             dynamic_cast<EnterRoomResponse*>(response);
         if (mainMenu.haveClient(user.id)) {
-            std::string roomId = roomRequest->roomId;
-            const User *mainMenuClient = mainMenu.removeClient(user.id);
-            Room *room = mainMenu.room_manager_.getRoom(roomId);
-            figure_color color = (room->getHostColor() == figure_color::WHITE ? figure_color::BLACK
-                                                                              : figure_color::WHITE);
-            room->addClient(*mainMenuClient, color);
-            user.position = {Location::Room, roomId};
+            std::string room_name = roomRequest->room_name;
+            std::string roomId = mainMenu.room_manager_.getRoomId(room_name);
+            if (mainMenu.room_manager_.haveRoom(roomId)) {
+                const User *mainMenuClient = mainMenu.removeClient(user.id);
+                Room *room = mainMenu.room_manager_.getRoom(roomId);
+                figure_color color = (room->getHostColor() == figure_color::WHITE ? figure_color::BLACK
+                                                                                  : figure_color::WHITE);
+                room->addClient(*mainMenuClient, color);
+                user.position = {Location::Room, roomId};
 
-            roomResponse->enemy_id = room->getHostId();
-            roomResponse->player_color = color;
-            roomResponse->status = 0;
-            return;
+                roomResponse->enemy_id = room->getHostId();
+                roomResponse->player_color = color;
+                roomResponse->status = 0;
+                return;
+            }
         }
         roomResponse->status = 1;
     }

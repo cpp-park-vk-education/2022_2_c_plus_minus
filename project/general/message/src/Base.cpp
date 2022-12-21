@@ -1,5 +1,19 @@
 #include "Base.hpp"
 
+std::string ColorToStr(figure_color color){
+    if (color == figure_color::WHITE){
+        return "white";
+    }
+    return "black";
+}
+
+figure_color StrToColor(std::string color){
+    if (color == "white") {
+        return figure_color::WHITE;
+    }
+    return figure_color::BLACK;
+}
+
 std::string AsStringInternal(const QueryType ty) {
     static std::map<QueryType, std::string> mapped = {
         {QueryType::UNDEFINED, "undefined"},

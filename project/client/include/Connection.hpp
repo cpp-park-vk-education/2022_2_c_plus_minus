@@ -25,6 +25,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
 
     void Connect(std::string_view path, std::string_view port);
     void Write(std::string text);
+    void WriteLog(LogType type, const std::string& text);
     void Close();
 
    private:
@@ -154,6 +155,10 @@ void Connection::Write(std::string text) {
             self->Write();
         }
     });
+}
+
+void Connection::WriteLog(LogType type, const std::string& text){
+    m_logger.Write(type, text);
 }
 
 void Connection::OnRead(const boost::system::error_code& error,

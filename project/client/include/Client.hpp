@@ -13,6 +13,8 @@
 #include "Response.hpp"
 #include "RoomRequest.hpp"
 #include "RoomResponse.hpp"
+#include "TextDrawer.hpp"
+#include "Logger.hpp"
 
 namespace client {
 class Connection;
@@ -34,15 +36,16 @@ class Client final : public std::enable_shared_from_this<Client> {
     Client& operator=(const Client&) = delete;
 
     ~Client();
+    void Run();
     void HandleMessage(Response&&);
     void Write(std::string text);
     void GetAllRooms();
     void CreateRoom(const std::string& name, const figure_color& color = figure_color::WHITE);
-    void EnterRoom(const std::string& id);
+    void EnterRoom(const std::string& name);
     void LeaveRoom();
     void StartGame();
     void MoveFigure(const std::string& fromTo);
-    void Authorise(const std::string& nick);
+    void Authorise();
 
     void Connect(std::string_view path, std::string_view port);
     void CloseConnection();
@@ -70,4 +73,7 @@ class Client final : public std::enable_shared_from_this<Client> {
     mutable std::mutex mutex_;
     boost::asio::signal_set signals_;
     GameState game_;
+    std::string nick_ = "Unidentified turtle";
+    bool is_authorised = false;
+    std::map<std::string, RoomData> rooms_;
 };

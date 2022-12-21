@@ -24,18 +24,18 @@ struct CreateRoomRequest : public Request {
 };
 
 struct EnterRoomRequest : public Request {
-    std::string roomId;
+    std::string room_name;
 
     void parse(boost::json::object &requestData) override {
-        roomId = requestData["roomId"].as_string().c_str();
+        room_name = requestData["room-name"].as_string().c_str();
         operation_result_ = true;
     }
 
-    EnterRoomRequest(std::string id) { roomId = id; }
+    EnterRoomRequest(std::string name) { room_name = name; }
     EnterRoomRequest() = default;
 
     std::string toJSON() override {
-        boost::json::object object({{"roomId", roomId}});
+        boost::json::object object({{"room-name", room_name}});
         return dataRequest(QueryType::ENTER_ROOM, object);
     }
 };
