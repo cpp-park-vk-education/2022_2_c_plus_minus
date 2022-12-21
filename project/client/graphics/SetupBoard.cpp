@@ -1,10 +1,6 @@
 #include "SetupBoard.hpp"
 
 
-void setupLogin(std::shared_ptr<GUIFactory> gui) {
-}
-
-
 std::tuple<int, int> cell(std::string pos) {
     char letter = pos[0];
     char number = pos[1];

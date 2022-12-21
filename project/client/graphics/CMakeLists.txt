@@ -4,6 +4,6 @@ project(basic_graphics)
 
 set(CMAKE_CXX_FLAGS "-std=c++2a -Wall -Wpedantic -Wextra -lsfml-graphics -lsfml-window -lsfml-system")
 
-add_executable(${PROJECT_NAME} GUIObj.cpp SetupBoard.cpp Graphics.cpp)
+add_executable(${PROJECT_NAME} GUIObj.cpp SetupBoard.cpp Graphics.cpp SetupLogin.cpp SetupLogin.hpp)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC sfml-graphics sfml-window sfml-system)

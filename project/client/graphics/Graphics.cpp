@@ -4,6 +4,7 @@
 #include <iostream>
 #include "GUIObj.hpp"
 #include "SetupBoard.hpp"
+#include "SetupLogin.hpp"
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 800;

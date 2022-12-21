@@ -6,8 +6,6 @@ const int CELL_SIZE = 100;
 const int CELL_TITLE_SIZE = 20;
 
 
-void setupLogin(std::shared_ptr<GUIFactory> gui);
-
 std::tuple<int, int> cell(std::string pos);
 
 std::vector<GUIObj*> setupCells(std::shared_ptr<GUIFactory> gui);
