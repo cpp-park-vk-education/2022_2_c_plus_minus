@@ -20,8 +20,17 @@ int main() {
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Chess");
     std::shared_ptr<GUIFactory> gui(new SFMLGUIFactory(&window));
-    setupBoard(gui);
+
+    std::queue<std::string> moves;
+
+    setupBoard(gui, moves);
     while (gui->handleEvents()) {
+
+        while (!moves.empty()) {
+            std::cerr << moves.front() << '\n';
+            moves.pop();
+        }
+
         gui->display();
     }
 

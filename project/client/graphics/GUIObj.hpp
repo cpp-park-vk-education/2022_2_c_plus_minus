@@ -16,9 +16,9 @@ struct GUIObj {
 
     virtual bool contains(int, int) = 0;
 
-    virtual int getX(); // TODO make them pure virtual
+    virtual int getX() = 0;
 
-    virtual int getY();
+    virtual int getY() = 0;
 };
 
 
@@ -128,6 +128,10 @@ struct SFMLText : public GUIText {
     void draw() override;
 
     bool contains(int, int) override;
+
+    int getX() override;
+
+    int getY() override;
 };
 
 
@@ -157,6 +161,10 @@ struct SFMLSprite : public GUISprite {
     void create() override;
 
     bool contains(int, int) override;
+
+    int getX() override;
+
+    int getY() override;
 };
 
 

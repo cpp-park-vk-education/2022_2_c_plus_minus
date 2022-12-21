@@ -50,6 +50,22 @@ int SFMLRect::getY() {
     return rect.getPosition().y;
 }
 
+int SFMLText::getX() {
+    return _text.getPosition().x;
+}
+
+int SFMLText::getY() {
+    return _text.getPosition().y;
+}
+
+int SFMLSprite::getX() {
+    return sprite.getPosition().x;
+}
+
+int SFMLSprite::getY() {
+    return sprite.getPosition().y;
+}
+
 
 SFMLText::SFMLText(SFMLGUIFactory* factory) : factory{factory} {
 }
