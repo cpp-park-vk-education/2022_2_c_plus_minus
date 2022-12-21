@@ -1,7 +1,4 @@
-#include "guiobj.hpp"
-
-const int CELL_SIZE = 100;
-const int CELL_TITLE_SIZE = 20;
+#include "setup.hpp"
 
 
 void setupLogin(std::shared_ptr<GUIFactory> gui) {
@@ -91,6 +88,9 @@ EventHandler figureEventHandler(GUISprite* figure, std::vector<GUIObj*> cells, s
             EventHandler eh(onClick(cell), [figure, cell, gui]() -> size_t {
                 figure -> x(cell->getX())
                        -> y(cell->getY());
+                if (figure->getX() == cell->getX() && figure->getY() == cell->getY()) {
+                    return 64 + 1;
+                }
                 return 64;
             });
             gui->addEventHandler(eh);
@@ -106,7 +106,7 @@ void setupPawns(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
         auto pawn = gui -> sprite()
                         -> x(x)
                         -> y(y)
-                        -> image("../figures.png")
+                        -> image("figures.png")
                         -> frame(1000, 200, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
         gui->addEventHandler(figureEventHandler(pawn, cells, gui));
@@ -119,7 +119,7 @@ void setupPawns(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
         auto pawn = gui -> sprite()
                         -> x(x)
                         -> y(y)
-                        -> image("../figures.png")
+                        -> image("figures.png")
                         -> frame(1000, 0, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
         gui->addEventHandler(figureEventHandler(pawn, cells, gui));
@@ -134,7 +134,7 @@ void setupRooks(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
         auto rook = gui -> sprite()
                         -> x(x)
                         -> y(y)
-                        -> image("../figures.png")
+                        -> image("figures.png")
                         -> frame(800, 0, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
         gui->addEventHandler(figureEventHandler(rook, cells, gui));
@@ -145,7 +145,7 @@ void setupRooks(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
         auto rook = gui -> sprite()
                         -> x(x)
                         -> y(y)
-                        -> image("../figures.png")
+                        -> image("figures.png")
                         -> frame(800, 200, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
         gui->addEventHandler(figureEventHandler(rook, cells, gui));
@@ -160,7 +160,7 @@ void setupKnights(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
         auto knight = gui -> sprite()
                         -> x(x)
                         -> y(y)
-                        -> image("../figures.png")
+                        -> image("figures.png")
                         -> frame(600, 0, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
         gui->addEventHandler(figureEventHandler(knight, cells, gui));
@@ -171,7 +171,7 @@ void setupKnights(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
         auto knight = gui -> sprite()
                         -> x(x)
                         -> y(y)
-                        -> image("../figures.png")
+                        -> image("figures.png")
                         -> frame(600, 200, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
         gui->addEventHandler(figureEventHandler(knight, cells, gui));
@@ -186,7 +186,7 @@ void setupBishops(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
         auto bishop = gui -> sprite()
                         -> x(x)
                         -> y(y)
-                        -> image("../figures.png")
+                        -> image("figures.png")
                         -> frame(400, 0, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
         gui->addEventHandler(figureEventHandler(bishop, cells, gui));
@@ -197,7 +197,7 @@ void setupBishops(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
         auto bishop = gui -> sprite()
                         -> x(x)
                         -> y(y)
-                        -> image("../figures.png")
+                        -> image("figures.png")
                         -> frame(400, 200, 200, 200)
                         -> scale(CELL_SIZE / 200.0);
         gui->addEventHandler(figureEventHandler(bishop, cells, gui));
@@ -211,7 +211,7 @@ void setupQueens(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
     auto queen1 = gui -> sprite()
         -> x(x)
         -> y(y)
-        -> image("../figures.png")
+        -> image("figures.png")
         -> frame(200, 0, 200, 200)
         -> scale(CELL_SIZE / 200.0);
     gui->addEventHandler(figureEventHandler(queen1, cells, gui));
@@ -220,7 +220,7 @@ void setupQueens(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
     auto queen2 = gui -> sprite()
             -> x(x)
             -> y(y)
-            -> image("../figures.png")
+            -> image("figures.png")
             -> frame(200, 200, 200, 200)
             -> scale(CELL_SIZE / 200.0);
     gui->addEventHandler(figureEventHandler(queen2, cells, gui));
@@ -233,7 +233,7 @@ void setupKings(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
     auto king1 = gui -> sprite()
         -> x(x)
         -> y(y)
-        -> image("../figures.png")
+        -> image("figures.png")
         -> frame(0, 0, 200, 200)
         -> scale(CELL_SIZE / 200.0);
     gui->addEventHandler(figureEventHandler(king1, cells, gui));
@@ -242,7 +242,7 @@ void setupKings(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells) {
     auto king2 = gui -> sprite()
         -> x(x)
         -> y(y)
-        -> image("../figures.png")
+        -> image("figures.png")
         -> frame(0, 200, 200, 200)
         -> scale(CELL_SIZE / 200.0);
     gui->addEventHandler(figureEventHandler(king2, cells, gui));

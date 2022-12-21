@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "guiobj.hpp"
-#include "setup.cpp"
+#include "setup.hpp"
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 800;

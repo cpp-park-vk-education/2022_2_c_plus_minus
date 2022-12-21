@@ -66,7 +66,7 @@ GUIText* SFMLText::size(int size) {
 
 GUIText* SFMLText::font(std::string fontPath) {
     static sf::Font f;
-    f.loadFromFile("../Montserrat-Regular.ttf");
+    f.loadFromFile("Montserrat-Regular.ttf");
     _text.setFont(f);
     return this;
 }
