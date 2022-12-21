@@ -31,6 +31,7 @@ int main() {
     for (auto& t: ts) {
         t.join();
     }
+    system("tput setaf 52");
 }
 
 //#include <boost/asio.hpp>

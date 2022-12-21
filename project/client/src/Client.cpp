@@ -48,7 +48,9 @@ void Client::Run() {
                 std::cout << "your color --->       ";
                 std::cin >> color;
                 CreateRoom(room_name, StrToColor(color));
-                sleep(10);
+                sleep(1);
+                drawer.Clear();
+                drawer.DrawRoom(nick, room_name, game_);
                 break;
             }
             case 3: {
