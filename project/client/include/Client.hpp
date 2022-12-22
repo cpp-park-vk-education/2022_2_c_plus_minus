@@ -17,7 +17,6 @@
 #include "TextDrawer.hpp"
 #include "Logger.hpp"
 
-#include <SFML/Graphics.hpp>
 #include "SafeQueue.hpp"
 #include "Chan.hpp"
 
