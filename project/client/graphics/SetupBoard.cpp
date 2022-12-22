@@ -270,6 +270,7 @@ void setupInfo(std::shared_ptr<GUIFactory> gui, std::string player1, std::string
     std::replace(player1.begin(), player1.end(), ' ', '\n');
     std::replace(player2.begin(), player2.end(), ' ', '\n');
     std::replace(room.begin(), room.end(), ' ', '\n');
+    room = "Room:\n\n" + room;
     gui -> rect()
         -> x(800)
         -> y(0)
@@ -298,7 +299,7 @@ void setupInfo(std::shared_ptr<GUIFactory> gui, std::string player1, std::string
 
     gui -> text()
         -> x(810)
-        -> y(350)
+        -> y(300)
         -> size(30)
         -> color(0xffffffffu)
         -> text(room)
