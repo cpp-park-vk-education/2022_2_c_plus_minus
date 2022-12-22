@@ -18,10 +18,9 @@
 #include "Logger.hpp"
 
 #include <SFML/Graphics.hpp>
-#include "GUIObj.hpp"
-#include "SetupBoard.hpp"
 #include "SafeQueue.hpp"
 #include "Chan.hpp"
+
 
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 800;

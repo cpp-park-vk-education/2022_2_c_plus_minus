@@ -4,19 +4,19 @@
 
 #include "Connection.hpp"
 
-void makeMove(std::shared_ptr<GUIFactory> gui, std::string mov, std::map<std::string, GUIObj*>& figPos) {
-    auto from = mov.substr(0, 2);
-    auto to = mov.substr(2, 2);
-    if (figPos.find(to) != figPos.end()) {
-        gui->remove(figPos[to]);
-    }
-    figPos[to] = figPos[from];
-    figPos.erase(from);
-    auto [x, y] = cell(to);
-    dynamic_cast<SFMLSprite*>(figPos[to]) -> x(x)
-            -> y(y);
-}
-
+//void makeMove(std::shared_ptr<GUIFactory> gui, std::string mov, std::map<std::string, GUIObj*>& figPos) {
+//    auto from = mov.substr(0, 2);
+//    auto to = mov.substr(2, 2);
+//    if (figPos.find(to) != figPos.end()) {
+//        gui->remove(figPos[to]);
+//    }
+//    figPos[to] = figPos[from];
+//    figPos.erase(from);
+//    auto [x, y] = cell(to);
+//    dynamic_cast<SFMLSprite*>(figPos[to]) -> x(x)
+//            -> y(y);
+//}
+//
 
 Client::Client(std::shared_ptr<boost::asio::io_context> io)
     : io_ctx_{io}, connection_{nullptr}, signals_(*io_ctx_) {
