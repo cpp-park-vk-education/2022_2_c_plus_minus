@@ -181,6 +181,8 @@ struct GUIFactory {
 
     virtual void add(GUIObj*);
 
+    virtual void remove(GUIObj*);
+
     virtual void display() = 0;
 
     virtual bool handleEvents() = 0;

@@ -153,6 +153,12 @@ void GUIFactory::add(GUIObj* obj) {
     objects.push_back(obj);
 }
 
+void GUIFactory::remove(GUIObj* obj) {
+    std::cerr << objects.size() << ' ';
+    objects.erase(std::find(objects.begin(), objects.end(), obj));
+    std::cerr << objects.size() << '\n';
+}
+
 SFMLGUIFactory::~SFMLGUIFactory() {
 }
 
