@@ -7,6 +7,19 @@ using Row_t = Table::Row_t;
 
 class TextDrawer{
 public:
+    void DrawMessage(std::string message) {
+        Table menu;
+        menu.format()
+                .border_color(Color::white)
+                .padding_left(4)
+                .padding_right(4);
+
+        menu.add_row(Row_t{message});
+        menu[0].format().font_align(FontAlign::center).font_color(Color::magenta).width(40);
+        std::cout << menu << std::endl;
+        return;
+    }
+
     void DrawRoom(std::string host_nick, std::string room_name, GameState state) {
         Table menu;
         menu.format()

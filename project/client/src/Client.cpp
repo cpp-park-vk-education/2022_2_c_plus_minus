@@ -64,47 +64,35 @@ void Client::Run() {
                 std::cout << "your color --->       ";
                 std::cin >> color;
                 CreateRoom(room_name, StrToColor(color));
-                while(waiting_responses_);
-                if (game_.is_in_room){
-                    std::thread tr ([this](){
-                        sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Chess");
-                        std::shared_ptr<GUIFactory> gui(new SFMLGUIFactory(&window));
-
-                        std::shared_ptr<MoveChan> chan_ptr = std::make_shared<MoveChan>(chan_);
-                        std::map<std::string, GUIObj*> figPos;
-                        setupBoard(gui, chan_ptr, figPos);
-                        
-                        std::string player1 = "First Player";
-                        std::string player2 = "Second Player";
-                        std::string room = "This room's name";
-                        setupInfo(gui, player1, player2, room);
-                        
-                        std::cout << "started" << std::endl;
-
-                        while (gui->handleEvents()) {
-                            if (game_.is_room_full) {
-                                if (!game_.is_started) {
-                                    StartGame();
-                                    game_.is_started = true;
-                                }
-                            }
-                            if (game_.is_started) {
-                                while (!chan_.moves_chan_.empty()) {
-                                    std::cout << "ACTION" << std::endl;
-                                    auto move = chan_.moves_chan_.TryPop();
-                                    std::cerr << move << '\n';
-                                    if (move.length() > 0) {
-                                        if (MoveFigure(move) != move_status::MOVE_ERROR && (move !=  chan_.last_move_ )) {
-                                            makeMove(gui, move, figPos);
-                                        }
-                                    }
-                                }
-                            }
-//                            std::cout << "handling" << std::endl;
-                            gui->display();
+                drawer.DrawMessage("Wait for enemy ...");
+                while (!game_.is_room_full);
+                drawer.DrawMessage("Player entered, Do yo want to start (Y/n):" );
+                std::cout << "your choose --->       ";
+                std::string resp;
+                std::cin >> resp;
+                if (resp == "n") {
+                    LeaveRoom();
+                    break;
+                }
+                StartGame();
+                drawer.DrawMessage("Game started!");
+                while (!game_.is_finished){
+                    if (game_.is_your_turn){
+                        drawer.DrawMessage("Enter your move (ex : E2E4):");
+                        std::cout << "your choice --->       ";
+                        std::string choice;
+                        std::cin >> choice;
+                        if (MoveFigure(choice) == MOVE_ERROR){
+                            drawer.DrawMessage("Wrong Move, try again");
+                            continue;
                         }
-                    });
-                    tr.detach();
+                    } else {
+                        drawer.DrawMessage("Wait for enemy's move...");
+                        while (chan_.moves_chan_.empty());
+                        chan_.moves_chan_.TryPop();
+                        while (chan_.moves_chan_.empty());
+                        drawer.DrawMessage("Enemy moved : " + chan_.moves_chan_.TryPop());
+                    }
                 }
                 drawer.Clear();
                 drawer.DrawBasicMenu();
@@ -115,42 +103,46 @@ void Client::Run() {
                 std::string room_name;
                 std::cin >> room_name;
                 EnterRoom(room_name);
-                while(waiting_responses_);
-                if (game_.is_in_room){
-                    std::thread tr ([this]() {
-                        sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Chess");
-                        std::shared_ptr<GUIFactory> gui(new SFMLGUIFactory(&window));
-                        auto chan_ptr = std::make_shared<MoveChan>(chan_);
-                        std::map<std::string, GUIObj*> figPos;
-                        setupBoard(gui, chan_ptr,  figPos);
-
-                        std::string player1 = "First Player";
-                        std::string player2 = "Second Player";
-                        std::string room = "This room's name";
-                        setupInfo(gui, player1, player2, room);
-                        gui->display();
-                        std::cout << "wait" << std::endl;
-                        while (!game_.is_room_full && !game_.is_started);
-                        std::cout << "started" << std::endl;
-                        while (gui->handleEvents()) {
-                            while (!chan_.moves_chan_.empty()) {
-                                std::string move =chan_.moves_chan_.TryPop();
-                                std::cerr << move << '\n';
-                                if (MoveFigure(move) != move_status::MOVE_ERROR && (move !=  chan_.last_move_ )){
-                                    makeMove(gui, move, figPos);
-                                }
-                            }
-                            gui->display();
+                while (!game_.is_in_room);
+                drawer.DrawMessage("You entered\nLets wait for start from host");
+                while (!game_.is_started);
+                drawer.DrawMessage("Game started!");
+                int i = 0;
+                while (!game_.is_finished){
+                    if (game_.is_your_turn){
+                        drawer.DrawMessage("Enter your move (ex : E2E4):");
+                        std::cout << "your choice --->       ";
+                        std::string choice;
+                        std::cin >> choice;
+                        auto result = MoveFigure(choice);
+                        if (result == MOVE_ERROR){
+                            drawer.DrawMessage("Wrong Move, try again");
+                            continue;
                         }
-                    });
-                    tr.detach();
+                        if (result == MOVE_CHECKMATE_WHITE || result == MOVE_CHECKMATE_BLACK ){
+                            drawer.DrawMessage("Game Finished");
+                            game_.is_finished = true;
+                            break;
+                        }
+                    } else {
+                        drawer.DrawMessage("Wait for enemy's move...");
+                        if (i > 0) {
+                            while (chan_.moves_chan_.empty());
+                            chan_.moves_chan_.TryPop();
+                        }
+                        i++;
+                        while (chan_.moves_chan_.empty());
+                        drawer.DrawMessage("Enemy moved : " + chan_.moves_chan_.TryPop());
+                    }
                 }
+                drawer.Clear();
+                drawer.DrawBasicMenu();
                 break;
             }
             case 4:
                 stop = true;
             default:
-                std::cout << "There's no this choice, try again" << std::endl;
+                drawer.DrawMessage("There's no this choice, try again");
                 sleep(1);
                 drawer.Clear();
                 drawer.DrawBasicMenu();
@@ -216,6 +208,7 @@ void Client::StartGame(){
 void Client::CreateRoom(const std::string& name, const figure_color& color) {
     CreateRoomRequest req(name, color);
     game_.color = color;
+    game_.is_your_turn = color == WHITE;
     Write(req.toJSON());
     waiting_responses_++;
 }
@@ -304,11 +297,10 @@ void Client::handleAuth(const std::string& data) {
 void Client::handleEnterRoom(const std::string& data) {
     connection_->WriteLog(LogType::info,  "handling entering room  ... \n");
     connection_->WriteLog(LogType::info,  data);
-    std::cout << data;
     EnterRoomResponse response;
     response.parse(data);
     if (response.status == 0){
-        if (!game_.is_in_room){
+        if (!game_.is_in_room) {
             game_.is_in_room = true;
             game_.color = response.player_color;
             game_.is_your_turn = response.player_color == figure_color::WHITE;
@@ -338,10 +330,14 @@ void Client::handleGetAllRooms(const std::string& data) {
 }
 
 void Client::handleMoveFigure(const std::string& data) {
-//    std::cout << "handling moving figure ... " << std::endl;
     GameResponse response;
     response.parse(data);
     if (response.moveStatus != MOVE_ERROR) {
+        if (game_.is_your_turn){
+            game_.is_your_turn = false;
+        } else {
+            game_.is_your_turn = true;
+        }
         game_.FEN_game_state = response.tableFEN;
         if (response.moveStatus == MOVE_CHECK_WHITE) {
             std::cout << "Check white" << std::endl;
@@ -360,7 +356,6 @@ void Client::handleMoveFigure(const std::string& data) {
         if (response.moveStatus == MOVE_OK) {
             std::cout << "Successful move" << std::endl;
         }
-        game_.is_your_turn ? true : false;
 
     } else {
         response.moveStatus = MOVE_ERROR;
@@ -375,7 +370,6 @@ void Client::handleMoveFigure(const std::string& data) {
 }
 
 void Client::handleStartGame(const std::string& data) {
-    std::cout << "handling starting game... " << std::endl;
     game_.is_started = true;
     if ( waiting_responses_) waiting_responses_--;
 }
