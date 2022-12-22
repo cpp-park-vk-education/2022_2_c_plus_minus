@@ -40,8 +40,10 @@ class GameHandler : public Handler {
         gameResponse->tableFEN = moveResult.table_fen;
         gameResponse->moveFrom = moveResult.move_from;
         gameResponse->moveTo = moveResult.move_to;
+        gameResponse->move_str = "";
 
         if (moveResult.moveStatus != MOVE_ERROR) {
+            gameResponse->move_str = game_request->move;
             clientGame->broadcast(user.id, QueryType::MOVE_FIGURE,
                                   gameResponse->toJSON());
         }

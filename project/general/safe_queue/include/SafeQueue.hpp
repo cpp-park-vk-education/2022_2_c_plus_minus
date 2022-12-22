@@ -12,19 +12,19 @@ class SafeQueue {
     SafeQueue() {}
     SafeQueue(const SafeQueue& other) {
         std::lock_guard<std::mutex> lock{other.mutex_};
-        queue_ = other.queue;
+        queue_ = other.queue_;
     }
 
     void Push(const T& new_value) {
-        std::lock_guard<std::mutex> lock{mutex_};
+//        std::lock_guard<std::mutex> lock{mutex_};
         queue_.push(new_value);
-        con_var_.notify_one();
+//        con_var_.notify_one();
     }
 
     void Push(T&& new_value) {
         std::lock_guard<std::mutex> lock{mutex_};
         queue_.emplace(std::forward<T>(new_value));
-        con_var_.notify_one();
+//        con_var_.notify_one();
     }
 
     void WaitAndPop(T& value) {
@@ -42,18 +42,10 @@ class SafeQueue {
         return res;
     }
 
-    bool TryPop(T& value) {
+    T TryPop() {
         std::lock_guard<std::mutex> lock{mutex_};
-        if (queue_.empty()) return false;
-        value = queue_.front();
-        queue_.pop();
-        return true;
-    }
-
-    std::shared_ptr<T> TryPop() {
-        std::lock_guard<std::mutex> lock{mutex_};
-        if (queue_.empty()) return std::shared_ptr<T>{};
-        std::shared_ptr<std::mutex> res{std::make_shared<T>(queue_.front())};
+        if (queue_.empty()) return T{};
+        T res = queue_.front();
         queue_.pop();
         return res;
     }

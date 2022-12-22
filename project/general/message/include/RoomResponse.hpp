@@ -6,7 +6,17 @@
 struct CreateRoomResponse : public Response {
     int status;
     CreateRoomResponse() = default;
-    void parse(const std::string &requestData) override {}
+    void parse(const std::string &requestData) override {
+        boost::json::error_code ec;
+        boost::json::value parsedData = boost::json::parse(requestData, ec);
+        if (ec) {
+            operation_result_ = false;
+            return;
+        }
+        operation_result_ = true;
+
+        status = parsedData.at("status").to_number<int>();
+    }
     std::string toJSON() override {
         boost::json::object object({{"status", status}});
 
@@ -20,7 +30,17 @@ struct OnEnterRoomResponse : public Response {
     std::string id;
 
     OnEnterRoomResponse() = default;
-    void parse(const std::string &requestData) override {}
+    void parse(const std::string &requestData) override {
+        boost::json::error_code ec;
+        boost::json::value parsedData = boost::json::parse(requestData, ec);
+        if (ec) {
+            operation_result_ = false;
+            return;
+        }
+        operation_result_ = true;
+
+        status = parsedData.at("status").to_number<int>();
+    }
     std::string toJSON() override {
         boost::json::object object(
             {{"status", status}, {"game_started", game_started}, {"id", id}});

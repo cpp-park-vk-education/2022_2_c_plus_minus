@@ -31,6 +31,7 @@ struct GameResponse : public Response {
     std::string tableFEN;
     int moveFrom;
     int moveTo;
+    std::string move_str;
 
     GameResponse() = default;
 
@@ -38,7 +39,8 @@ struct GameResponse : public Response {
         boost::json::object object({{"moveStatus", moveStatus},
                                     {"tableFEN", tableFEN},
                                     {"moveFrom", moveFrom},
-                                    {"moveTo", moveTo}});
+                                    {"moveTo", moveTo},
+                                    {"move-str", move_str}});
 
         return boost::json::serialize(object);
     }
@@ -58,5 +60,7 @@ struct GameResponse : public Response {
             boost::json::value_to<std::string>(parsedData.at("tableFEN"));
         moveFrom = parsedData.at("moveFrom").to_number<int>();
         moveTo = parsedData.at("moveTo").to_number<int>();
+        move_str =
+                boost::json::value_to<std::string>(parsedData.at("move-str"));
     }
 };

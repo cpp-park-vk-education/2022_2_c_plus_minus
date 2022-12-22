@@ -56,6 +56,7 @@ class EnterRoomHandler : public Handler {
                 roomResponse->enemy_id = room->getHostId();
                 roomResponse->player_color = color;
                 roomResponse->status = 0;
+                room->broadcast(user.id, QueryType::ENTER_ROOM, roomResponse->toJSON());
                 return;
             }
         }

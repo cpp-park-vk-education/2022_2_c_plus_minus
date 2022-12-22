@@ -6,6 +6,7 @@
 #include <mutex>
 #include <string>
 #include <string_view>
+#include <queue>
 
 #include "GameRequest.hpp"
 #include "GameResponse.hpp"
@@ -16,9 +17,19 @@
 #include "TextDrawer.hpp"
 #include "Logger.hpp"
 
+#include <SFML/Graphics.hpp>
+#include "GUIObj.hpp"
+#include "SetupBoard.hpp"
+#include "SafeQueue.hpp"
+#include "Chan.hpp"
+
+const int WINDOW_WIDTH = 1000;
+const int WINDOW_HEIGHT = 800;
+
 namespace client {
 class Connection;
 }
+
 
 class Client final : public std::enable_shared_from_this<Client> {
    public:
@@ -44,7 +55,7 @@ class Client final : public std::enable_shared_from_this<Client> {
     void EnterRoom(const std::string& name);
     void LeaveRoom();
     void StartGame();
-    void MoveFigure(const std::string& fromTo);
+    move_status MoveFigure(const std::string& fromTo);
     void Authorise();
 
     void Connect(std::string_view path, std::string_view port);
@@ -76,4 +87,7 @@ class Client final : public std::enable_shared_from_this<Client> {
     std::string nick_ = "Unidentified turtle";
     bool is_authorised = false;
     std::map<std::string, RoomData> rooms_;
+    std::atomic_int64_t waiting_responses_ = 0;
+    MoveChan chan_;
 };
+
