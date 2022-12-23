@@ -337,6 +337,7 @@ move_status ChessTable::move_figure(int from, int to) {
     }
     return result;
 }
+
 bool ChessTable::check_draw(figure_color enemy_color) {  // не оптимизированно
     bool result = true;
     figure_color non_enemy_color = (enemy_color == WHITE) ? BLACK : WHITE;

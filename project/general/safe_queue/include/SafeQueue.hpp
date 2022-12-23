@@ -18,13 +18,11 @@ class SafeQueue {
     void Push(const T& new_value) {
 //        std::lock_guard<std::mutex> lock{mutex_};
         queue_.push(new_value);
-//        con_var_.notify_one();
     }
 
     void Push(T&& new_value) {
         std::lock_guard<std::mutex> lock{mutex_};
         queue_.emplace(std::forward<T>(new_value));
-//        con_var_.notify_one();
     }
 
     void WaitAndPop(T& value) {
