@@ -2,6 +2,7 @@ FROM gcc:10.4.0
 RUN apt update -y
 RUN apt install -y cmake cppcheck clang-tidy clang-format libgtest-dev libc6-dbg gdb python3-pip
 RUN pip3  install cpplint
+RUN apt install libsfml-dev
 RUN wget https://sourceware.org/pub/valgrind/valgrind-3.19.0.tar.bz2 && \
     tar xfv valgrind-3.19.0.tar.bz2 && \
     cd valgrind-3.19.0 && \
