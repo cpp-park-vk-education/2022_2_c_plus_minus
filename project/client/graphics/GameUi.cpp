@@ -1,52 +1,40 @@
-#pragma once
+#include "GameUi.hpp"
 
+GameUi::GameUi() : window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Chess"), gui(new SFMLGUIFactory(&window)){
+    std::queue<std::string> movesChan;
+    setupBoard(gui, movesChan, figPos);
 
-#include <SFML/Graphics.hpp>
-#include <iostream>
-#include "GUIObj.hpp"
-#include "SetupBoard.hpp"
-
-#define DEBUG
-
-const int WINDOW_WIDTH = 1000;
-const int WINDOW_HEIGHT = 800;
-
-using namespace sf;
-
-class GameHandler{
-public:
-    GameHandler() : gui(new SFMLGUIFactory(&window)), window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Chess"){
-
-        std::queue<std::string> movesChan;
-        setupBoard(gui, movesChan, figPos);
-
-        std::string player1 = "First Player";
-        std::string player2 = "Second Player";
-        std::string room = "This room's name";
-        setupInfo(gui, player1, player2, room);
+    std::string player1 = "First Player";
+    std::string player2 = "Second Player";
+    std::string room = "This room's name";
+    setupInfo(gui, player1, player2, room);
+}
+std::string GameUi::coordsToStr(int x, int y){
+    if (x > 800 || y > 800){
+        return "nn";
     }
-    void makeMove(std::string mov);
-    int start();
-
-private:
-    std::shared_ptr<GUIFactory> gui;
-    std::map<std::string, GUIObj*> figPos;
-    sf::RenderWindow window;
-    Vector2f pos;
-    bool captured = false;
-    std::string start_pos = "  ";
-    std::string finish_pos = "  ";
-};
-
-
-
-void GameHandler::makeMove(std::string mov){
-
+    std::string letters = "ABCDEFGH";
+    std::string nums = "87654321";
+    std::string result = "  ";
+    result[0] = letters[x/100];
+    result[1] = nums[y/100];
+    return result;
 }
 
-std::string coordsToStr(int x, int y);
+void GameUi::makeMove(std::string mov) {
+    auto from = mov.substr(0, 2);
+    auto to = mov.substr(2, 2);
+    if (figPos.find(to) != figPos.end()) {
+        gui->remove(figPos[to]);
+    }
+    figPos[to] = figPos[from];
+    figPos.erase(from);
+    auto [x, y] = cell(to);
+    dynamic_cast<SFMLSprite*>(figPos[to]) -> x(x)
+            -> y(y);
+}
 
-int GameHandler::start() {
+int GameUi::start() {
     while (window.isOpen()){
         Event e;
         while (window.pollEvent(e)) {
@@ -56,7 +44,7 @@ int GameHandler::start() {
                     break;
                 }
                 case Event::MouseMoved: {
-                    pos = window.mapPixelToCoords(Mouse::getPosition(window));
+//                    pos = window.mapPixelToCoords(Mouse::getPosition(window));
                     break;
                 }
                 case Event::MouseButtonPressed: {
@@ -89,6 +77,6 @@ int GameHandler::start() {
             }
         }
         gui->display();
-     }
+    }
     return 0;
 }

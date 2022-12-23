@@ -16,13 +16,9 @@
 #include "RoomResponse.hpp"
 #include "TextDrawer.hpp"
 #include "Logger.hpp"
-
+#include "GameUi.hpp"
 #include "SafeQueue.hpp"
 #include "Chan.hpp"
-
-
-const int WINDOW_WIDTH = 1000;
-const int WINDOW_HEIGHT = 800;
 
 namespace client {
 class Connection;

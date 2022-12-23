@@ -9,6 +9,7 @@ OPTION(BUILD_SANITIZE "SANITIZE" OFF)
 
 string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra -pedantic -Wformat=2 -Wfloat-equal -Wconversion -fprofile-arcs")
 string(APPEND CMAKE_CXX_FLAGS " -Wlogical-op  -Wduplicated-cond -Wcast-qual -Wcast-align")
+string(APPEND CMAKE_CXX_FLAGS " -lsfml-graphics -lsfml-window -lsfml-system")
 
 if(BUILD_DEV)
     string(APPEND CMAKE_CXX_FLAGS " -g -O0")
@@ -21,8 +22,9 @@ endif()
 
 # Collects the names of all the source files in the specified directory
 aux_source_directory(src SRC)
-add_library(${PROJECT_NAME}_lib ${SRC} )
-target_include_directories(${PROJECT_NAME}_lib PUBLIC include include/tabulate include/graphics)
+aux_source_directory(graphics GR_SRC)
+add_library(${PROJECT_NAME}_lib ${SRC} ${GR_SRC})
+target_include_directories(${PROJECT_NAME}_lib PUBLIC include include/tabulate graphics)
 
 add_executable(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
@@ -31,6 +33,6 @@ add_executable(${PROJECT_NAME}
 find_package(Boost REQUIRED COMPONENTS system  json)
 include_directories(${Boost_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME}_lib
-        ${Boost_LIBRARIES} general_lib)
+        ${Boost_LIBRARIES} general_lib sfml-graphics sfml-window sfml-system)
 
 target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_lib)
