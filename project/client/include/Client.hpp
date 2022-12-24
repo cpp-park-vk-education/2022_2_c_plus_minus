@@ -16,7 +16,7 @@
 #include "RoomResponse.hpp"
 #include "TextDrawer.hpp"
 #include "Logger.hpp"
-#include "GameUi.hpp"
+//#include "GameUi.hpp"
 #include "SafeQueue.hpp"
 #include "Chan.hpp"
 
@@ -24,6 +24,7 @@ namespace client {
 class Connection;
 }
 
+class GameUi;
 
 class Client final : public std::enable_shared_from_this<Client> {
    public:
@@ -83,5 +84,6 @@ class Client final : public std::enable_shared_from_this<Client> {
     std::map<std::string, RoomData> rooms_;
     std::atomic_int64_t waiting_responses_ = 0;
     MoveChan chan_;
+    std::shared_ptr<GameUi> gameUI_;
 };
 

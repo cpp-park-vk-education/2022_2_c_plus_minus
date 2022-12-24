@@ -3,10 +3,10 @@
 #include <iostream>
 
 #include "Connection.hpp"
-
+#include "GameUi.hpp"
 
 Client::Client(std::shared_ptr<boost::asio::io_context> io)
-    : io_ctx_{io}, connection_{nullptr}, signals_(*io_ctx_) {
+    : io_ctx_{io}, connection_{nullptr}, signals_(*io_ctx_), gameUI_(std::make_shared<GameUi>()) {
     signals_.add(SIGINT);
     signals_.add(SIGTERM);
     signals_.async_wait(boost::bind(&Client::CloseConnection, this));
@@ -61,28 +61,28 @@ void Client::Run() {
                     LeaveRoom();
                     break;
                 }
-                GameUi game;
-                game.start();
                 StartGame();
-                drawer.DrawMessage("Game started!");
-                while (!game_.is_finished){
-                    if (game_.is_your_turn){
-                        drawer.DrawMessage("Enter your move (ex : E2E4):");
-                        std::cout << "your choice --->       ";
-                        std::string choice;
-                        std::cin >> choice;
-                        if (MoveFigure(choice) == MOVE_ERROR){
-                            drawer.DrawMessage("Wrong Move, try again");
-                            continue;
-                        }
-                    } else {
-                        drawer.DrawMessage("Wait for enemy's move...");
-                        while (chan_.moves_chan_.empty());
-                        chan_.moves_chan_.TryPop();
-                        while (chan_.moves_chan_.empty());
-                        drawer.DrawMessage("Enemy moved : " + chan_.moves_chan_.TryPop());
-                    }
-                }
+                gameUI_->addClient(this->shared_from_this());
+                gameUI_->start();
+//                drawer.DrawMessage("Game started!");
+//                while (!game_.is_finished){
+//                    if (game_.is_your_turn){
+//                        drawer.DrawMessage("Enter your move (ex : E2E4):");
+//                        std::cout << "your choice --->       ";
+//                        std::string choice;
+//                        std::cin >> choice;
+//                        if (MoveFigure(choice) == MOVE_ERROR){
+//                            drawer.DrawMessage("Wrong Move, try again");
+//                            continue;
+//                        }
+//                    } else {
+//                        drawer.DrawMessage("Wait for enemy's move...");
+//                        while (chan_.moves_chan_.empty());
+//                        chan_.moves_chan_.TryPop();
+//                        while (chan_.moves_chan_.empty());
+//                        drawer.DrawMessage("Enemy moved : " + chan_.moves_chan_.TryPop());
+//                    }
+//                }
                 drawer.Clear();
                 drawer.DrawBasicMenu();
             }
@@ -97,6 +97,8 @@ void Client::Run() {
                 while (!game_.is_started);
                 drawer.DrawMessage("Game started!");
                 int i = 0;
+                gameUI_->addClient(shared_from_this());
+                gameUI_->start();
                 while (!game_.is_finished){
                     if (game_.is_your_turn){
                         drawer.DrawMessage("Enter your move (ex : E2E4):");
@@ -345,6 +347,7 @@ void Client::handleMoveFigure(const std::string& data) {
         if (response.moveStatus == MOVE_OK) {
             std::cout << "Successful move" << std::endl;
         }
+        gameUI_->makeMove(response.move_str);
 
     } else {
         response.moveStatus = MOVE_ERROR;

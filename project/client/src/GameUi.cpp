@@ -1,14 +1,15 @@
 #include "GameUi.hpp"
+#include "Client.hpp"
 
 GameUi::GameUi() : window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Chess"), gui(new SFMLGUIFactory(&window)){
-    std::queue<std::string> movesChan;
-    setupBoard(gui, movesChan, figPos);
-
-    std::string player1 = "First Player";
-    std::string player2 = "Second Player";
-    std::string room = "This room's name";
-    setupInfo(gui, player1, player2, room);
+//    window.close();
 }
+
+void GameUi::addClient(std::shared_ptr<Client> client) {
+
+    client_ = client->weak_from_this();
+}
+
 std::string GameUi::coordsToStr(int x, int y){
     if (x > 800 || y > 800){
         return "nn";
@@ -35,31 +36,40 @@ void GameUi::makeMove(std::string mov) {
 }
 
 int GameUi::start() {
+    std::queue<std::string> movesChan;
+    setupBoard(gui, movesChan, figPos);
+    std::string player1 = "First Player";
+    std::string player2 = "Second Player";
+    std::string room = "This room's name";
+    setupInfo(gui, player1, player2, room);
+
     while (window.isOpen()){
-        Event e;
+        sf::Event e;
         while (window.pollEvent(e)) {
             switch (e.type) {
-                case Event::Closed: {
+                case sf::Event::Closed: {
                     window.close();
                     break;
                 }
-                case Event::MouseMoved: {
+                case sf::Event::MouseMoved: {
 //                    pos = window.mapPixelToCoords(Mouse::getPosition(window));
                     break;
                 }
-                case Event::MouseButtonPressed: {
-                    if (e.key.code == Mouse::Left) {
+                case sf::Event::MouseButtonPressed: {
+                    if (e.key.code == sf::Mouse::Left) {
                         std::cout << "pressed" << std::endl;
                         if (captured) {
-                            pos = window.mapPixelToCoords(Mouse::getPosition(window));
+                            pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                             finish_pos = coordsToStr(pos.x, pos.y);
                             if (finish_pos != "nn") {
                                 captured = false;
-                                makeMove(start_pos + finish_pos);
+                                auto client = client_.lock();
+                                if (client)
+                                    client->MoveFigure(start_pos + finish_pos);
                                 continue;
                             }
                         }
-                        pos = window.mapPixelToCoords(Mouse::getPosition(window));
+                        pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                         start_pos = coordsToStr(pos.x, pos.y);
                         if (start_pos != "nn") {
                             captured = true;
@@ -69,8 +79,8 @@ int GameUi::start() {
                         break;
                     }
                 }
-                case Event::MouseButtonReleased: {
-                    if (e.key.code == Mouse::Left) {
+                case sf::Event::MouseButtonReleased: {
+                    if (e.key.code == sf::Mouse::Left) {
                         std::cout << "released" << std::endl;
                     }
                 }
