@@ -52,10 +52,10 @@ struct OnEnterRoomResponse : public Response {
 struct EnterRoomResponse : public Response {
     int status = 0;
     figure_color player_color;
-    std::string enemy_id;
+    std::string enemy_name;
     EnterRoomResponse() = default;
-    EnterRoomResponse(int st, figure_color pColor, std::string id)
-        : status(st), player_color(pColor), enemy_id(id) {}
+    EnterRoomResponse(int st, figure_color pColor, std::string name)
+        : status(st), player_color(pColor), enemy_name(name) {}
 
     void parse(const std::string &requestData) override {
         boost::json::error_code ec;
@@ -68,12 +68,12 @@ struct EnterRoomResponse : public Response {
 
         status = parsedData.at("status").to_number<int>();
         player_color = figure_color(parsedData.at("color").to_number<int>());
-        enemy_id = boost::json::value_to<std::string>(parsedData.at("enemy-id"));
+        enemy_name= boost::json::value_to<std::string>(parsedData.at("enemy-name"));
     }
 
     std::string toJSON() override {
         boost::json::object object(
-            {{"status", status}, {"color", int(player_color)}, {"enemy-id", enemy_id}});
+            {{"status", status}, {"color", int(player_color)}, {"enemy-name", enemy_name}});
 
         return boost::json::serialize(object);
     }

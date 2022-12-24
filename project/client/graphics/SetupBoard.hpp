@@ -36,4 +36,6 @@ void setupFigures(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells, s
 
 void setupBoard(std::shared_ptr<GUIFactory> gui, std::queue<std::string>& movesChan, std::map<std::string, GUIObj*>& figPos);
 
-void setupInfo(std::shared_ptr<GUIFactory> gui, std::string player1, std::string player2, std::string room);
+void setupInfo(std::shared_ptr<GUIFactory> gui, std::string player1, std::string player2, std::string color, std::string room);
+
+void setupMessage(std::shared_ptr<GUIFactory> gui, std::string message);

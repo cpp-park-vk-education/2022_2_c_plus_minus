@@ -58,12 +58,6 @@ class Client final : public std::enable_shared_from_this<Client> {
     void SetState(State state) noexcept;
     State GetState() const noexcept;
 
-    bool IsGameStarted() const noexcept;
-    bool IsGameFinished() const noexcept;
-    bool IsYourTurn() const noexcept;
-    std::string GetFENState() const noexcept;
-    figure_color GetColor() const noexcept;
-
    private:
     void handleCreateRoom(const std::string& data);
     void handleEnterRoom(const std::string& data);

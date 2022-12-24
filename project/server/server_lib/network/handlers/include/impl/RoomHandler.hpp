@@ -53,10 +53,15 @@ class EnterRoomHandler : public Handler {
                 room->addClient(*mainMenuClient, color);
                 user.position = {Location::Room, roomId};
 
-                roomResponse->enemy_id = room->getHostId();
+                roomResponse->enemy_name = room->getHost()->nickname;
                 roomResponse->player_color = color;
                 roomResponse->status = 0;
-                room->broadcast(user.id, QueryType::ENTER_ROOM, roomResponse->toJSON());
+                EnterRoomResponse for_host;
+                std::string str(user.nickname);
+                for_host.enemy_name = user.nickname;
+                for_host.player_color = color;
+                for_host.status = 0;
+                room->broadcast(user.nickname, QueryType::ENTER_ROOM, for_host.toJSON());
                 return;
             }
         }
@@ -105,6 +110,7 @@ class GetRoomsHandler : public Handler {
         auto rooms = mainMenu.room_manager_.getAllRooms();
         roomResponse->rooms = rooms;
         roomResponse->status = 0;
+        sleep(5);
     }
 
     ~GetRoomsHandler() = default;

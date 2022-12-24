@@ -170,6 +170,7 @@ struct SFMLSprite : public GUISprite {
 
 struct GUIFactory {
     std::vector<GUIObj*> objects;
+    GUIText* current_msg = nullptr;
 
     virtual ~GUIFactory() = default;
 

@@ -10,9 +10,6 @@ Connection::Connection(boost::asio::io_context& ioContext, BasicMenu& menu,
       user_(socket_),
       basic_menu_(menu),
       router_(router) {
-    std::stringstream ss;
-    ss << "connection_" << user_.id << "_log.txt";
-    logger_ = std::make_shared<Log>(ss.str().c_str());
 }
 
 Connection::~Connection() { close(); }
@@ -20,8 +17,12 @@ Connection::~Connection() { close(); }
 boost::asio::ip::tcp::socket& Connection::getSocket() { return socket_; }
 
 void Connection::start() {
+    time_ = std::chrono::system_clock::now();
     user_.id = socket_.remote_endpoint().address().to_string() + ":" +
                std::to_string(socket_.remote_endpoint().port());
+    std::stringstream ss;
+    ss << "connection_" << user_.id << "_log.txt";
+    logger_ = std::make_shared<Log>(ss.str().c_str());
     user_.nickname = "Unidentified turtle"; // by default
     user_.position = {Location::MainMenu, ""};
     basic_menu_.addClient(user_);

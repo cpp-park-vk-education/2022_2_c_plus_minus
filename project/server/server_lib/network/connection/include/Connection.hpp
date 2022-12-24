@@ -37,4 +37,5 @@ class Connection : public boost::enable_shared_from_this<Connection> {
     Router& router_;
     boost::asio::streambuf read_buffer_;
     std::shared_ptr<Log> logger_{ nullptr };
+    std::chrono::time_point<std::chrono::system_clock> time_;
 };

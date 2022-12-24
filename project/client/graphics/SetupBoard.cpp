@@ -285,22 +285,38 @@ void setupBoard(std::shared_ptr<GUIFactory> gui, std::queue<std::string>& movesC
     setupFigures(gui, cells, movesChan, figPos);
 }
 
-void setupInfo(std::shared_ptr<GUIFactory> gui, std::string player1, std::string player2, std::string room) {
+void setupMessage(std::shared_ptr<GUIFactory> gui, std::string message){
+    gui->remove(gui->current_msg);
+    auto text_obj = gui -> text();
+    text_obj -> x(810)
+             -> y(50)
+             -> size(30)
+             -> color(0xffffffffu)
+             -> text(message)
+             -> font("Montserrat-Regular.ttf")
+             -> create();
+    gui->current_msg = text_obj;
+}
+
+void setupInfo(std::shared_ptr<GUIFactory> gui, std::string player1, std::string player2, std::string color, std::string room) {
     std::replace(player1.begin(), player1.end(), ' ', '\n');
     std::replace(player2.begin(), player2.end(), ' ', '\n');
     std::replace(room.begin(), room.end(), ' ', '\n');
-    room = "Room:\n\n" + room;
+    room = "Room:\n" + room;
+    color = "Your color:\n" + color;
+    player1 = "You:\n" + player1;
+    player2 = "Enemy:\n" + player2;
     gui -> rect()
         -> x(800)
         -> y(0)
-        -> width(200)
+        -> width(400)
         -> height(800)
         -> color(0x84c3beff)
-        ->create();
+        -> create();
 
     gui -> text()
         -> x(810)
-        -> y(50)
+        -> y(150)
         -> size(30)
         -> color(0xffffffffu)
         -> text(player1)
@@ -308,20 +324,29 @@ void setupInfo(std::shared_ptr<GUIFactory> gui, std::string player1, std::string
         -> create();
 
     gui -> text()
+            -> x(810)
+            -> y(250)
+            -> size(30)
+            -> color(0xffffffffu)
+            -> text(color)
+            -> font("Montserrat-Regular.ttf")
+            -> create();
+
+    gui -> text()
+            -> x(810)
+            -> y(450)
+            -> size(30)
+            -> color(0xffffffffu)
+            -> text(room)
+            -> font("Montserrat-Regular.ttf")
+            -> create();
+
+    gui -> text()
         -> x(810)
         -> y(700)
         -> size(30)
         -> color(0xffffffffu)
         -> text(player2)
-        -> font("Montserrat-Regular.ttf")
-        -> create();
-
-    gui -> text()
-        -> x(810)
-        -> y(300)
-        -> size(30)
-        -> color(0xffffffffu)
-        -> text(room)
         -> font("Montserrat-Regular.ttf")
         -> create();
 }

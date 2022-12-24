@@ -27,6 +27,10 @@ enum move_status {
     BLACK_LEAVE
 };
 
+std::string MoveStatusAsString(move_status mv);
+//move_status StringAsMoveStatus(const std::string& str);
+
+
 enum class QueryType {
     // default or error
     UNDEFINED,
