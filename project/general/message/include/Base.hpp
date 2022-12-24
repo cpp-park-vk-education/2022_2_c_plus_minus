@@ -5,7 +5,7 @@
 
 const std::string separator = "\r\n\r\n";
 
-enum figure_color: int8_t { WHITE = 1, BLACK = -1 };
+enum figure_color : int8_t { WHITE = 1, BLACK = -1 };
 figure_color StrToColor(std::string color);
 std::string ColorToStr(figure_color color);
 
@@ -27,6 +27,9 @@ enum move_status {
     BLACK_LEAVE
 };
 
+std::string MoveStatusAsString(move_status mv);
+// move_status StringAsMoveStatus(const std::string& str);
+
 enum class QueryType {
     // default or error
     UNDEFINED,
@@ -43,7 +46,7 @@ enum class QueryType {
 std::string AsStringInternal(const QueryType ty);
 QueryType AsQueryTypeInternal(const std::string& str);
 
-struct RoomData{
+struct RoomData {
     std::string room_name;
     std::string host_nick;
     std::string room_id;

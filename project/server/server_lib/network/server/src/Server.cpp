@@ -80,7 +80,7 @@ void Server::handleAccept(const boost::system::error_code& err) {
     if (!err) {
         boost::asio::ip::tcp::socket& socket = client_->getSocket();
         logger_.Write(LogType::info, "Started handling: ",
-                      socket.remote_endpoint().address().to_string() ,  ":" ,
+                      socket.remote_endpoint().address().to_string(), ":",
                       std::to_string(socket.remote_endpoint().port()), "\n");
         client_->start();
     }

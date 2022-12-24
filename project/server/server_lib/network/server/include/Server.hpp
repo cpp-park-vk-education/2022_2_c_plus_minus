@@ -2,10 +2,10 @@
 #include <boost/asio.hpp>
 #include <string>
 
-#include "Connection.hpp"
 #include "BasicMenu.hpp"
-#include "Router.hpp"
+#include "Connection.hpp"
 #include "Logger.hpp"
+#include "Router.hpp"
 
 class Server {
    public:

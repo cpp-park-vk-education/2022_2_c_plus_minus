@@ -69,20 +69,19 @@ Connection::~Connection() {
 }
 
 void Connection::Connect(std::string_view path, std::string_view port) {
-    resolver_.async_resolve(path, port,
-                            boost::bind(&Connection::handleResolve, this,
-                                        boost::placeholders::_1,
-                                        boost::placeholders::_2));
+    resolver_.async_resolve(
+        path, port,
+        boost::bind(&Connection::handleResolve, this, boost::placeholders::_1,
+                    boost::placeholders::_2));
 }
 
 void Connection::handleResolve(
     const boost::system::error_code& err,
     const boost::asio::ip::tcp::resolver::results_type& endpoints) {
     if (!err) {
-        boost::asio::async_connect(
-            m_stream, endpoints,
-            boost::bind(&Connection::handleConnect, this,
-                        boost::placeholders::_1));
+        boost::asio::async_connect(m_stream, endpoints,
+                                   boost::bind(&Connection::handleConnect, this,
+                                               boost::placeholders::_1));
     } else {
         m_logger.Write(LogType::error,
                        "Resolving failed with error: ", err.message(), "\n");
@@ -157,7 +156,7 @@ void Connection::Write(std::string text) {
     });
 }
 
-void Connection::WriteLog(LogType type, const std::string& text){
+void Connection::WriteLog(LogType type, const std::string& text) {
     m_logger.Write(type, text);
 }
 
@@ -172,7 +171,7 @@ void Connection::OnRead(const boost::system::error_code& error,
             asio::buffers_begin(data),
             asio::buffers_begin(data) + transferredBytes - separator.size()};
         m_inbox.consume(transferredBytes);
-//        std::cout << received << std::endl;
+        //        std::cout << received << std::endl;
         Response incomingResponse;
         incomingResponse.parse(received);
 

@@ -39,17 +39,17 @@ SOFTWARE.
 #include <variant>
 using std::get_if;
 using std::holds_alternative;
+using std::string_view;
 using std::variant;
 using std::visit;
-using std::string_view;
 #else
 #include <tabulate/string_view_lite.hpp>
 #include <tabulate/variant_lite.hpp>
 using nonstd::get_if;
 using nonstd::holds_alternative;
+using nonstd::string_view;
 using nonstd::variant;
 using nonstd::visit;
-using nonstd::string_view;
 #endif
 
 #include <utility>
@@ -57,99 +57,102 @@ using nonstd::string_view;
 namespace tabulate {
 
 class Table {
-public:
-  Table() : table_(TableInternal::create()) {}
+   public:
+    Table() : table_(TableInternal::create()) {}
 
-  using Row_t = std::vector<variant<std::string, const char *, string_view, Table>>;
+    using Row_t =
+        std::vector<variant<std::string, const char *, string_view, Table>>;
 
-  Table &add_row(const Row_t &cells) {
+    Table &add_row(const Row_t &cells) {
+        if (rows_ == 0) {
+            // This is the first row added
+            // cells.size() is the number of columns
+            cols_ = cells.size();
+        }
 
-    if (rows_ == 0) {
-      // This is the first row added
-      // cells.size() is the number of columns
-      cols_ = cells.size();
+        std::vector<std::string> cell_strings;
+        if (cells.size() < cols_) {
+            cell_strings.resize(cols_);
+            std::fill(cell_strings.begin(), cell_strings.end(), "");
+        } else {
+            cell_strings.resize(cells.size());
+            std::fill(cell_strings.begin(), cell_strings.end(), "");
+        }
+
+        for (size_t i = 0; i < cells.size(); ++i) {
+            auto cell = cells[i];
+            if (holds_alternative<std::string>(cell)) {
+                cell_strings[i] = *get_if<std::string>(&cell);
+            } else if (holds_alternative<const char *>(cell)) {
+                cell_strings[i] = *get_if<const char *>(&cell);
+            } else if (holds_alternative<string_view>(cell)) {
+                cell_strings[i] = std::string{*get_if<string_view>(&cell)};
+            } else {
+                auto table = *get_if<Table>(&cell);
+                std::stringstream stream;
+                table.print(stream);
+                cell_strings[i] = stream.str();
+            }
+        }
+
+        table_->add_row(cell_strings);
+        rows_ += 1;
+        return *this;
     }
 
-    std::vector<std::string> cell_strings;
-    if (cells.size() < cols_) {
-      cell_strings.resize(cols_);
-      std::fill(cell_strings.begin(), cell_strings.end(), "");
-    } else {
-      cell_strings.resize(cells.size());
-      std::fill(cell_strings.begin(), cell_strings.end(), "");
-    }
+    Row &operator[](size_t index) { return row(index); }
 
-    for (size_t i = 0; i < cells.size(); ++i) {
-      auto cell = cells[i];
-      if (holds_alternative<std::string>(cell)) {
-        cell_strings[i] = *get_if<std::string>(&cell);
-      } else if (holds_alternative<const char *>(cell)) {
-        cell_strings[i] = *get_if<const char *>(&cell);
-      }  else if (holds_alternative<string_view>(cell)) {
-        cell_strings[i] = std::string{*get_if<string_view>(&cell)};
-      } else {
-        auto table = *get_if<Table>(&cell);
+    Row &row(size_t index) { return (*table_)[index]; }
+
+    Column column(size_t index) { return table_->column(index); }
+
+    Format &format() { return table_->format(); }
+
+    void print(std::ostream &stream) { table_->print(stream); }
+
+    std::string str() {
         std::stringstream stream;
-        table.print(stream);
-        cell_strings[i] = stream.str();
-      }
+        print(stream);
+        return stream.str();
     }
 
-    table_->add_row(cell_strings);
-    rows_ += 1;
-    return *this;
-  }
+    std::pair<size_t, size_t> shape() { return table_->shape(); }
 
-  Row &operator[](size_t index) { return row(index); }
+    class RowIterator {
+       public:
+        explicit RowIterator(std::vector<std::shared_ptr<Row>>::iterator ptr)
+            : ptr(ptr) {}
 
-  Row &row(size_t index) { return (*table_)[index]; }
+        RowIterator operator++() {
+            ++ptr;
+            return *this;
+        }
+        bool operator!=(const RowIterator &other) const {
+            return ptr != other.ptr;
+        }
+        Row &operator*() { return **ptr; }
 
-  Column column(size_t index) { return table_->column(index); }
+       private:
+        std::vector<std::shared_ptr<Row>>::iterator ptr;
+    };
 
-  Format &format() { return table_->format(); }
+    auto begin() -> RowIterator { return RowIterator(table_->rows_.begin()); }
+    auto end() -> RowIterator { return RowIterator(table_->rows_.end()); }
 
-  void print(std::ostream &stream) { table_->print(stream); }
+   private:
+    friend class MarkdownExporter;
+    friend class LatexExporter;
+    friend class AsciiDocExporter;
 
-  std::string str() {
-    std::stringstream stream;
-    print(stream);
-    return stream.str();
-  }
-
-  std::pair<size_t, size_t> shape() { return table_->shape(); }
-
-  class RowIterator {
-  public:
-    explicit RowIterator(std::vector<std::shared_ptr<Row>>::iterator ptr) : ptr(ptr) {}
-
-    RowIterator operator++() {
-      ++ptr;
-      return *this;
-    }
-    bool operator!=(const RowIterator &other) const { return ptr != other.ptr; }
-    Row &operator*() { return **ptr; }
-
-  private:
-    std::vector<std::shared_ptr<Row>>::iterator ptr;
-  };
-
-  auto begin() -> RowIterator { return RowIterator(table_->rows_.begin()); }
-  auto end() -> RowIterator { return RowIterator(table_->rows_.end()); }
-
-private:
-  friend class MarkdownExporter;
-  friend class LatexExporter;
-  friend class AsciiDocExporter;
-
-  friend std::ostream &operator<<(std::ostream &stream, const Table &table);
-  size_t rows_{0};
-  size_t cols_{0};
-  std::shared_ptr<TableInternal> table_;
+    friend std::ostream &operator<<(std::ostream &stream, const Table &table);
+    size_t rows_{0};
+    size_t cols_{0};
+    std::shared_ptr<TableInternal> table_;
 };
 
 inline std::ostream &operator<<(std::ostream &stream, const Table &table) {
-  const_cast<Table &>(table).print(stream);
-  return stream;
+    const_cast<Table &>(table).print(stream);
+    return stream;
 }
 
-} // namespace tabulate
+}  // namespace tabulate

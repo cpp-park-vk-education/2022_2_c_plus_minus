@@ -1,24 +1,24 @@
 #pragma once
 
-#include <boost/bind/bind.hpp>
 #include <boost/asio.hpp>
+#include <boost/bind/bind.hpp>
 #include <memory>
 #include <mutex>
+#include <queue>
 #include <string>
 #include <string_view>
-#include <queue>
 
 #include "GameRequest.hpp"
 #include "GameResponse.hpp"
 #include "GameState.hpp"
+#include "Logger.hpp"
 #include "Response.hpp"
 #include "RoomRequest.hpp"
 #include "RoomResponse.hpp"
 #include "TextDrawer.hpp"
-#include "Logger.hpp"
 //#include "GameUi.hpp"
-#include "SafeQueue.hpp"
 #include "Chan.hpp"
+#include "SafeQueue.hpp"
 
 namespace client {
 class Connection;
@@ -28,12 +28,7 @@ class GameUi;
 
 class Client final : public std::enable_shared_from_this<Client> {
    public:
-    enum class State {
-        CLOSED,
-        CONNECTED,
-        PERFORMING_ACTION,
-        READY
-    };
+    enum class State { CLOSED, CONNECTED, PERFORMING_ACTION, READY };
 
    public:
     Client(std::shared_ptr<boost::asio::io_context> io);
@@ -46,7 +41,8 @@ class Client final : public std::enable_shared_from_this<Client> {
     void HandleMessage(Response&&);
     void Write(std::string text);
     void GetAllRooms();
-    void CreateRoom(const std::string& name, const figure_color& color = figure_color::WHITE);
+    void CreateRoom(const std::string& name,
+                    const figure_color& color = figure_color::WHITE);
     void EnterRoom(const std::string& name);
     void LeaveRoom();
     void StartGame();
@@ -57,12 +53,6 @@ class Client final : public std::enable_shared_from_this<Client> {
     void CloseConnection();
     void SetState(State state) noexcept;
     State GetState() const noexcept;
-
-    bool IsGameStarted() const noexcept;
-    bool IsGameFinished() const noexcept;
-    bool IsYourTurn() const noexcept;
-    std::string GetFENState() const noexcept;
-    figure_color GetColor() const noexcept;
 
    private:
     void handleCreateRoom(const std::string& data);
@@ -86,4 +76,3 @@ class Client final : public std::enable_shared_from_this<Client> {
     MoveChan chan_;
     std::shared_ptr<GameUi> gameUI_;
 };
-

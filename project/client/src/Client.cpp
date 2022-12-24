@@ -6,7 +6,7 @@
 #include "GameUi.hpp"
 
 Client::Client(std::shared_ptr<boost::asio::io_context> io)
-    : io_ctx_{io}, connection_{nullptr}, signals_(*io_ctx_), gameUI_(std::make_shared<GameUi>()) {
+    : io_ctx_{io}, connection_{nullptr}, signals_(*io_ctx_) {
     signals_.add(SIGINT);
     signals_.add(SIGTERM);
     signals_.async_wait(boost::bind(&Client::CloseConnection, this));
@@ -18,7 +18,6 @@ Client::~Client() {
     }
 }
 
-
 void Client::Run() {
     TextDrawer drawer;
     drawer.Clear();
@@ -29,22 +28,24 @@ void Client::Run() {
         nick_ = nick;
     }
     Authorise();
-    while (!is_authorised) {}
+    while (!is_authorised) {
+    }
     drawer.Clear();
     drawer.DrawBasicMenu();
     int choice = 0;
     bool stop = false;
-    while (!stop){
+    while (!stop) {
         fflush(stdin);
         std::cin >> choice;
         switch (choice) {
             case 1:
                 GetAllRooms();
                 drawer.Clear();
+                while (waiting_responses_)
+                    ;
                 drawer.DrawGetAllRooms(rooms_);
                 break;
             case 2: {
-//                drawer.Clear();
                 drawer.DrawCreateRoom();
                 std::string room_name, color;
                 std::cin >> room_name;
@@ -52,8 +53,10 @@ void Client::Run() {
                 std::cin >> color;
                 CreateRoom(room_name, StrToColor(color));
                 drawer.DrawMessage("Wait for enemy ...");
-                while (!game_.is_room_full);
-                drawer.DrawMessage("Player entered, Do yo want to start (Y/n):" );
+                while (!game_.is_room_full)
+                    ;
+                drawer.DrawMessage("Player " + game_.enemy_name +
+                                   " entered, Do yo want to start (Y/n):");
                 std::cout << "your choose --->       ";
                 std::string resp;
                 std::cin >> resp;
@@ -62,70 +65,36 @@ void Client::Run() {
                     break;
                 }
                 StartGame();
+                gameUI_ = std::make_shared<GameUi>();
                 gameUI_->addClient(this->shared_from_this());
+                gameUI_->setupRoomInfo(nick_, game_.enemy_name,
+                                       ColorToStr(game_.color), room_name);
+                gameUI_->setupMsg("Started");
                 gameUI_->start();
-//                drawer.DrawMessage("Game started!");
-//                while (!game_.is_finished){
-//                    if (game_.is_your_turn){
-//                        drawer.DrawMessage("Enter your move (ex : E2E4):");
-//                        std::cout << "your choice --->       ";
-//                        std::string choice;
-//                        std::cin >> choice;
-//                        if (MoveFigure(choice) == MOVE_ERROR){
-//                            drawer.DrawMessage("Wrong Move, try again");
-//                            continue;
-//                        }
-//                    } else {
-//                        drawer.DrawMessage("Wait for enemy's move...");
-//                        while (chan_.moves_chan_.empty());
-//                        chan_.moves_chan_.TryPop();
-//                        while (chan_.moves_chan_.empty());
-//                        drawer.DrawMessage("Enemy moved : " + chan_.moves_chan_.TryPop());
-//                    }
-//                }
+                LeaveRoom();
                 drawer.Clear();
                 drawer.DrawBasicMenu();
+                break;
             }
             case 3: {
-//                drawer.Clear();
                 drawer.DrawEnterRoom();
                 std::string room_name;
                 std::cin >> room_name;
                 EnterRoom(room_name);
-                while (!game_.is_in_room);
-                drawer.DrawMessage("You entered\nLets wait for start from host");
-                while (!game_.is_started);
+                while (!game_.is_in_room)
+                    ;
+                drawer.DrawMessage(
+                    "You entered\nLets wait for start from host");
+                while (!game_.is_started)
+                    ;
                 drawer.DrawMessage("Game started!");
-                int i = 0;
-                gameUI_->addClient(shared_from_this());
+                gameUI_ = std::make_shared<GameUi>();
+                gameUI_->addClient(this->shared_from_this());
+                gameUI_->setupRoomInfo(nick_, game_.enemy_name,
+                                       ColorToStr(game_.color), room_name);
+                gameUI_->setupMsg("Started");
                 gameUI_->start();
-                while (!game_.is_finished){
-                    if (game_.is_your_turn){
-                        drawer.DrawMessage("Enter your move (ex : E2E4):");
-                        std::cout << "your choice --->       ";
-                        std::string choice;
-                        std::cin >> choice;
-                        auto result = MoveFigure(choice);
-                        if (result == MOVE_ERROR){
-                            drawer.DrawMessage("Wrong Move, try again");
-                            continue;
-                        }
-                        if (result == MOVE_CHECKMATE_WHITE || result == MOVE_CHECKMATE_BLACK ){
-                            drawer.DrawMessage("Game Finished");
-                            game_.is_finished = true;
-                            break;
-                        }
-                    } else {
-                        drawer.DrawMessage("Wait for enemy's move...");
-                        if (i > 0) {
-                            while (chan_.moves_chan_.empty());
-                            chan_.moves_chan_.TryPop();
-                        }
-                        i++;
-                        while (chan_.moves_chan_.empty());
-                        drawer.DrawMessage("Enemy moved : " + chan_.moves_chan_.TryPop());
-                    }
-                }
+                LeaveRoom();
                 drawer.Clear();
                 drawer.DrawBasicMenu();
                 break;
@@ -140,22 +109,6 @@ void Client::Run() {
         }
     }
 }
-
-bool Client::IsGameStarted() const noexcept { return game_.is_started; }
-bool Client::IsGameFinished() const noexcept { return game_.is_finished; }
-bool Client::IsYourTurn() const noexcept {
-    if (state_ == State::PERFORMING_ACTION){
-        return false;
-    }
-
-    return game_.is_your_turn;
-}
-
-std::string Client::GetFENState() const noexcept {
-    return game_.FEN_game_state;
-}
-
-figure_color Client::GetColor() const noexcept { return game_.color; }
 
 void Client::GetAllRooms() {
     GetRoomsRequest req;
@@ -177,6 +130,7 @@ void Client::EnterRoom(const std::string& id) {
 
 void Client::LeaveRoom() {
     LeaveRoomRequest req;
+    game_.reset();
     Write(req.toJSON());
     waiting_responses_++;
 }
@@ -186,11 +140,12 @@ move_status Client::MoveFigure(const std::string& fromTo) {
     MoveFigureRequest req(fromTo);
     Write(req.toJSON());
     waiting_responses_++;
-    while (waiting_responses_);
+    while (waiting_responses_)
+        ;
     return game_.last_move;
 }
 
-void Client::StartGame(){
+void Client::StartGame() {
     StartGameRequest req;
     Write(req.toJSON());
     waiting_responses_++;
@@ -272,11 +227,11 @@ void Client::handleCreateRoom(const std::string& data) {
 }
 
 void Client::handleAuth(const std::string& data) {
-    connection_->WriteLog(LogType::info,  "handling authorising  ... \n");
-    connection_->WriteLog(LogType::info,  data);
+    connection_->WriteLog(LogType::info, "handling authorising  ... \n");
+    connection_->WriteLog(LogType::info, data);
     AuthResponse response;
     response.parse(data);
-    if (response.status == 0){
+    if (response.status == 0) {
         is_authorised = true;
         waiting_responses_--;
         return;
@@ -286,34 +241,34 @@ void Client::handleAuth(const std::string& data) {
 }
 
 void Client::handleEnterRoom(const std::string& data) {
-    connection_->WriteLog(LogType::info,  "handling entering room  ... \n");
-    connection_->WriteLog(LogType::info,  data);
+    connection_->WriteLog(LogType::info, "handling entering room  ... \n");
+    connection_->WriteLog(LogType::info, data);
     EnterRoomResponse response;
     response.parse(data);
-    if (response.status == 0){
+    if (response.status == 0) {
+        game_.enemy_name = response.enemy_name;
         if (!game_.is_in_room) {
             game_.is_in_room = true;
             game_.color = response.player_color;
             game_.is_your_turn = response.player_color == figure_color::WHITE;
         }
         game_.is_room_full = true;
-        if ( waiting_responses_) waiting_responses_--;
+        if (waiting_responses_) waiting_responses_--;
         return;
     }
     game_.is_in_room = false;
-    if ( waiting_responses_) waiting_responses_--;
+    if (waiting_responses_) waiting_responses_--;
 }
 
 void Client::handleLeaveRoom(const std::string& data) {
-    std::cout << "handling leaving room ... " << std::endl;
-    std::cout << data << std::endl;
+    connection_->WriteLog(LogType::info, "handling leaving room  ... \n");
+    connection_->WriteLog(LogType::info, data);
     waiting_responses_--;
 }
 
-
 void Client::handleGetAllRooms(const std::string& data) {
-    connection_->WriteLog(LogType::info,  "handling getting rooms  ... \n");
-    connection_->WriteLog(LogType::info,  data);
+    connection_->WriteLog(LogType::info, "handling getting rooms  ... \n");
+    connection_->WriteLog(LogType::info, data);
     GetRoomsResponse response;
     response.parse(data);
     rooms_ = response.rooms;
@@ -324,44 +279,30 @@ void Client::handleMoveFigure(const std::string& data) {
     GameResponse response;
     response.parse(data);
     if (response.moveStatus != MOVE_ERROR) {
-        if (game_.is_your_turn){
+        if (game_.is_your_turn) {
             game_.is_your_turn = false;
         } else {
             game_.is_your_turn = true;
         }
         game_.FEN_game_state = response.tableFEN;
-        if (response.moveStatus == MOVE_CHECK_WHITE) {
-            std::cout << "Check white" << std::endl;
-        }
+
         if (response.moveStatus == MOVE_CHECKMATE_WHITE) {
-            std::cout << "Check and Mate white" << std::endl;
-            game_.is_finished = true;
-        }
-        if (response.moveStatus == MOVE_CHECK_BLACK) {
-            std::cout << "Check black" << std::endl;
+            gameUI_->finishGame();
         }
         if (response.moveStatus == MOVE_CHECKMATE_BLACK) {
-            std::cout << "Check mate black" << std::endl;
-            game_.is_finished = true;
-        }
-        if (response.moveStatus == MOVE_OK) {
-            std::cout << "Successful move" << std::endl;
+            gameUI_->finishGame();
         }
         gameUI_->makeMove(response.move_str);
-
-    } else {
-        response.moveStatus = MOVE_ERROR;
-        if (response.moveStatus) {
-            std::cout << "Wrong move" << std::endl;
-        }
     }
+    gameUI_->setupMsg(
+        MoveStatusAsString(static_cast<move_status>(response.moveStatus)));
     state_ = State::READY;
     game_.last_move = move_status(response.moveStatus);
     chan_.moves_chan_.Push(response.move_str);
-    if ( waiting_responses_) waiting_responses_--;
+    if (waiting_responses_) waiting_responses_--;
 }
 
 void Client::handleStartGame(const std::string& data) {
     game_.is_started = true;
-    if ( waiting_responses_) waiting_responses_--;
+    if (waiting_responses_) waiting_responses_--;
 }

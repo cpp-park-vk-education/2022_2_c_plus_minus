@@ -45,78 +45,76 @@ using nonstd::optional;
 namespace tabulate {
 
 class LatexExporter : public Exporter {
+    static const char new_line = '\n';
 
-  static const char new_line = '\n';
-
-public:
-  class ExportOptions {
-  public:
-    ExportOptions &indentation(std::size_t value) {
-      indentation_ = value;
-      return *this;
-    }
-
-  private:
-    friend class LatexExporter;
-    optional<size_t> indentation_;
-  };
-
-  ExportOptions &configure() { return options_; }
-
-  std::string dump(Table &table) override {
-    std::string result{"\\begin{tabular}"};
-    result += new_line;
-
-    result += add_alignment_header(table);
-    result += new_line;
-    const auto rows = table.rows_;
-    // iterate content and put text into the table.
-    for (size_t i = 0; i < rows; i++) {
-      auto &row = table[i];
-      // apply row content indentation
-      if (options_.indentation_.has_value()) {
-        result += std::string(options_.indentation_.value(), ' ');
-      }
-
-      for (size_t j = 0; j < row.size(); j++) {
-
-        result += row[j].get_text();
-
-        // check column position, need "\\" at the end of each row
-        if (j < row.size() - 1) {
-          result += " & ";
-        } else {
-          result += " \\\\";
+   public:
+    class ExportOptions {
+       public:
+        ExportOptions &indentation(std::size_t value) {
+            indentation_ = value;
+            return *this;
         }
-      }
-      result += new_line;
+
+       private:
+        friend class LatexExporter;
+        optional<size_t> indentation_;
+    };
+
+    ExportOptions &configure() { return options_; }
+
+    std::string dump(Table &table) override {
+        std::string result{"\\begin{tabular}"};
+        result += new_line;
+
+        result += add_alignment_header(table);
+        result += new_line;
+        const auto rows = table.rows_;
+        // iterate content and put text into the table.
+        for (size_t i = 0; i < rows; i++) {
+            auto &row = table[i];
+            // apply row content indentation
+            if (options_.indentation_.has_value()) {
+                result += std::string(options_.indentation_.value(), ' ');
+            }
+
+            for (size_t j = 0; j < row.size(); j++) {
+                result += row[j].get_text();
+
+                // check column position, need "\\" at the end of each row
+                if (j < row.size() - 1) {
+                    result += " & ";
+                } else {
+                    result += " \\\\";
+                }
+            }
+            result += new_line;
+        }
+
+        result += "\\end{tabular}";
+        return result;
     }
 
-    result += "\\end{tabular}";
-    return result;
-  }
+    virtual ~LatexExporter() {}
 
-  virtual ~LatexExporter() {}
+   private:
+    std::string add_alignment_header(Table &table) {
+        std::string result{"{"};
 
-private:
-  std::string add_alignment_header(Table &table) {
-    std::string result{"{"};
+        for (auto &cell : table[0]) {
+            auto format = cell.format();
+            if (format.font_align_.value() == FontAlign::left) {
+                result += 'l';
+            } else if (format.font_align_.value() == FontAlign::center) {
+                result += 'c';
+            } else if (format.font_align_.value() == FontAlign::right) {
+                result += 'r';
+            }
+        }
 
-    for (auto &cell : table[0]) {
-      auto format = cell.format();
-      if (format.font_align_.value() == FontAlign::left) {
-        result += 'l';
-      } else if (format.font_align_.value() == FontAlign::center) {
-        result += 'c';
-      } else if (format.font_align_.value() == FontAlign::right) {
-        result += 'r';
-      }
+        result += "}";
+        return result;
     }
-
-    result += "}";
-    return result;
-  }
-  ExportOptions options_;
+    ExportOptions options_;
 };
 
-} // namespace tabulate
+}  // namespace tabulate

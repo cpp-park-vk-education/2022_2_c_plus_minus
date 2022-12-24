@@ -14,7 +14,6 @@ struct Request {
             req_type = AsQueryTypeInternal(json["type"].as_string().c_str());
             req_data = json["data"].as_object();
         } catch (...) {
-            // in some cases data is empty
         }
     };
     bool is_valid() { return operation_result_; }

@@ -18,7 +18,8 @@ struct CreateRoomRequest : public Request {
     CreateRoomRequest() = default;
 
     std::string toJSON() override {
-        boost::json::object object({{"roomName", name}, {"color", int(player_color)}});
+        boost::json::object object(
+            {{"roomName", name}, {"color", int(player_color)}});
         return dataRequest(QueryType::CREATE_ROOM, object);
     }
 };

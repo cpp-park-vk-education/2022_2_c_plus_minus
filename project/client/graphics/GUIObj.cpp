@@ -1,27 +1,26 @@
-#include <iostream>
 #include "GUIObj.hpp"
 
+#include <iostream>
 
-SFMLRect::SFMLRect(SFMLGUIFactory* factory) : factory{factory} {
-}
+SFMLRect::SFMLRect(SFMLGUIFactory* factory) : factory{factory} {}
 
 GUIRect* SFMLRect::x(int x) {
-    rect.setPosition({(float) x, rect.getPosition().y});
+    rect.setPosition({(float)x, rect.getPosition().y});
     return this;
 }
 
 GUIRect* SFMLRect::y(int y) {
-    rect.setPosition({rect.getPosition().x, (float) y});
+    rect.setPosition({rect.getPosition().x, (float)y});
     return this;
 }
 
 GUIRect* SFMLRect::width(int width) {
-    rect.setSize({(float) width, rect.getSize().y});
+    rect.setSize({(float)width, rect.getSize().y});
     return this;
 }
 
 GUIRect* SFMLRect::height(int height) {
-    rect.setSize({rect.getSize().x, (float) height});
+    rect.setSize({rect.getSize().x, (float)height});
     return this;
 }
 
@@ -30,45 +29,27 @@ GUIRect* SFMLRect::color(uint32_t color) {
     return this;
 }
 
-void SFMLRect::create() {
-    factory->add(this);
-}
+void SFMLRect::create() { factory->add(this); }
 
-void SFMLRect::draw() {
-    factory->window->draw(rect);
-}
+void SFMLRect::draw() { factory->window->draw(rect); }
 
 bool SFMLRect::contains(int x, int y) {
     return rect.getGlobalBounds().contains(x, y);
 }
 
-int SFMLRect::getX() {
-    return rect.getPosition().x;
-}
+int SFMLRect::getX() { return rect.getPosition().x; }
 
-int SFMLRect::getY() {
-    return rect.getPosition().y;
-}
+int SFMLRect::getY() { return rect.getPosition().y; }
 
-int SFMLText::getX() {
-    return _text.getPosition().x;
-}
+int SFMLText::getX() { return _text.getPosition().x; }
 
-int SFMLText::getY() {
-    return _text.getPosition().y;
-}
+int SFMLText::getY() { return _text.getPosition().y; }
 
-int SFMLSprite::getX() {
-    return sprite.getPosition().x;
-}
+int SFMLSprite::getX() { return sprite.getPosition().x; }
 
-int SFMLSprite::getY() {
-    return sprite.getPosition().y;
-}
+int SFMLSprite::getY() { return sprite.getPosition().y; }
 
-
-SFMLText::SFMLText(SFMLGUIFactory* factory) : factory{factory} {
-}
+SFMLText::SFMLText(SFMLGUIFactory* factory) : factory{factory} {}
 
 GUIText* SFMLText::text(std::string s) {
     _text.setString(s);
@@ -93,45 +74,32 @@ GUIText* SFMLText::color(uint32_t color) {
 }
 
 GUIText* SFMLText::x(int x) {
-    _text.setPosition({(float) x, _text.getPosition().y});
+    _text.setPosition({(float)x, _text.getPosition().y});
     return this;
 }
 
 GUIText* SFMLText::y(int y) {
-    _text.setPosition({_text.getPosition().x, (float) y});
+    _text.setPosition({_text.getPosition().x, (float)y});
     return this;
 }
 
-void SFMLText::create() {
-    factory->add(this);
-}
+void SFMLText::create() { factory->add(this); }
 
-void SFMLText::draw() {
-    factory->window->draw(_text);
-}
+void SFMLText::draw() { factory->window->draw(_text); }
 
 bool SFMLText::contains(int x, int y) {
     return _text.getGlobalBounds().contains(x, y);
 }
 
-SFMLSprite::SFMLSprite(SFMLGUIFactory* factory) : factory{factory} {
-}
+SFMLSprite::SFMLSprite(SFMLGUIFactory* factory) : factory{factory} {}
 
+SFMLGUIFactory::SFMLGUIFactory(sf::RenderWindow* window) : window{window} {}
 
-SFMLGUIFactory::SFMLGUIFactory(sf::RenderWindow* window) : window{window} {
-}
+GUIRect* SFMLGUIFactory::rect() { return new SFMLRect(this); }
 
-GUIRect* SFMLGUIFactory::rect() {
-    return new SFMLRect(this);
-}
+GUIText* SFMLGUIFactory::text() { return new SFMLText(this); }
 
-GUIText* SFMLGUIFactory::text() {
-    return new SFMLText(this);
-}
-
-GUISprite* SFMLGUIFactory::sprite() {
-    return new SFMLSprite(this);
-}
+GUISprite* SFMLGUIFactory::sprite() { return new SFMLSprite(this); }
 
 void SFMLSprite::create() {
     _texture.loadFromImage(_image);
@@ -139,28 +107,24 @@ void SFMLSprite::create() {
     factory->add(this);
 }
 
-void SFMLSprite::draw() {
-    factory->window->draw(sprite);
-}
+void SFMLSprite::draw() { factory->window->draw(sprite); }
 
 bool SFMLSprite::contains(int x, int y) {
     return sprite.getGlobalBounds().contains(x, y);
 }
 
-
-
-void GUIFactory::add(GUIObj* obj) {
-    objects.push_back(obj);
-}
+void GUIFactory::add(GUIObj* obj) { objects.push_back(obj); }
 
 void GUIFactory::remove(GUIObj* obj) {
-    std::cerr << objects.size() << ' ';
-    objects.erase(std::find(objects.begin(), objects.end(), obj));
-    std::cerr << objects.size() << '\n';
+    //    std::cerr << objects.size() << ' ';
+    auto iter = std::find(objects.begin(), objects.end(), obj);
+    if (iter != objects.end()) {
+        objects.erase(iter);
+        //        std::cerr << objects.size() << '\n';
+    }
 }
 
-SFMLGUIFactory::~SFMLGUIFactory() {
-}
+SFMLGUIFactory::~SFMLGUIFactory() {}
 
 void SFMLGUIFactory::display() {
     window->clear();
@@ -226,14 +190,8 @@ void SFMLGUIFactory::addEventHandler(std::any event) {
     eventHandlers.push_back(e);
 }
 
-void SFMLGUIFactory::popEventHandler() {
-    eventHandlers.pop_back();
-}
+void SFMLGUIFactory::popEventHandler() { eventHandlers.pop_back(); }
 
-int GUIObj::getX() {
-    return 0;
-}
+int GUIObj::getX() { return 0; }
 
-int GUIObj::getY() {
-    return 0;
-}
+int GUIObj::getY() { return 0; }

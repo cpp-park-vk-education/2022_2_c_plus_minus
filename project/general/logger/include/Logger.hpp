@@ -4,16 +4,11 @@
 #include <fstream>
 #include <mutex>
 
-enum class LogType {
-    error,
-    warning,
-    info
-};
+enum class LogType { error, warning, info };
 
 // The most simple logging mechanism
 class Log final {
-public:
-
+   public:
     Log(const char* filename) {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_os.open(filename, std::ofstream::out);
@@ -26,16 +21,15 @@ public:
         }
     }
 
-    template<class ...Args>
-    void Write(const LogType type, Args &&... args) {
+    template <class... Args>
+    void Write(const LogType type, Args&&... args) {
         const auto now = std::chrono::high_resolution_clock::now();
         const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-                now.time_since_epoch()
-        );
+            now.time_since_epoch());
 
         std::lock_guard<std::mutex> lock(m_mutex);
         m_os << ms.count() << ' ';
-        switch(type) {
+        switch (type) {
             case LogType::info: {
                 m_os << "--info: ";
             } break;
@@ -45,13 +39,14 @@ public:
             case LogType::warning: {
                 m_os << "--warning: ";
             } break;
-            default: break;
+            default:
+                break;
         }
         ((m_os << " " << std::forward<Args>(args)), ...);
         m_os << std::endl;
     }
 
-private:
-    std::ofstream   m_os {};
-    std::mutex      m_mutex;
+   private:
+    std::ofstream m_os{};
+    std::mutex m_mutex;
 };

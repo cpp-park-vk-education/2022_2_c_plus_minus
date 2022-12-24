@@ -19,13 +19,14 @@ std::string Room::getName() { return name_; }
 
 unsigned int Room::getMaxClientNumber() { return max_count_; }
 
-void Room::addClient(const User& user){
+void Room::addClient(const User& user) {
     int a = 5;
     a++;
 }
 
 void Room::addClient(const User& user, const figure_color& color) {
-    clients_.insert({user.id, std::pair<const User*, figure_color>(&user, color)});
+    clients_.insert(
+        {user.id, std::pair<const User*, figure_color>(&user, color)});
     current_count_++;
     boost::json::object object{{"id", user.id}};
     std::string buffer = boost::json::serialize(object);
@@ -82,12 +83,16 @@ void Room::broadcast(const std::string& id, QueryType method,
 }
 
 void Room::startGame() {
-    auto white = std::find_if(clients_.begin(), clients_.end(), [](std::pair<std::string , std::pair<const User*, figure_color>> usr){
-        return usr.second.second == figure_color::WHITE;
-    });
-    auto black = std::find_if(clients_.begin(), clients_.end(), [](std::pair<std::string , std::pair<const User*, figure_color>> usr){
-        return usr.second.second == figure_color::BLACK;
-    });
+    auto white = std::find_if(
+        clients_.begin(), clients_.end(),
+        [](std::pair<std::string, std::pair<const User*, figure_color>> usr) {
+            return usr.second.second == figure_color::WHITE;
+        });
+    auto black = std::find_if(
+        clients_.begin(), clients_.end(),
+        [](std::pair<std::string, std::pair<const User*, figure_color>> usr) {
+            return usr.second.second == figure_color::BLACK;
+        });
     game_session_ = new GameSession(id_, white->first, black->first);
 }
 
@@ -100,7 +105,7 @@ Room::~Room() {
 }
 
 move_response Room::makeAction(const std::string& id,
-                                   const std::string& action) {
+                               const std::string& action) {
     return game_session_->makeMove(action, id);
 }
 

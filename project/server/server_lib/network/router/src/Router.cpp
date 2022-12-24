@@ -1,6 +1,7 @@
+#include "Router.hpp"
+
 #include <iostream>
 
-#include "Router.hpp"
 #include "ErrorResponse.hpp"
 
 void Router::addRoute(QueryType name, Route route) {

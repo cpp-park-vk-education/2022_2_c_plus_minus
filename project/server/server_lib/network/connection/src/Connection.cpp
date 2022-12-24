@@ -9,20 +9,20 @@ Connection::Connection(boost::asio::io_context& ioContext, BasicMenu& menu,
       socket_(strand_),
       user_(socket_),
       basic_menu_(menu),
-      router_(router) {
-    std::stringstream ss;
-    ss << "connection_" << user_.id << "_log.txt";
-    logger_ = std::make_shared<Log>(ss.str().c_str());
-}
+      router_(router) {}
 
 Connection::~Connection() { close(); }
 
 boost::asio::ip::tcp::socket& Connection::getSocket() { return socket_; }
 
 void Connection::start() {
+    time_ = std::chrono::system_clock::now();
     user_.id = socket_.remote_endpoint().address().to_string() + ":" +
                std::to_string(socket_.remote_endpoint().port());
-    user_.nickname = "Unidentified turtle"; // by default
+    std::stringstream ss;
+    ss << "connection_" << user_.id << "_log.txt";
+    logger_ = std::make_shared<Log>(ss.str().c_str());
+    user_.nickname = "Unidentified turtle";  // by default
     user_.position = {Location::MainMenu, ""};
     basic_menu_.addClient(user_);
 
@@ -43,9 +43,10 @@ void Connection::handleRead(const boost::system::error_code& err,
                             separator.size());
         read_buffer_.consume(bytes_transferred);
         boost::system::error_code socketErr;
-        logger_->Write(LogType::info, "Recieved (", user_.id ,"): ", str, "\n");
+        logger_->Write(LogType::info, "Recieved (", user_.id, "): ", str, "\n");
         std::string writeBuffer = router_.process(str, user_, basic_menu_);
-        logger_->Write(LogType::info, "Write (", user_.id ,"): ", writeBuffer, "\n");
+        logger_->Write(LogType::info, "Write (", user_.id, "): ", writeBuffer,
+                       "\n");
 
         boost::asio::async_write(
             socket_,
@@ -53,7 +54,8 @@ void Connection::handleRead(const boost::system::error_code& err,
             boost::bind(&Connection::handleWrite, shared_from_this(),
                         boost::placeholders::_1, boost::placeholders::_2));
     } else {
-        logger_->Write(LogType::error, "Сonnection was broken: ", user_.id ,"\n");
+        logger_->Write(LogType::error, "Сonnection was broken: ", user_.id,
+                       "\n");
     }
 }
 
@@ -74,10 +76,10 @@ void Connection::close() {
 
         this->socket_.lowest_layer().shutdown(
             boost::asio::ip::tcp::socket::shutdown_both, error);
-                    if (error) {
-                        logger_->Write(LogType::error, "(socket shutdown) ",
-                                       error.message() , "\n");
-                    }
+        if (error) {
+            logger_->Write(LogType::error, "(socket shutdown) ",
+                           error.message(), "\n");
+        }
 
         this->socket_.lowest_layer().close(error);
         if (error) {

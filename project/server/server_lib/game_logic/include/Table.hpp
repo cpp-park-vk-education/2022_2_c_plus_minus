@@ -41,8 +41,8 @@ class ChessTable {
    private:
     void delete_table();
     Figure **table;
-    std::string whiteDeadFigures ;
-    std::string blackDeadFigures ;
+    std::string whiteDeadFigures;
+    std::string blackDeadFigures;
     std::vector<int> black_enpassant;
     std::vector<int> white_enpassant;
 };

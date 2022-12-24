@@ -1,11 +1,10 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <memory>
 #include <any>
+#include <memory>
 #include <set>
 #include <utility>
-
 
 struct GUIObj {
     virtual ~GUIObj() = default;
@@ -21,7 +20,6 @@ struct GUIObj {
     virtual int getY() = 0;
 };
 
-
 struct GUIRect : public GUIObj {
     virtual ~GUIRect() = default;
 
@@ -35,7 +33,6 @@ struct GUIRect : public GUIObj {
 
     virtual GUIRect* color(uint32_t) = 0;
 };
-
 
 struct GUIText : public GUIObj {
     virtual ~GUIText() = default;
@@ -53,7 +50,6 @@ struct GUIText : public GUIObj {
     virtual GUIText* y(int) = 0;
 };
 
-
 struct GUISprite : GUIObj {
     virtual ~GUISprite() = default;
 
@@ -70,9 +66,7 @@ struct GUISprite : GUIObj {
     virtual GUISprite* scale(float k) = 0;
 };
 
-
 struct SFMLGUIFactory;
-
 
 struct SFMLRect : public GUIRect {
     virtual ~SFMLRect() = default;
@@ -134,7 +128,6 @@ struct SFMLText : public GUIText {
     int getY() override;
 };
 
-
 struct SFMLSprite : public GUISprite {
     sf::Sprite sprite;
     sf::Texture _texture;
@@ -167,9 +160,9 @@ struct SFMLSprite : public GUISprite {
     int getY() override;
 };
 
-
 struct GUIFactory {
     std::vector<GUIObj*> objects;
+    GUIText* current_msg = nullptr;
 
     virtual ~GUIFactory() = default;
 
@@ -192,14 +185,14 @@ struct GUIFactory {
     virtual void popEventHandler() = 0;
 };
 
-
 struct EventHandler {
     std::function<bool(sf::Event)> trigger;
-    std::function<size_t()> callback;                        // callback returns the amount of events which must be popped
-    explicit EventHandler(std::function<bool(sf::Event)> t, std::function<size_t()> c) : trigger{std::move(t)}, callback{std::move(c)} {
-    }
+    std::function<size_t()>
+        callback;  // callback returns the amount of events which must be popped
+    explicit EventHandler(std::function<bool(sf::Event)> t,
+                          std::function<size_t()> c)
+        : trigger{std::move(t)}, callback{std::move(c)} {}
 };
-
 
 struct SFMLGUIFactory : public GUIFactory {
     std::unique_ptr<sf::RenderWindow> window;

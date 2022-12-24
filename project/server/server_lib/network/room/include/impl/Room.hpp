@@ -38,8 +38,7 @@ class Room : public RoomInterface {
 
     void startGame();
     bool gameStarted();
-    move_response makeAction(const std::string& id,
-                                 const std::string& action);
+    move_response makeAction(const std::string& id, const std::string& action);
     void onEnd();
 
     ~Room();

@@ -16,7 +16,7 @@ class SafeQueue {
     }
 
     void Push(const T& new_value) {
-//        std::lock_guard<std::mutex> lock{mutex_};
+        //        std::lock_guard<std::mutex> lock{mutex_};
         queue_.push(new_value);
     }
 

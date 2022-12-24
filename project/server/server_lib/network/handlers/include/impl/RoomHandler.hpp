@@ -19,9 +19,11 @@ class CreateRoomHandler : public Handler {
             std::string hostId = user.id;
             figure_color color = roomRequest->player_color;
             std::string roomName = roomRequest->name;
-            mainMenu.room_manager_.createRoom(roomName, roomId, hostId, color, 2);
-            const User *mainMenuClient = mainMenu.removeClient(user.id);
-            mainMenu.room_manager_.getRoom(roomId)->addClient(*mainMenuClient, color);
+            mainMenu.room_manager_.createRoom(roomName, roomId, hostId, color,
+                                              2);
+            const User* mainMenuClient = mainMenu.removeClient(user.id);
+            mainMenu.room_manager_.getRoom(roomId)->addClient(*mainMenuClient,
+                                                              color);
             user.position = {Location::Room, roomId};
             roomResponse->status = 0;
             return;
@@ -46,17 +48,25 @@ class EnterRoomHandler : public Handler {
             std::string room_name = roomRequest->room_name;
             std::string roomId = mainMenu.room_manager_.getRoomId(room_name);
             if (mainMenu.room_manager_.haveRoom(roomId)) {
-                const User *mainMenuClient = mainMenu.removeClient(user.id);
-                Room *room = mainMenu.room_manager_.getRoom(roomId);
-                figure_color color = (room->getHostColor() == figure_color::WHITE ? figure_color::BLACK
-                                                                                  : figure_color::WHITE);
+                const User* mainMenuClient = mainMenu.removeClient(user.id);
+                Room* room = mainMenu.room_manager_.getRoom(roomId);
+                figure_color color =
+                    (room->getHostColor() == figure_color::WHITE
+                         ? figure_color::BLACK
+                         : figure_color::WHITE);
                 room->addClient(*mainMenuClient, color);
                 user.position = {Location::Room, roomId};
 
-                roomResponse->enemy_id = room->getHostId();
+                roomResponse->enemy_name = room->getHost()->nickname;
                 roomResponse->player_color = color;
                 roomResponse->status = 0;
-                room->broadcast(user.id, QueryType::ENTER_ROOM, roomResponse->toJSON());
+                EnterRoomResponse for_host;
+                std::string str(user.nickname);
+                for_host.enemy_name = user.nickname;
+                for_host.player_color = color;
+                for_host.status = 0;
+                room->broadcast(user.nickname, QueryType::ENTER_ROOM,
+                                for_host.toJSON());
                 return;
             }
         }
@@ -77,9 +87,10 @@ class LeaveRoomHandler : public Handler {
 
         std::string roomId = user.position.second;
         if (mainMenu.room_manager_.getRoom(roomId)->haveClient(user.id)) {
-            const User *roomClient =
-                    mainMenu.room_manager_.getRoom(roomId)->removeClient(user.id);
-            if (mainMenu.room_manager_.getRoom(roomId)->getCurrentClientNumber() == 0){
+            const User* roomClient =
+                mainMenu.room_manager_.getRoom(roomId)->removeClient(user.id);
+            if (mainMenu.room_manager_.getRoom(roomId)
+                    ->getCurrentClientNumber() == 0) {
                 mainMenu.room_manager_.deleteRoom(roomId);
             }
             mainMenu.addClient(*roomClient);
@@ -105,6 +116,7 @@ class GetRoomsHandler : public Handler {
         auto rooms = mainMenu.room_manager_.getAllRooms();
         roomResponse->rooms = rooms;
         roomResponse->status = 0;
+        sleep(5);
     }
 
     ~GetRoomsHandler() = default;
@@ -117,11 +129,11 @@ class StartGameHandler : public Handler {
     void process(const Request* request, Response* response, User& user,
                  BasicMenu& mainMenu) override {
         StartGameResponse* roomResponse =
-                dynamic_cast<StartGameResponse*>(response);
+            dynamic_cast<StartGameResponse*>(response);
         std::string roomId = user.position.second;
         auto room = mainMenu.room_manager_.getRoom(roomId);
         if (room->getCurrentClientNumber() == room->getMaxClientNumber()) {
-            if (user.id == room->getHostId() ) {
+            if (user.id == room->getHostId()) {
                 room->broadcast(user.id, QueryType::START_GAME);
                 room->startGame();
                 user.position = {Location::Game, roomId};

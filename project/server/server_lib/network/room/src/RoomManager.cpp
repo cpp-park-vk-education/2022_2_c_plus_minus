@@ -1,8 +1,8 @@
 #include "RoomManager.hpp"
 
 std::string RoomManager::getRoomId(std::string name) {
-    for (const auto& room : rooms_){
-        if (room.second->getName() == name){
+    for (const auto& room : rooms_) {
+        if (room.second->getName() == name) {
             return room.first;
         }
     }
@@ -23,12 +23,10 @@ bool RoomManager::haveRoom(std::string id) {
 
 std::map<std::string, RoomData> RoomManager::getAllRooms() {
     std::map<std::string, RoomData> room_data_map;
-    for (const auto& room : rooms_){
-        room_data_map[room.first] = RoomData{
-                room.second->getName(),
-                room.second->getHost()->nickname,
-                room.first,
-                room.second->getHostColor()};
+    for (const auto& room : rooms_) {
+        room_data_map[room.first] =
+            RoomData{room.second->getName(), room.second->getHost()->nickname,
+                     room.first, room.second->getHostColor()};
     }
     return room_data_map;
 }
@@ -36,7 +34,8 @@ std::map<std::string, RoomData> RoomManager::getAllRooms() {
 void RoomManager::createRoom(std::string name, std::string roomId,
                              std::string host_id, const figure_color& color,
                              unsigned int maxClientNumber) {
-    rooms_.insert({roomId, new Room(roomId, name, host_id, color, maxClientNumber)});
+    rooms_.insert(
+        {roomId, new Room(roomId, name, host_id, color, maxClientNumber)});
 }
 
 void RoomManager::deleteRoom(std::string roomId) {

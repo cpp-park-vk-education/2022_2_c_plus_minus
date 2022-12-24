@@ -61,6 +61,6 @@ struct GameResponse : public Response {
         moveFrom = parsedData.at("moveFrom").to_number<int>();
         moveTo = parsedData.at("moveTo").to_number<int>();
         move_str =
-                boost::json::value_to<std::string>(parsedData.at("move-str"));
+            boost::json::value_to<std::string>(parsedData.at("move-str"));
     }
 };

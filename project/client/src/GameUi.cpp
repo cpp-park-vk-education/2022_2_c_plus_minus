@@ -1,25 +1,36 @@
 #include "GameUi.hpp"
+
 #include "Client.hpp"
 
-GameUi::GameUi() : window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Chess"), gui(new SFMLGUIFactory(&window)){
-//    window.close();
+GameUi::GameUi()
+    : window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Chess"),
+      gui(new SFMLGUIFactory(&window)) {
+    //    window.close();
 }
 
 void GameUi::addClient(std::shared_ptr<Client> client) {
-
     client_ = client->weak_from_this();
 }
 
-std::string GameUi::coordsToStr(int x, int y){
-    if (x > 800 || y > 800){
+void GameUi::finishGame() { is_finished = true; }
+
+std::string GameUi::coordsToStr(int x, int y) {
+    if (x > 800 || y > 800) {
         return "nn";
     }
     std::string letters = "ABCDEFGH";
     std::string nums = "87654321";
     std::string result = "  ";
-    result[0] = letters[x/100];
-    result[1] = nums[y/100];
+    result[0] = letters[x / 100];
+    result[1] = nums[y / 100];
     return result;
+}
+
+void GameUi::setupMsg(std::string msg) { setupMessage(gui, msg); }
+
+void GameUi::setupRoomInfo(std::string player1, std::string player2,
+                           std::string color, std::string room) {
+    setupInfo(gui, player1, player2, color, room);
 }
 
 void GameUi::makeMove(std::string mov) {
@@ -31,19 +42,15 @@ void GameUi::makeMove(std::string mov) {
     figPos[to] = figPos[from];
     figPos.erase(from);
     auto [x, y] = cell(to);
-    dynamic_cast<SFMLSprite*>(figPos[to]) -> x(x)
-            -> y(y);
+    dynamic_cast<SFMLSprite*>(figPos[to])->x(x)->y(y);
 }
+
+void GameUi::reset() { gui.reset(); }
 
 int GameUi::start() {
     std::queue<std::string> movesChan;
     setupBoard(gui, movesChan, figPos);
-    std::string player1 = "First Player";
-    std::string player2 = "Second Player";
-    std::string room = "This room's name";
-    setupInfo(gui, player1, player2, room);
-
-    while (window.isOpen()){
+    while (window.isOpen()) {
         sf::Event e;
         while (window.pollEvent(e)) {
             switch (e.type) {
@@ -51,15 +58,11 @@ int GameUi::start() {
                     window.close();
                     break;
                 }
-                case sf::Event::MouseMoved: {
-//                    pos = window.mapPixelToCoords(Mouse::getPosition(window));
-                    break;
-                }
                 case sf::Event::MouseButtonPressed: {
-                    if (e.key.code == sf::Mouse::Left) {
-                        std::cout << "pressed" << std::endl;
+                    if (e.key.code == sf::Mouse::Left && !is_finished) {
                         if (captured) {
-                            pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                            pos = window.mapPixelToCoords(
+                                sf::Mouse::getPosition(window));
                             finish_pos = coordsToStr(pos.x, pos.y);
                             if (finish_pos != "nn") {
                                 captured = false;
@@ -69,19 +72,17 @@ int GameUi::start() {
                                 continue;
                             }
                         }
-                        pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                        pos = window.mapPixelToCoords(
+                            sf::Mouse::getPosition(window));
                         start_pos = coordsToStr(pos.x, pos.y);
                         if (start_pos != "nn") {
                             captured = true;
                         }
-                        sf::Vector2i lp = sf::Mouse::getPosition(window);
-                        std::cout << lp.x << ' ' << lp.y << std::endl;
                         break;
                     }
                 }
                 case sf::Event::MouseButtonReleased: {
-                    if (e.key.code == sf::Mouse::Left) {
-                        std::cout << "released" << std::endl;
+                    if (e.key.code == sf::Mouse::Left && !is_finished) {
                     }
                 }
             }

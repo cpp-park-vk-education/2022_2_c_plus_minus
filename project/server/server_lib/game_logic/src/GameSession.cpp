@@ -21,7 +21,7 @@ void GameSession::create_error_response(move_response &result) const {
 }
 
 move_response GameSession::makeMove(std::string move,
-                                        const std::string &player_id) {
+                                    const std::string &player_id) {
     move_response result;
     if (!GameSession::beginned || GameSession::ended)  // если игра закончилась
     {
