@@ -25,49 +25,29 @@ void Connection::start() {
     user_.nickname = "Unidentified turtle";  // by default
     user_.position = {Location::MainMenu, ""};
     basic_menu_.addClient(user_);
-
-    boost::asio::async_read_until(
-        socket_, read_buffer_, separator,
-        boost::asio::bind_executor(
-            strand_,
-            boost::bind(&Connection::handleRead, shared_from_this(),
-                        boost::placeholders::_1, boost::placeholders::_2)));
+    read();
 }
 
-void Connection::handleRead(const boost::system::error_code& err,
-                            std::size_t bytes_transferred) {
-    if (!err) {
-        const auto data = read_buffer_.data();
-        std::string str(boost::asio::buffers_begin(data),
-                        boost::asio::buffers_begin(data) + bytes_transferred -
-                            separator.size());
-        read_buffer_.consume(bytes_transferred);
-        boost::system::error_code socketErr;
-        logger_->Write(LogType::info, "Recieved (", user_.id, "): ", str, "\n");
-        std::string writeBuffer = router_.process(str, user_, basic_menu_);
-        logger_->Write(LogType::info, "Write (", user_.id, "): ", writeBuffer,
-                       "\n");
 
-        boost::asio::async_write(
+void Connection::read() {
+    const boost::system::error_code err;
+    std::size_t bytes_transferred =boost::asio::read_until(socket_, read_buffer_, separator);
+    const auto data = read_buffer_.data();
+    std::string str(boost::asio::buffers_begin(data),
+                    boost::asio::buffers_begin(data) + bytes_transferred -
+                    separator.size());
+    read_buffer_.consume(bytes_transferred);
+    boost::system::error_code socketErr;
+    logger_->Write(LogType::info, "Recieved (", user_.id, "): ", str, "\n");
+    std::string writeBuffer = router_.process(str, user_, basic_menu_);
+    logger_->Write(LogType::info, "Write (", user_.id, "): ", writeBuffer,
+                   "\n");
+    boost::asio::write(
             socket_,
-            boost::asio::buffer(writeBuffer.data(), writeBuffer.size()),
-            boost::bind(&Connection::handleWrite, shared_from_this(),
-                        boost::placeholders::_1, boost::placeholders::_2));
-    } else {
-        logger_->Write(LogType::error, "Сonnection was broken: ", user_.id,
-                       "\n");
-    }
+            boost::asio::buffer(writeBuffer.data(), writeBuffer.size()));
+    read();
 }
 
-void Connection::handleWrite(const boost::system::error_code& error,
-                             std::size_t transferredBytes) {
-    boost::asio::async_read_until(
-        socket_, read_buffer_, separator,
-        boost::asio::bind_executor(
-            strand_,
-            boost::bind(&Connection::handleRead, shared_from_this(),
-                        boost::placeholders::_1, boost::placeholders::_2)));
-}
 
 void Connection::close() {
     boost::asio::post(strand_, [this]() {

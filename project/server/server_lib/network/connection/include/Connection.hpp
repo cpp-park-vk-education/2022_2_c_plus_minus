@@ -24,10 +24,7 @@ class Connection : public boost::enable_shared_from_this<Connection> {
     ~Connection();
 
    private:
-    void handleRead(const boost::system::error_code& err,
-                    std::size_t bytes_transferred);
-    void handleWrite(const boost::system::error_code& err,
-                     std::size_t transferredBytes);
+    void read();
 
     boost::asio::strand<boost::asio::io_context::executor_type> strand_;
     boost::asio::ip::tcp::socket socket_;
