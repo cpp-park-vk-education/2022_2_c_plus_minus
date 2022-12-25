@@ -86,20 +86,23 @@ class LeaveRoomHandler : public Handler {
             dynamic_cast<LeaveRoomResponse*>(response);
 
         std::string roomId = user.position.second;
-        if (mainMenu.room_manager_.getRoom(roomId)->haveClient(user.id)) {
-            const User* roomClient =
-                mainMenu.room_manager_.getRoom(roomId)->removeClient(user.id);
-            if (mainMenu.room_manager_.getRoom(roomId)
-                    ->getCurrentClientNumber() == 0) {
-                mainMenu.room_manager_.deleteRoom(roomId);
-            }
-            mainMenu.addClient(*roomClient);
-            user.position = {Location::MainMenu, ""};
+        if (user.position.first != Location::MainMenu) {
+            if (mainMenu.room_manager_.getRoom(roomId)->haveClient(user.id)) {
+                const User *roomClient =
+                        mainMenu.room_manager_.getRoom(roomId)->removeClient(user.id);
+                if (mainMenu.room_manager_.getRoom(roomId)
+                            ->getCurrentClientNumber() == 0) {
+                    mainMenu.room_manager_.deleteRoom(roomId);
+                }
+                mainMenu.addClient(*roomClient);
+                user.position = {Location::MainMenu, ""};
 
-            roomResponse->status = 0;
-            return;
+                roomResponse->status = 0;
+                return;
+            }
         }
-        roomResponse->status = 1;
+        mainMenu.removeClient(user.id);
+        roomResponse->status = 0;
     }
 
     ~LeaveRoomHandler() = default;
@@ -116,7 +119,6 @@ class GetRoomsHandler : public Handler {
         auto rooms = mainMenu.room_manager_.getAllRooms();
         roomResponse->rooms = rooms;
         roomResponse->status = 0;
-        sleep(5);
     }
 
     ~GetRoomsHandler() = default;

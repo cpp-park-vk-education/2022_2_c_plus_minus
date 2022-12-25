@@ -41,8 +41,7 @@ void Client::Run() {
             case 1:
                 GetAllRooms();
                 drawer.Clear();
-                while (waiting_responses_)
-                    ;
+                while (waiting_responses_);
                 drawer.DrawGetAllRooms(rooms_);
                 break;
             case 2: {
@@ -53,8 +52,7 @@ void Client::Run() {
                 std::cin >> color;
                 CreateRoom(room_name, StrToColor(color));
                 drawer.DrawMessage("Wait for enemy ...");
-                while (!game_.is_room_full)
-                    ;
+                while (!game_.is_room_full);
                 drawer.DrawMessage("Player " + game_.enemy_name +
                                    " entered, Do yo want to start (Y/n):");
                 std::cout << "your choose --->       ";
@@ -81,12 +79,10 @@ void Client::Run() {
                 std::string room_name;
                 std::cin >> room_name;
                 EnterRoom(room_name);
-                while (!game_.is_in_room)
-                    ;
+                while (!game_.is_in_room);
                 drawer.DrawMessage(
                     "You entered\nLets wait for start from host");
-                while (!game_.is_started)
-                    ;
+                while (!game_.is_started);
                 drawer.DrawMessage("Game started!");
                 gameUI_ = std::make_shared<GameUi>();
                 gameUI_->addClient(this->shared_from_this());
@@ -177,7 +173,10 @@ Client::State Client::GetState() const noexcept {
     return state_;
 }
 
-void Client::CloseConnection() { connection_->Close(); }
+void Client::CloseConnection() {
+    LeaveRoom();
+    connection_->Close();
+}
 
 void Client::HandleMessage(Response&& response) {
     response_ = std::move(response);
