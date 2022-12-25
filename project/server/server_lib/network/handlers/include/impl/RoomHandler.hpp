@@ -88,10 +88,11 @@ class LeaveRoomHandler : public Handler {
         std::string roomId = user.position.second;
         if (user.position.first != Location::MainMenu) {
             if (mainMenu.room_manager_.getRoom(roomId)->haveClient(user.id)) {
-                const User *roomClient =
-                        mainMenu.room_manager_.getRoom(roomId)->removeClient(user.id);
+                const User* roomClient =
+                    mainMenu.room_manager_.getRoom(roomId)->removeClient(
+                        user.id);
                 if (mainMenu.room_manager_.getRoom(roomId)
-                            ->getCurrentClientNumber() == 0) {
+                        ->getCurrentClientNumber() == 0) {
                     mainMenu.room_manager_.deleteRoom(roomId);
                 }
                 mainMenu.addClient(*roomClient);

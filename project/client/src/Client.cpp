@@ -5,6 +5,9 @@
 #include "Connection.hpp"
 #include "GameUi.hpp"
 
+
+static std::atomic_int64_t responses = 0 ;
+
 Client::Client(std::shared_ptr<boost::asio::io_context> io)
     : io_ctx_{io}, connection_{nullptr}, signals_(*io_ctx_) {
     signals_.add(SIGINT);
@@ -19,91 +22,103 @@ Client::~Client() {
 }
 
 void Client::Run() {
-    TextDrawer drawer;
-    drawer.Clear();
-    drawer.DrawAuthorise();
-    std::string nick;
-    std::cin >> nick;
-    if (nick.length() > 0) {
-        nick_ = nick;
+    auto time = std::chrono::system_clock::now();
+    for (int i = 0; i < 10000; i++){
+        GetAllRooms();
     }
-    Authorise();
-    while (!is_authorised) {
-    }
-    drawer.Clear();
-    drawer.DrawBasicMenu();
-    int choice = 0;
-    bool stop = false;
-    while (!stop) {
-        fflush(stdin);
-        std::cin >> choice;
-        switch (choice) {
-            case 1:
-                GetAllRooms();
-                drawer.Clear();
-                while (waiting_responses_);
-                drawer.DrawGetAllRooms(rooms_);
-                break;
-            case 2: {
-                drawer.DrawCreateRoom();
-                std::string room_name, color;
-                std::cin >> room_name;
-                std::cout << "your color --->       ";
-                std::cin >> color;
-                CreateRoom(room_name, StrToColor(color));
-                drawer.DrawMessage("Wait for enemy ...");
-                while (!game_.is_room_full);
-                drawer.DrawMessage("Player " + game_.enemy_name +
-                                   " entered, Do yo want to start (Y/n):");
-                std::cout << "your choose --->       ";
-                std::string resp;
-                std::cin >> resp;
-                if (resp == "n") {
-                    LeaveRoom();
-                    break;
-                }
-                StartGame();
-                gameUI_ = std::make_shared<GameUi>();
-                gameUI_->addClient(this->shared_from_this());
-                gameUI_->setupRoomInfo(nick_, game_.enemy_name,
-                                       ColorToStr(game_.color), room_name);
-                gameUI_->setupMsg("Started");
-                gameUI_->start();
-                LeaveRoom();
-                drawer.Clear();
-                drawer.DrawBasicMenu();
-                break;
-            }
-            case 3: {
-                drawer.DrawEnterRoom();
-                std::string room_name;
-                std::cin >> room_name;
-                EnterRoom(room_name);
-                while (!game_.is_in_room);
-                drawer.DrawMessage(
-                    "You entered\nLets wait for start from host");
-                while (!game_.is_started);
-                drawer.DrawMessage("Game started!");
-                gameUI_ = std::make_shared<GameUi>();
-                gameUI_->addClient(this->shared_from_this());
-                gameUI_->setupRoomInfo(nick_, game_.enemy_name,
-                                       ColorToStr(game_.color), room_name);
-                gameUI_->setupMsg("Started");
-                gameUI_->start();
-                LeaveRoom();
-                drawer.Clear();
-                drawer.DrawBasicMenu();
-                break;
-            }
-            case 4:
-                stop = true;
-            default:
-                drawer.DrawMessage("There's no this choice, try again");
-                sleep(1);
-                drawer.Clear();
-                drawer.DrawBasicMenu();
-        }
-    }
+    while (responses < 10000);
+    auto time2 = std::chrono::system_clock::now();
+    auto dif = time2.time_since_epoch() - time.time_since_epoch();
+    std::cout << responses << " per " << std::chrono::duration_cast<std::chrono::milliseconds>(dif).count() << "ms" << std::endl;
+//    TextDrawer drawer;
+//    drawer.Clear();
+//    drawer.DrawAuthorise();
+//    std::string nick;
+//    std::cin >> nick;
+//    if (nick.length() > 0) {
+//        nick_ = nick;
+//    }
+//    Authorise();
+//    while (!is_authorised) {
+//    }
+//    drawer.Clear();
+//    drawer.DrawBasicMenu();
+//    int choice = 0;
+//    bool stop = false;
+//    while (!stop) {
+//        fflush(stdin);
+//        std::cin >> choice;
+//        switch (choice) {
+//            case 1:
+//                GetAllRooms();
+//                drawer.Clear();
+//                while (waiting_responses_)
+//                    ;
+//                drawer.DrawGetAllRooms(rooms_);
+//                break;
+//            case 2: {
+//                drawer.DrawCreateRoom();
+//                std::string room_name, color;
+//                std::cin >> room_name;
+//                std::cout << "your color --->       ";
+//                std::cin >> color;
+//                CreateRoom(room_name, StrToColor(color));
+//                drawer.DrawMessage("Wait for enemy ...");
+//                while (!game_.is_room_full)
+//                    ;
+//                drawer.DrawMessage("Player " + game_.enemy_name +
+//                                   " entered, Do yo want to start (Y/n):");
+//                std::cout << "your choose --->       ";
+//                std::string resp;
+//                std::cin >> resp;
+//                if (resp == "n") {
+//                    LeaveRoom();
+//                    break;
+//                }
+//                StartGame();
+//                gameUI_ = std::make_shared<GameUi>();
+//                gameUI_->addClient(this->shared_from_this());
+//                gameUI_->setupRoomInfo(nick_, game_.enemy_name,
+//                                       ColorToStr(game_.color), room_name);
+//                gameUI_->setupMsg("Started");
+//                gameUI_->start();
+//                LeaveRoom();
+//                drawer.Clear();
+//                drawer.DrawBasicMenu();
+//                break;
+//            }
+//            case 3: {
+//                drawer.DrawEnterRoom();
+//                std::string room_name;
+//                std::cin >> room_name;
+//                EnterRoom(room_name);
+//                while (!game_.is_in_room)
+//                    ;
+//                drawer.DrawMessage(
+//                    "You entered\nLets wait for start from host");
+//                while (!game_.is_started)
+//                    ;
+//                drawer.DrawMessage("Game started!");
+//                gameUI_ = std::make_shared<GameUi>();
+//                gameUI_->addClient(this->shared_from_this());
+//                gameUI_->setupRoomInfo(nick_, game_.enemy_name,
+//                                       ColorToStr(game_.color), room_name);
+//                gameUI_->setupMsg("Started");
+//                gameUI_->start();
+//                LeaveRoom();
+//                drawer.Clear();
+//                drawer.DrawBasicMenu();
+//                break;
+//            }
+//            case 4:
+//                stop = true;
+//            default:
+//                drawer.DrawMessage("There's no this choice, try again");
+//                sleep(1);
+//                drawer.Clear();
+//                drawer.DrawBasicMenu();
+//        }
+//    }
 }
 
 void Client::GetAllRooms() {
@@ -272,6 +287,7 @@ void Client::handleGetAllRooms(const std::string& data) {
     response.parse(data);
     rooms_ = response.rooms;
     waiting_responses_--;
+    responses++;
 }
 
 void Client::handleMoveFigure(const std::string& data) {

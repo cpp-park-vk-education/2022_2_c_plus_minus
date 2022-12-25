@@ -21,9 +21,6 @@ jobs:
 
       - name: prepare
         run: apt install clang-format -y
-      # run clang-format
-      - name: format
-        run: make format
       # run clang-tidy cpplint cppcheck
       - name: linters
         run: make linters
