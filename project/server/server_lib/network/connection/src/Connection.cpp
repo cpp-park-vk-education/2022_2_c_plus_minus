@@ -38,13 +38,13 @@ void Connection::handleRead(const boost::system::error_code& err,
                             std::size_t bytes_transferred) {
     if (!err) {
         const auto data = read_buffer_.data();
-        std::string str(boost::asio::buffers_begin(data),
+        std::string received_msg(boost::asio::buffers_begin(data),
                         boost::asio::buffers_begin(data) + bytes_transferred -
                             separator.size());
         read_buffer_.consume(bytes_transferred);
         boost::system::error_code socketErr;
-        logger_->Write(LogType::info, "Recieved (", user_.id, "): ", str, "\n");
-        std::string writeBuffer = router_.process(str, user_, basic_menu_);
+        logger_->Write(LogType::info, "Recieved (", user_.id, "): ", received_msg, "\n");
+        std::string writeBuffer = router_.process(received_msg, user_, basic_menu_);
         logger_->Write(LogType::info, "Write (", user_.id, "): ", writeBuffer,
                        "\n");
 

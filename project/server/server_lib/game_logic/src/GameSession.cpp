@@ -36,7 +36,7 @@ move_response GameSession::makeMove(std::string move,
         GameSession::create_error_response(result);
         return result;
     }
-    std::cout << GameSession::table.turn << std::endl;  // DEBUG
+//    std::cout << GameSession::table.turn << std::endl;  // DEBUG
     // определяем фигуру
     int from = str_to_index(move.at(0), move.at(1));
     int to = str_to_index(move.at(2), move.at(3));
@@ -51,9 +51,7 @@ move_response GameSession::makeMove(std::string move,
         GameSession::create_error_response(result);
         return result;
     }
-    std::cout << GameSession::table.turn << std::endl;  // DEBUG
-    // проверяем на ничью
-    // std::cout<<"DRAW"<<std::endl;//DEBUG
+//    std::cout << GameSession::table.turn << std::endl;  // DEBUG
 
     move_status move_result = GameSession::table.move_figure(from, to);
 

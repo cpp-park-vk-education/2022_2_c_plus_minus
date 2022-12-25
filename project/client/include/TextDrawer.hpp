@@ -137,13 +137,13 @@ class TextDrawer {
             .font_align(FontAlign::center)
             .font_color(Color::magenta);
         Table rooms;
-        rooms.add_row(Row_t{"Room id", "Room name", "Host nick", "Host color"});
+        rooms.add_row(Row_t{"Room name", "Host nick", "Host color"});
         rooms[0]
             .format()
             .font_align(FontAlign::center)
             .color(tabulate::Color::white);
         for (const auto& r : rooms_data) {
-            rooms.add_row(Row_t{r.second.room_id, r.second.room_name,
+            rooms.add_row(Row_t{r.second.room_name,
                                 r.second.host_nick,
                                 ColorToStr(r.second.host_color)});
         }

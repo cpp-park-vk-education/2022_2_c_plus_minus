@@ -20,8 +20,11 @@ Server::Server(const std::string address, const std::string port,
 
     router_.addRoute(
         QueryType::CREATE_ROOM,
-        Router::Route{new CreateRoomRequest(), new CreateRoomHandler(),
-                      new CreateRoomResponse()});
+        Router::Route{
+            new CreateRoomRequest(),
+            new CreateRoomHandler(),
+            new CreateRoomResponse()});
+
     router_.addRoute(
         QueryType::ENTER_ROOM,
         Router::Route{new EnterRoomRequest(), new EnterRoomHandler(),
@@ -37,9 +40,13 @@ Server::Server(const std::string address, const std::string port,
         QueryType::START_GAME,
         Router::Route{new StartGameRequest(), new StartGameHandler(),
                       new StartGameResponse()});
+
     router_.addRoute(QueryType::MOVE_FIGURE,
-                     Router::Route{new MoveFigureRequest(), new GameHandler(),
-                                   new GameResponse()});
+                     Router::Route{
+                        new MoveFigureRequest(),
+                        new GameHandler(),
+                        new GameResponse()});
+
     router_.addRoute(QueryType::AUTHORISE,
                      Router::Route{new AuthRequest(), new AuthHandler(),
                                    new AuthResponse()});
