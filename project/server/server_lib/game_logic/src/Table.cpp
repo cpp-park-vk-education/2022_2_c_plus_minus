@@ -1,5 +1,4 @@
 #include "Table.hpp"
-
 #include "iostream"
 
 Figure *ChessTable::get_figure(int index) {
@@ -10,8 +9,6 @@ Figure *ChessTable::get_figure(int index) {
 }
 
 ChessTable::ChessTable(const ChessTable &mainTable) {
-    // копируем доску
-
     FEN_parser(mainTable.get_FEN());
 }
 
@@ -273,8 +270,7 @@ move_status ChessTable::move_figure(int from, int to) {
         }
     } else if (result == MOVE_CAST) {
         make_move(from, to);
-        // если подвинули короля, то нужно подвинуть и ладью. будем считать, что
-        // положение ладби на начальной позиции гарантированно
+
         if (to == 62) {
             make_move(63, 61);
         } else if (to == 58) {
@@ -338,7 +334,7 @@ move_status ChessTable::move_figure(int from, int to) {
     return result;
 }
 
-bool ChessTable::check_draw(figure_color enemy_color) {  // не оптимизированно
+bool ChessTable::check_draw(figure_color enemy_color) {
     bool result = true;
     figure_color non_enemy_color = (enemy_color == WHITE) ? BLACK : WHITE;
     for (int i = 0; i < BOARD_SIZE; i++) {
@@ -697,7 +693,7 @@ std::string ChessTable::get_FEN() const {
             null_counter = 0;
         }
         FEN += "/";
-    };
+    }
 
     FEN += " ";
 

@@ -12,21 +12,48 @@ std::string pos(int x, int y) {
     return std::string{"ABCDEFGH"[x / CELL_SIZE], "87654321"[y / CELL_SIZE]};
 }
 
-std::vector<GUIObj*> setupCells(std::shared_ptr<GUIFactory> gui) {
+std::vector<GUIObj*> setupCells(std::shared_ptr<GUIFactory> gui, figure_color color) {
     std::vector<GUIObj*> cells;
-    for (auto letter : "ABCDEFGH") {
-        for (auto number : "12345678") {
-            auto [x, y] = cell(std::string{letter, number});
-            auto cell =
-                gui->rect()
-                    ->x(x)
-                    ->y(y)
-                    ->width(CELL_SIZE)
-                    ->height(CELL_SIZE)
-                    ->color((letter - 'A' + number - '1') % 2 ? 0x01796fffu
-                                                              : 0xf0fff0ffu);
-            cells.push_back(cell);
-            cell->create();
+    std::string letters;
+    std::string numbers;
+
+    letters = "ABCDEFGH";
+    numbers = "12345678";
+    if (color == BLACK){
+        letters = "HGFEDCBA";
+        numbers = "87654321";
+    }
+    if (color == figure_color::WHITE) {
+        for (auto letter: letters) {
+            for (auto number: numbers) {
+                auto [x, y] = cell(std::string{letter, number});
+                auto cell =
+                        gui->rect()
+                                ->x(x)
+                                ->y(y)
+                                ->width(CELL_SIZE)
+                                ->height(CELL_SIZE)
+                                ->color((letter - 'A' + number - '1') % 2 ? 0xf0fff0ffu
+                                                                          : 0x01796fff);
+                cells.push_back(cell);
+                cell->create();
+            }
+        }
+    } else  {
+        for (auto letter: letters) {
+            for (auto number: numbers) {
+                auto [x, y] = cell(std::string{letter, number});
+                auto cell =
+                        gui->rect()
+                                ->x(x)
+                                ->y(y)
+                                ->width (CELL_SIZE)
+                                ->height(CELL_SIZE)
+                                ->color((letter - 'A' + number - '1') % 2 ? 0xf0fff0ffu
+                                                                          : 0x01796fff);
+                cells.push_back(cell);
+                cell->create();
+            }
         }
     }
     return cells;
@@ -37,17 +64,53 @@ void setupCellTitles(std::shared_ptr<GUIFactory> gui) {
         char number = '1';
         auto [x, y] = cell(std::string{letter, number});
         gui->text()
+                ->x(x + CELL_SIZE - CELL_TITLE_SIZE)
+                ->y(y + CELL_SIZE - CELL_TITLE_SIZE)
+                ->font("Montserrat-Regular.ttf")
+                ->size(CELL_TITLE_SIZE)
+                ->color((letter - 'A' + number - '1') % 2
+                        ? sf::Color::Black.toInteger()
+                        : sf::Color::White.toInteger())
+                ->text(std::string{letter})
+                ->create();
+    }
+    for (auto number : "12345678") {
+        char letter = 'A';
+        auto [x, y] = cell(std::string{letter, number});
+        gui->text()
+                ->x(x)
+                ->y(y)
+                ->font("Montserrat-Regular.ttf")
+                ->size(CELL_TITLE_SIZE)
+                ->color((letter - 'A' + number - '1') % 2
+                        ? sf::Color::Black.toInteger()
+                        : sf::Color::White.toInteger())
+                ->text(std::string{number})
+                ->create();
+    }
+}
+
+void setupBlackCellTitles(std::shared_ptr<GUIFactory> gui) {
+    int counter = 0;
+    std::string letters  = "HGFEDCBA";
+    for (auto letter : letters) {
+        char number = '1';
+        auto [x, y] = cell(std::string{letter, number});
+        gui->text()
             ->x(x + CELL_SIZE - CELL_TITLE_SIZE)
             ->y(y + CELL_SIZE - CELL_TITLE_SIZE)
             ->font("Montserrat-Regular.ttf")
             ->size(CELL_TITLE_SIZE)
             ->color((letter - 'A' + number - '1') % 2
-                        ? sf::Color::White.toInteger()
-                        : sf::Color::Black.toInteger())
-            ->text(std::string{letter})
+                        ? sf::Color::Black.toInteger()
+                        : sf::Color::White.toInteger())
+            ->text(std::string{letters[7-counter]})
             ->create();
+        counter++;
     }
-    for (auto number : "12345678") {
+    counter = 0;
+    std::string nums  = "87654321";
+    for (auto number : nums) {
         char letter = 'A';
         auto [x, y] = cell(std::string{letter, number});
         gui->text()
@@ -56,10 +119,11 @@ void setupCellTitles(std::shared_ptr<GUIFactory> gui) {
             ->font("Montserrat-Regular.ttf")
             ->size(CELL_TITLE_SIZE)
             ->color((letter - 'A' + number - '1') % 2
-                        ? sf::Color::White.toInteger()
-                        : sf::Color::Black.toInteger())
-            ->text(std::string{number})
+                    ? sf::Color::Black.toInteger()
+                    : sf::Color::White.toInteger())
+            ->text(std::string{nums[7-counter]})
             ->create();
+        counter++;
     }
 }
 
@@ -86,41 +150,16 @@ std::function<bool(sf::Event e)> onClick(GUIObj* obj) {
         return false;
     };
 }
-#include <iostream>
-// EventHandler figureEventHandler(GUISprite* figure, std::vector<GUIObj*>
-// cells, std::shared_ptr<GUIFactory> gui, std::queue<std::string>& movesChan,
-// std::map<std::string, GUIObj*>& figPos) {
-//     return EventHandler(onClick(figure), [figure, cells, gui, &movesChan,
-//     &figPos]() mutable -> size_t {
-//         for (auto cell : cells) {
-//             EventHandler eh(onClick(cell), [figure, cell, gui, &movesChan,
-//             &figPos]() mutable -> size_t {
-//                 if (figure->getX() == cell->getX() && figure->getY() ==
-//                 cell->getY()) {
-//                     return 64 + 1;
-//                 }
-//                 auto move = pos(figure->getX(), figure->getY()) +
-//                 pos(cell->getX(), cell->getY()); movesChan.push(move); if
-//                 (auto cellPos = pos(cell->getX(), cell->getY());
-//                 figPos.contains(cellPos)) {
-//                     gui->remove(figPos[cellPos]);
-//                 }
-//                 figPos.erase(pos(figure->getX(), figure->getY()));
-//                 figure -> x(cell->getX())
-//                        -> y(cell->getY());
-//                 figPos[pos(figure->getX(), figure->getY())] = figure;
-//                 return 64;
-//             });
-//             gui->addEventHandler(eh);
-//         }
-//         return 0;
-//     });
-// }
 
 void setupPawns(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells,
                 std::queue<std::string>& movesChan,
-                std::map<std::string, GUIObj*>& figPos) {
-    char number = '7';
+                std::map<std::string, GUIObj*>& figPos, figure_color color) {
+
+
+    char number;
+    if (color == figure_color::WHITE){
+        number = '7';
+    } else number ='2';
     for (auto letter : "ABCDEFGH") {
         auto pos = std::string{letter, number};
         auto [x, y] = cell(pos);
@@ -130,13 +169,13 @@ void setupPawns(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells,
                         ->image("figures.png")
                         ->frame(1000, 200, 200, 200)
                         ->scale(CELL_SIZE / 200.0);
-        //        gui->addEventHandler(figureEventHandler(pawn, cells, gui,
-        //        movesChan, figPos));
         figPos[pos] = pawn;
         pawn->create();
     }
+    if (color == figure_color::WHITE){
+        number = '2';
+    } else number ='7';
 
-    number = '2';
     for (auto letter : "ABCDEFGH") {
         auto pos = std::string{letter, number};
         auto [x, y] = cell(pos);
@@ -146,8 +185,6 @@ void setupPawns(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells,
                         ->image("figures.png")
                         ->frame(1000, 0, 200, 200)
                         ->scale(CELL_SIZE / 200.0);
-        //        gui->addEventHandler(figureEventHandler(pawn, cells, gui,
-        //        movesChan, figPos));
         figPos[pos] = pawn;
         pawn->create();
     }
@@ -155,182 +192,300 @@ void setupPawns(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells,
 
 void setupRooks(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells,
                 std::queue<std::string>& movesChan,
-                std::map<std::string, GUIObj*>& figPos) {
+                std::map<std::string, GUIObj*>& figPos, figure_color color) {
     using namespace std::literals;
-    for (auto pos : {"A1"s, "H1"s}) {
-        auto [x, y] = cell(pos);
-        auto rook = gui->sprite()
-                        ->x(x)
-                        ->y(y)
-                        ->image("figures.png")
-                        ->frame(800, 0, 200, 200)
-                        ->scale(CELL_SIZE / 200.0);
-        //        gui->addEventHandler(figureEventHandler(rook, cells, gui,
-        //        movesChan, figPos));
-        figPos[pos] = rook;
-        rook->create();
-    }
-    for (auto pos : {"A8"s, "H8"s}) {
-        auto [x, y] = cell(pos);
-        auto rook = gui->sprite()
-                        ->x(x)
-                        ->y(y)
-                        ->image("figures.png")
-                        ->frame(800, 200, 200, 200)
-                        ->scale(CELL_SIZE / 200.0);
-        //        gui->addEventHandler(figureEventHandler(rook, cells, gui,
-        //        movesChan, figPos));
-        figPos[pos] = rook;
-        rook->create();
+    if (color == figure_color::WHITE) {
+        for (auto pos: {"A1"s, "H1"s}) {
+            auto [x, y] = cell(pos);
+            auto rook = gui->sprite()
+                    ->x(x)
+                    ->y(y)
+                    ->image("figures.png")
+                    ->frame(800, 0, 200, 200)
+                    ->scale(CELL_SIZE / 200.0);
+
+            figPos[pos] = rook;
+            rook->create();
+        }
+        for (auto pos: {"A8"s, "H8"s}) {
+            auto [x, y] = cell(pos);
+            auto rook = gui->sprite()
+                    ->x(x)
+                    ->y(y)
+                    ->image("figures.png")
+                    ->frame(800, 200, 200, 200)
+                    ->scale(CELL_SIZE / 200.0);
+
+            figPos[pos] = rook;
+            rook->create();
+        }
+    } else {
+        for (auto pos: {"A8"s, "H8"s}) {
+            auto [x, y] = cell(pos);
+            auto rook = gui->sprite()
+                    ->x(x)
+                    ->y(y)
+                    ->image("figures.png")
+                    ->frame(800, 0, 200, 200)
+                    ->scale(CELL_SIZE / 200.0);
+
+            figPos[pos] = rook;
+            rook->create();
+        }
+        for (auto pos: {"A1"s, "H1"s}) {
+            auto [x, y] = cell(pos);
+            auto rook = gui->sprite()
+                    ->x(x)
+                    ->y(y)
+                    ->image("figures.png")
+                    ->frame(800, 200, 200, 200)
+                    ->scale(CELL_SIZE / 200.0);
+
+            figPos[pos] = rook;
+            rook->create();
+        }
     }
 }
 
 void setupKnights(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells,
                   std::queue<std::string>& movesChan,
-                  std::map<std::string, GUIObj*>& figPos) {
+                  std::map<std::string, GUIObj*>& figPos, figure_color color) {
     using namespace std::literals;
-    for (auto pos : {"B1"s, "G1"s}) {
-        auto [x, y] = cell(pos);
-        auto knight = gui->sprite()
-                          ->x(x)
-                          ->y(y)
-                          ->image("figures.png")
-                          ->frame(600, 0, 200, 200)
-                          ->scale(CELL_SIZE / 200.0);
-        //        gui->addEventHandler(figureEventHandler(knight, cells, gui,
-        //        movesChan, figPos));
-        figPos[pos] = knight;
-        knight->create();
-    }
-    for (auto pos : {"B8"s, "G8"s}) {
-        auto [x, y] = cell(pos);
-        auto knight = gui->sprite()
-                          ->x(x)
-                          ->y(y)
-                          ->image("figures.png")
-                          ->frame(600, 200, 200, 200)
-                          ->scale(CELL_SIZE / 200.0);
-        //        gui->addEventHandler(figureEventHandler(knight, cells, gui,
-        //        movesChan, figPos));
-        figPos[pos] = knight;
-        knight->create();
+    if (color == figure_color::WHITE) {
+        for (auto pos: {"B1"s, "G1"s}) {
+            auto [x, y] = cell(pos);
+            auto knight = gui->sprite()
+                    ->x(x)
+                    ->y(y)
+                    ->image("figures.png")
+                    ->frame(600, 0, 200, 200)
+                    ->scale(CELL_SIZE / 200.0);
+
+            figPos[pos] = knight;
+            knight->create();
+        }
+        for (auto pos: {"B8"s, "G8"s}) {
+            auto [x, y] = cell(pos);
+            auto knight = gui->sprite()
+                    ->x(x)
+                    ->y(y)
+                    ->image("figures.png")
+                    ->frame(600, 200, 200, 200)
+                    ->scale(CELL_SIZE / 200.0);
+
+            figPos[pos] = knight;
+            knight->create();
+        }
+    } else {
+        for (auto pos: {"B8"s, "G8"s}) {
+            auto [x, y] = cell(pos);
+            auto knight = gui->sprite()
+                    ->x(x)
+                    ->y(y)
+                    ->image("figures.png")
+                    ->frame(600, 0, 200, 200)
+                    ->scale(CELL_SIZE / 200.0);
+
+            figPos[pos] = knight;
+            knight->create();
+        }
+        for (auto pos: {"B1"s, "G1"s}) {
+            auto [x, y] = cell(pos);
+            auto knight = gui->sprite()
+                    ->x(x)
+                    ->y(y)
+                    ->image("figures.png")
+                    ->frame(600, 200, 200, 200)
+                    ->scale(CELL_SIZE / 200.0);
+
+            figPos[pos] = knight;
+            knight->create();
+        }
     }
 }
 
 void setupBishops(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells,
                   std::queue<std::string>& movesChan,
-                  std::map<std::string, GUIObj*>& figPos) {
+                  std::map<std::string, GUIObj*>& figPos, figure_color color) {
     using namespace std::literals;
-    for (auto pos : {"C1"s, "F1"s}) {
-        auto [x, y] = cell(pos);
-        auto bishop = gui->sprite()
-                          ->x(x)
-                          ->y(y)
-                          ->image("figures.png")
-                          ->frame(400, 0, 200, 200)
-                          ->scale(CELL_SIZE / 200.0);
-        //        gui->addEventHandler(figureEventHandler(bishop, cells, gui,
-        //        movesChan, figPos));
-        figPos[pos] = bishop;
-        bishop->create();
+    if (color == figure_color::WHITE) {
+        for (auto pos: {"C1"s, "F1"s}) {
+            auto [x, y] = cell(pos);
+            auto bishop = gui->sprite()
+                    ->x(x)
+                    ->y(y)
+                    ->image("figures.png")
+                    ->frame(400, 0, 200, 200)
+                    ->scale(CELL_SIZE / 200.0);
+
+            figPos[pos] = bishop;
+            bishop->create();
+        }
+        for (auto pos: {"C8"s, "F8"s}) {
+            auto [x, y] = cell(pos);
+            auto bishop = gui->sprite()
+                    ->x(x)
+                    ->y(y)
+                    ->image("figures.png")
+                    ->frame(400, 200, 200, 200)
+                    ->scale(CELL_SIZE / 200.0);
+
+            figPos[pos] = bishop;
+            bishop->create();
+        }
+    } else {
+        for (auto pos: {"C8"s, "F8"s}) {
+            auto [x, y] = cell(pos);
+            auto bishop = gui->sprite()
+                    ->x(x)
+                    ->y(y)
+                    ->image("figures.png")
+                    ->frame(400, 0, 200, 200)
+                    ->scale(CELL_SIZE / 200.0);
+
+            figPos[pos] = bishop;
+            bishop->create();
+        }
+        for (auto pos: {"C1"s, "F1"s}) {
+            auto [x, y] = cell(pos);
+            auto bishop = gui->sprite()
+                    ->x(x)
+                    ->y(y)
+                    ->image("figures.png")
+                    ->frame(400, 200, 200, 200)
+                    ->scale(CELL_SIZE / 200.0);
+
+            figPos[pos] = bishop;
+            bishop->create();
+        }
     }
-    for (auto pos : {"C8"s, "F8"s}) {
-        auto [x, y] = cell(pos);
-        auto bishop = gui->sprite()
-                          ->x(x)
-                          ->y(y)
-                          ->image("figures.png")
-                          ->frame(400, 200, 200, 200)
-                          ->scale(CELL_SIZE / 200.0);
-        //        gui->addEventHandler(figureEventHandler(bishop, cells, gui,
-        //        movesChan, figPos));
-        figPos[pos] = bishop;
-        bishop->create();
-    }
+
 }
 
 void setupQueens(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells,
                  std::queue<std::string>& movesChan,
-                 std::map<std::string, GUIObj*>& figPos) {
+                 std::map<std::string, GUIObj*>& figPos, figure_color color) {
     using namespace std::literals;
-    auto [x, y] = cell("D1"s);
-    auto queen1 = gui->sprite()
-                      ->x(x)
-                      ->y(y)
-                      ->image("figures.png")
-                      ->frame(200, 0, 200, 200)
-                      ->scale(CELL_SIZE / 200.0);
-    //    gui->addEventHandler(figureEventHandler(queen1, cells, gui, movesChan,
-    //    figPos));
-    figPos["D1"] = queen1;
-    queen1->create();
-    std::tie(x, y) = cell("D8"s);
-    auto queen2 = gui->sprite()
-                      ->x(x)
-                      ->y(y)
-                      ->image("figures.png")
-                      ->frame(200, 200, 200, 200)
-                      ->scale(CELL_SIZE / 200.0);
-    //    gui->addEventHandler(figureEventHandler(queen2, cells, gui, movesChan,
-    //    figPos));
-    figPos["D8"] = queen2;
-    queen2->create();
+    if (color == figure_color::WHITE) {
+        auto [x, y] = cell("D1"s);
+        auto queen1 = gui->sprite()
+                ->x(x)
+                ->y(y)
+                ->image("figures.png")
+                ->frame(200, 0, 200, 200)
+                ->scale(CELL_SIZE / 200.0);
+
+        figPos["D1"] = queen1;
+        queen1->create();
+        std::tie(x, y) = cell("D8"s);
+        auto queen2 = gui->sprite()
+                ->x(x)
+                ->y(y)
+                ->image("figures.png")
+                ->frame(200, 200, 200, 200)
+                ->scale(CELL_SIZE / 200.0);
+
+        figPos["D8"] = queen2;
+        queen2->create();
+    } else {
+        auto [x, y] = cell("E8"s);
+        auto queen1 = gui->sprite()
+                ->x(x)
+                ->y(y)
+                ->image("figures.png")
+                ->frame(200, 0, 200, 200)
+                ->scale(CELL_SIZE / 200.0);
+
+        figPos["E8"] = queen1;
+        queen1->create();
+        std::tie(x, y) = cell("E1"s);
+        auto queen2 = gui->sprite()
+                ->x(x)
+                ->y(y)
+                ->image("figures.png")
+                ->frame(200, 200, 200, 200)
+                ->scale(CELL_SIZE / 200.0);
+
+        figPos["E1"] = queen2;
+        queen2->create();
+    }
 }
 
 void setupKings(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells,
                 std::queue<std::string>& movesChan,
-                std::map<std::string, GUIObj*>& figPos) {
+                std::map<std::string, GUIObj*>& figPos, figure_color color) {
     using namespace std::literals;
-    auto [x, y] = cell("E1"s);
-    auto king1 = gui->sprite()
-                     ->x(x)
-                     ->y(y)
-                     ->image("figures.png")
-                     ->frame(0, 0, 200, 200)
-                     ->scale(CELL_SIZE / 200.0);
-    //    gui->addEventHandler(figureEventHandler(king1, cells, gui, movesChan,
-    //    figPos));
-    figPos["E1"] = king1;
-    king1->create();
-    std::tie(x, y) = cell("E8"s);
-    auto king2 = gui->sprite()
-                     ->x(x)
-                     ->y(y)
-                     ->image("figures.png")
-                     ->frame(0, 200, 200, 200)
-                     ->scale(CELL_SIZE / 200.0);
-    //    gui->addEventHandler(figureEventHandler(king2, cells, gui, movesChan,
-    //    figPos));
-    figPos["E8"] = king2;
-    king2->create();
+    if (color == figure_color::WHITE) {
+        auto [x, y] = cell("E1"s);
+        auto king1 = gui->sprite()
+                ->x(x)
+                ->y(y)
+                ->image("figures.png")
+                ->frame(0, 0, 200, 200)
+                ->scale(CELL_SIZE / 200.0);
+        figPos["E1"] = king1;
+        king1->create();
+        std::tie(x, y) = cell("E8"s);
+        auto king2 = gui->sprite()
+                ->x(x)
+                ->y(y)
+                ->image("figures.png")
+                ->frame(0, 200, 200, 200)
+                ->scale(CELL_SIZE / 200.0);
+        figPos["E8"] = king2;
+        king2->create();
+    } else {
+        auto [x, y] = cell("D8"s);
+        auto king1 = gui->sprite()
+                ->x(x)
+                ->y(y)
+                ->image("figures.png")
+                ->frame(0, 0, 200, 200)
+                ->scale(CELL_SIZE / 200.0);
+        figPos["D8"] = king1;
+        king1->create();
+        std::tie(x, y) = cell("D1"s);
+        auto king2 = gui->sprite()
+                ->x(x)
+                ->y(y)
+                ->image("figures.png")
+                ->frame(0, 200, 200, 200)
+                ->scale(CELL_SIZE / 200.0);
+        figPos["D1"] = king2;
+        king2->create();
+    }
 }
 
 void setupFigures(std::shared_ptr<GUIFactory> gui, std::vector<GUIObj*> cells,
                   std::queue<std::string>& movesChan,
-                  std::map<std::string, GUIObj*>& figPos) {
-    setupPawns(gui, cells, movesChan, figPos);
-    setupRooks(gui, cells, movesChan, figPos);
-    setupKnights(gui, cells, movesChan, figPos);
-    setupBishops(gui, cells, movesChan, figPos);
-    setupQueens(gui, cells, movesChan, figPos);
-    setupKings(gui, cells, movesChan, figPos);
+                  std::map<std::string, GUIObj*>& figPos, figure_color color) {
+    setupPawns(gui, cells, movesChan, figPos, color);
+    setupRooks(gui, cells, movesChan, figPos, color);
+    setupKnights(gui, cells, movesChan, figPos, color);
+    setupBishops(gui, cells, movesChan, figPos, color);
+    setupQueens(gui, cells, movesChan, figPos, color);
+    setupKings(gui, cells, movesChan, figPos, color);
 }
 
 void setupBoard(std::shared_ptr<GUIFactory> gui,
                 std::queue<std::string>& movesChan,
-                std::map<std::string, GUIObj*>& figPos) {
-    auto cells = setupCells(gui);
-    setupCellTitles(gui);
-    setupFigures(gui, cells, movesChan, figPos);
+                std::map<std::string, GUIObj*>& figPos, figure_color color) {
+    auto cells = setupCells(gui, color);
+    if (color == figure_color::WHITE) {
+        setupCellTitles(gui);
+    } else {
+        setupBlackCellTitles(gui);
+    }
+    setupFigures(gui, cells, movesChan, figPos, color);
 }
 
-void setupMessage(std::shared_ptr<GUIFactory> gui, std::string message) {
+void setupMessage(std::shared_ptr<GUIFactory> gui, std::string message, uint32_t color) {
     gui->remove(gui->current_msg);
     auto text_obj = gui->text();
     text_obj->x(810)
         ->y(50)
         ->size(30)
-        ->color(0xffffffffu)
+        ->color(color)
         ->text(message)
         ->font("Montserrat-Regular.ttf")
         ->create();

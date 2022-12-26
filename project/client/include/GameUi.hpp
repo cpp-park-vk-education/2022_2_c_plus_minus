@@ -16,12 +16,12 @@ const int WINDOW_HEIGHT = 800;
 
 class GameUi : public std::enable_shared_from_this<GameUi> {
    public:
-    GameUi();
+    GameUi(figure_color color);
     void makeMove(std::string mov);
     int start();
     void finishGame();
     void addClient(std::shared_ptr<Client> client);
-    void setupMsg(std::string msg);
+    void setupMsg(std::string msg, uint32_t color = sf::Color::Black.toInteger());
     void setupRoomInfo(std::string player1, std::string player2,
                        std::string color, std::string room);
     std::string coordsToStr(int x, int y);
@@ -37,4 +37,5 @@ class GameUi : public std::enable_shared_from_this<GameUi> {
     std::string start_pos = "  ";
     std::string finish_pos = "  ";
     std::weak_ptr<Client> client_;
+    figure_color color_ = WHITE;
 };

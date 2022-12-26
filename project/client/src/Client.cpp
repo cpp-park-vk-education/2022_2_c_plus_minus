@@ -34,6 +34,7 @@ void Client::Run() {
     drawer.DrawBasicMenu();
     int choice = 0;
     bool stop = false;
+
     while (!stop) {
         fflush(stdin);
         std::cin >> choice;
@@ -63,7 +64,7 @@ void Client::Run() {
                     break;
                 }
                 StartGame();
-                gameUI_ = std::make_shared<GameUi>();
+                gameUI_ = std::make_shared<GameUi>(game_.color);
                 gameUI_->addClient(this->shared_from_this());
                 gameUI_->setupRoomInfo(nick_, game_.enemy_name,
                                        ColorToStr(game_.color), room_name);
@@ -84,7 +85,8 @@ void Client::Run() {
                     "You entered\nLets wait for start from host");
                 while (!game_.is_started);
                 drawer.DrawMessage("Game started!");
-                gameUI_ = std::make_shared<GameUi>();
+                gameUI_ = std::make_shared<GameUi>(game_.color);
+
                 gameUI_->addClient(this->shared_from_this());
                 gameUI_->setupRoomInfo(nick_, game_.enemy_name,
                                        ColorToStr(game_.color), room_name);
@@ -136,8 +138,7 @@ move_status Client::MoveFigure(const std::string& fromTo) {
     MoveFigureRequest req(fromTo);
     Write(req.toJSON());
     waiting_responses_++;
-    while (waiting_responses_)
-        ;
+    while (waiting_responses_);
     return game_.last_move;
 }
 
@@ -287,9 +288,21 @@ void Client::handleMoveFigure(const std::string& data) {
 
         if (response.moveStatus == MOVE_CHECKMATE_WHITE) {
             gameUI_->finishGame();
+            state_ = State::READY;
+            game_.last_move = move_status(response.moveStatus);
+            chan_.moves_chan_.Push(response.move_str);
+            if (waiting_responses_) waiting_responses_--;
+            gameUI_->makeMove(response.move_str);
+            gameUI_->setupMsg(
+                    MoveStatusAsString(static_cast<move_status>(response.moveStatus)), sf::Color::Red.toInteger());
+            return;
         }
         if (response.moveStatus == MOVE_CHECKMATE_BLACK) {
             gameUI_->finishGame();
+            gameUI_->makeMove(response.move_str);
+            gameUI_->setupMsg(
+                    MoveStatusAsString(static_cast<move_status>(response.moveStatus)), sf::Color::Red.toInteger());
+            return;
         }
         gameUI_->makeMove(response.move_str);
     }

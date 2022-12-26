@@ -2,10 +2,10 @@
 
 #include "Client.hpp"
 
-GameUi::GameUi()
+GameUi::GameUi(figure_color color)
     : window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Chess"),
-      gui(new SFMLGUIFactory(&window)) {
-    //    window.close();
+      gui(new SFMLGUIFactory(&window)),
+      color_(color){
 }
 
 void GameUi::addClient(std::shared_ptr<Client> client) {
@@ -18,15 +18,31 @@ std::string GameUi::coordsToStr(int x, int y) {
     if (x > 800 || y > 800) {
         return "nn";
     }
-    std::string letters = "ABCDEFGH";
-    std::string nums = "87654321";
+    std::string letters;
+    std::string nums;
+//    if (color_ == WHITE) {
+    letters = "ABCDEFGH";
+    nums = "87654321";
     std::string result = "  ";
     result[0] = letters[x / 100];
     result[1] = nums[y / 100];
+    if (color_ == BLACK) {
+        std::map<char, char> map;
+        for (int i = 0; i < 8; i++){
+            map['1'+i] = '8'-i;
+        }
+        std::string str = "ABCDEFGH";
+        for (int i = 0; i < 8; i++){
+            map[str[i]] = str[7-i];
+        }
+        result[0] = map[result[0]];
+        result[1] = map[result[1]];
+    }
+
     return result;
 }
 
-void GameUi::setupMsg(std::string msg) { setupMessage(gui, msg); }
+void GameUi::setupMsg(std::string msg, uint32_t color) { setupMessage(gui, msg, color); }
 
 void GameUi::setupRoomInfo(std::string player1, std::string player2,
                            std::string color, std::string room) {
@@ -36,6 +52,20 @@ void GameUi::setupRoomInfo(std::string player1, std::string player2,
 void GameUi::makeMove(std::string mov) {
     auto from = mov.substr(0, 2);
     auto to = mov.substr(2, 2);
+    if (color_ == BLACK){
+        std::map<char, char> map;
+        for (int i = 0; i < 8; i++){
+            map['1'+i] = '8'-i;
+        }
+        std::string str = "ABCDEFGH";
+        for (int i = 0; i < 8; i++){
+            map[str[i]] = str[7-i];
+        }
+        from[0] = map[from[0]];
+        from[1] = map[from[1]];
+        to[0] = map[to[0]];
+        to[1] = map[to[1]];
+    }
     if (figPos.find(to) != figPos.end()) {
         gui->remove(figPos[to]);
     }
@@ -49,7 +79,7 @@ void GameUi::reset() { gui.reset(); }
 
 int GameUi::start() {
     std::queue<std::string> movesChan;
-    setupBoard(gui, movesChan, figPos);
+    setupBoard(gui, movesChan, figPos, color_);
     while (window.isOpen()) {
         sf::Event e;
         while (window.pollEvent(e)) {

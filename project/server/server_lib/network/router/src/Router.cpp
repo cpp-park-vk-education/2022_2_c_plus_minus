@@ -18,7 +18,6 @@ std::string Router::process(const std::string& requestData, User& user,
     }
     Request req;
     req.parse(json_object);
-
     auto route = routes_.find(req.req_type);
     if (route != routes_.end()) {
         Route steps = route->second;

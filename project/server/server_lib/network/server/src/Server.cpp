@@ -12,7 +12,7 @@ Server::Server(const std::string address, const std::string port,
       io_ctx_(),
       signals_(io_ctx_),
       acceptor_(io_ctx_),
-      client_(),
+      connection_(),
       basic_menu_() {
     signals_.add(SIGINT);
     signals_.add(SIGTERM);
@@ -77,21 +77,20 @@ void Server::run() {
 }
 
 void Server::accept() {
-    client_.reset(new Connection(io_ctx_, basic_menu_, router_));
-    acceptor_.async_accept(client_->getSocket(),
+    connection_.reset(new Connection(io_ctx_, basic_menu_, router_));
+    acceptor_.async_accept(connection_->getSocket(),
                            boost::bind(&Server::handleAccept, this,
                                        boost::asio::placeholders::error));
 }
 
 void Server::handleAccept(const boost::system::error_code& err) {
     if (!err) {
-        boost::asio::ip::tcp::socket& socket = client_->getSocket();
+        boost::asio::ip::tcp::socket& socket = connection_->getSocket();
         logger_.Write(LogType::info, "Started handling: ",
                       socket.remote_endpoint().address().to_string(), ":",
                       std::to_string(socket.remote_endpoint().port()), "\n");
-        client_->start();
+        connection_->start();
     }
-
     accept();
 }
 

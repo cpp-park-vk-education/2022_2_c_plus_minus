@@ -25,7 +25,7 @@ class Server {
     boost::asio::io_context io_ctx_;
     boost::asio::signal_set signals_;
     boost::asio::ip::tcp::acceptor acceptor_;
-    boost::shared_ptr<Connection> client_;
+    boost::shared_ptr<Connection> connection_;
     BasicMenu basic_menu_;
     Router router_;
     Log logger_{"server_log.txt"};
