@@ -19,8 +19,8 @@ int main() {
             }
         });
     }
-
-    client->Run();
+    client->PerfTest();
+//    client->Run();
     for (auto& t : ts) {
         t.join();
     }
