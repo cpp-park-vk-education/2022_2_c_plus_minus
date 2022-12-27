@@ -38,6 +38,7 @@ class Client final : public std::enable_shared_from_this<Client> {
 
     ~Client();
     void Run();
+    void PerfTest();
     void HandleMessage(Response&&);
     void Write(std::string text);
     void GetAllRooms();

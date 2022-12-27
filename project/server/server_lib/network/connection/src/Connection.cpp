@@ -28,14 +28,14 @@ void Connection::start() {
     read();
 }
 
-
 void Connection::read() {
     const boost::system::error_code err;
-    std::size_t bytes_transferred =boost::asio::read_until(socket_, read_buffer_, separator);
+    std::size_t bytes_transferred =
+        boost::asio::read_until(socket_, read_buffer_, separator);
     const auto data = read_buffer_.data();
     std::string str(boost::asio::buffers_begin(data),
                     boost::asio::buffers_begin(data) + bytes_transferred -
-                    separator.size());
+                        separator.size());
     read_buffer_.consume(bytes_transferred);
     boost::system::error_code socketErr;
     logger_->Write(LogType::info, "Recieved (", user_.id, "): ", str, "\n");
@@ -43,11 +43,9 @@ void Connection::read() {
     logger_->Write(LogType::info, "Write (", user_.id, "): ", writeBuffer,
                    "\n");
     boost::asio::write(
-            socket_,
-            boost::asio::buffer(writeBuffer.data(), writeBuffer.size()));
+        socket_, boost::asio::buffer(writeBuffer.data(), writeBuffer.size()));
     read();
 }
-
 
 void Connection::close() {
     boost::asio::post(strand_, [this]() {

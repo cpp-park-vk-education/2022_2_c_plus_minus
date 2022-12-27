@@ -1,4 +1,5 @@
 #include <table.hpp>
+
 #include "Client.hpp"
 
 int main() {
@@ -19,8 +20,8 @@ int main() {
             }
         });
     }
-
-    client->Run();
+    client->PerfTest();
+//    client->Run();
     for (auto& t : ts) {
         t.join();
     }

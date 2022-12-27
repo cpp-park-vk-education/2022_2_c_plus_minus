@@ -4,8 +4,7 @@
 
 GameUi::GameUi()
     : window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Chess"),
-      gui(new SFMLGUIFactory(&window)) {
-}
+      gui(new SFMLGUIFactory(&window)) {}
 
 void GameUi::addClient(std::shared_ptr<Client> client) {
     client_ = client->weak_from_this();
